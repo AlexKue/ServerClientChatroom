@@ -1,7 +1,7 @@
-package serverclientchatroom.listener.threads;
+package chatroom.server.listener.threads;
 
-import serverclientchatroom.listener.MessageListener;
-import serverclientchatroom.model.User;
+import chatroom.server.listener.MessageListener;
+import chatroom.model.User;
 
 public class UserThread extends Thread {
     private User user;
@@ -12,6 +12,7 @@ public class UserThread extends Thread {
     }
 
     public void run(){
+
 
     }
 

@@ -1,10 +1,9 @@
-package serverclientchatroom;
-
+package chatroom.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import serverclientchatroom.listener.MessageListener;
-import serverclientchatroom.listener.NetworkListener;
+import chatroom.server.listener.MessageListener;
+import chatroom.server.listener.NetworkListener;
 
 public class Server {
     public static void main (String args[]){

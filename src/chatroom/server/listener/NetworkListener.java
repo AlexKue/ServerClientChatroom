@@ -1,11 +1,11 @@
-package serverclientchatroom.listener;
+package chatroom.server.listener;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 
-import serverclientchatroom.listener.threads.UserThread;
-import serverclientchatroom.model.User;
+import chatroom.server.listener.threads.UserThread;
+import chatroom.model.User;
 
 public class NetworkListener extends Thread {
 
@@ -30,16 +30,10 @@ public class NetworkListener extends Thread {
                 System.err.println("Connection between server and new client failed!");
                 ex.printStackTrace();
             }
-
         }
     }
 
     public ArrayList<UserThread> getUserThreadList() {
         return userThreadList;
     }
-
-    public void setUserThreadList(ArrayList<UserThread> UserList) {
-        this.userThreadList = UserList;
-    }
-
 }

@@ -1,5 +1,4 @@
-package serverclientchatroom;
-
+package chatroom.client;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -15,7 +14,10 @@ public class Client {
     public static void main(String args[]){
         Scanner sc = new Scanner(System.in);
         try {
-            Socket server = new Socket("localhost",54322);
+            System.out.println("Please enter the adress of the server to connect to: ");
+            String address = sc.nextLine();
+
+            Socket server = new Socket(sc.nextLine(),54322);
             System.out.println("Connected to server!");
             
             InputStream in = server.getInputStream();
