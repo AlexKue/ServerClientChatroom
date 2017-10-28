@@ -18,8 +18,8 @@ public class Server {
             messageListener.start();
             
         } catch (IOException ex) {
+            System.err.println("Error while starting the server!");
             ex.printStackTrace();
-            System.err.println("Connection Error!");
         }
         
     } 

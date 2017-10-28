@@ -9,16 +9,29 @@ import java.net.Socket;
 public class User {
     private String name;
     private final Socket socket;
-    private DataInputStream dIn;
-    private DataOutputStream dOut;
+    private DataInputStream dataIn;
+    private DataOutputStream dataOut;
 
     public User(Socket socket) {  
         this.socket = socket;
-        dIn = new DataInputStream(new BufferedInputStream(dIn));
-        dOut = new DataOutputStream(new BufferedOutputStream(dOut));
+        dataIn = new DataInputStream(new BufferedInputStream(getDataIn()));
+        dataOut = new DataOutputStream(new BufferedOutputStream(getDataOut()));
     }
 
-   
 
-    
+    public String getName() {
+        return name;
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public DataInputStream getDataIn() {
+        return dataIn;
+    }
+
+    public DataOutputStream getDataOut() {
+        return dataOut;
+    }
 }
