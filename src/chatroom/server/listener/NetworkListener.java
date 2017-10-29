@@ -4,16 +4,15 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 
-import chatroom.server.listener.threads.UserThread;
 import chatroom.model.User;
 
 public class NetworkListener extends Thread {
 
     private ServerSocket listener;
-    private ArrayList<UserThread> userThreadList;
+    private ArrayList<UserListeningThread> userListeningThreadList;
 
     public NetworkListener(ServerSocket listener) {
-        this.userThreadList = new ArrayList<>();
+        this.userListeningThreadList = new ArrayList<>();
         this.listener = listener;
     }
 
@@ -22,9 +21,10 @@ public class NetworkListener extends Thread {
         while (true) {
             try {
                 //Create new Thread for the MessageListener for each new client
-                UserThread u = new UserThread(new User(listener.accept()));
-                getUserThreadList().add(u);
+                UserListeningThread u = new UserListeningThread(new User(listener.accept()));
+                getUserListeningThreadList().add(u);
                 u.start();
+
 
             } catch (IOException ex) {
                 System.err.println("Connection between server and new client failed!");
@@ -33,7 +33,7 @@ public class NetworkListener extends Thread {
         }
     }
 
-    public ArrayList<UserThread> getUserThreadList() {
-        return userThreadList;
+    public ArrayList<UserListeningThread> getUserListeningThreadList() {
+        return userListeningThreadList;
     }
 }
