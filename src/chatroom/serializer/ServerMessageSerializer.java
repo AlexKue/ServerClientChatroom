@@ -1,4 +1,4 @@
 package chatroom.serializer;
 
-public class ServerMessageSerializer {
+public class ServerMessageSerializer extends MessageSerializer{
 }
