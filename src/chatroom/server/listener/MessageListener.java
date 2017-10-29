@@ -1,40 +1,55 @@
 package chatroom.server.listener;
 
+import java.io.IOException;
 import java.util.concurrent.SynchronousQueue;
 
-import chatroom.server.listener.threads.UserThread;
 import chatroom.model.Message;
-import chatroom.serializer.MessageSerializer;
 
 public class MessageListener extends Thread {
     private SynchronousQueue<Message> messageQueue;
     private NetworkListener networkListener;
-    private MessageSerializer serializer;
 
     public MessageListener(NetworkListener networkListener) {
         messageQueue = new SynchronousQueue<>();        //Synchronized queue containing messages from clients
         this.networkListener = networkListener;
-        serializer = new MessageSerializer();
     }
     
     @Override
     public void run(){
         while(true){
             if(!getMessageQueue().isEmpty()){
-                //  "..." = deserialize(messageQueue.take());
+                try {
+                    Message m = messageQueue.take();
+                    //TODO: Deserialize message
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
-    public void serialize(){}
-    public void deserialize(){}
     public void sendToTarget(){
     //TODO
     }
 
-    public void sentToAll(){
-        for(UserThread u : networkListener.getUserThreadList()){
+    public void sentToAll(Message m){
+        for(UserListeningThread u : networkListener.getUserListeningThreadList()){
             /* TODO */
+            try {
+                u.getUser().getDataOut().writeObject(m);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    private void serialize(Byte type, Message m){
+        switch(type){
+            //TODO
+        }
+    }
+    private void deserialize(Byte type, Message m){
+        switch(type){
+            //TODO
         }
     }
 
