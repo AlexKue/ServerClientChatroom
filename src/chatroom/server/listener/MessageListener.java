@@ -29,29 +29,15 @@ public class MessageListener extends Thread {
     }
 
     public void sendToTarget(){
-    //TODO
+    //TODO sendToTarget function
     }
 
     public void sentToAll(Message m){
         for(UserListeningThread u : networkListener.getUserListeningThreadList()){
-            /* TODO */
-            try {
-                u.getUser().getDataOut().writeObject(m);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            //TODO Serialize
         }
     }
-    private void serialize(Byte type, Message m){
-        switch(type){
-            //TODO
-        }
-    }
-    private void deserialize(Byte type, Message m){
-        switch(type){
-            //TODO
-        }
-    }
+
 
     public SynchronousQueue<Message> getMessageQueue() {
         return messageQueue;
