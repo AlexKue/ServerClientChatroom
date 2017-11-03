@@ -29,7 +29,7 @@ public class UserListeningThread extends Thread {
             try {               
                 byte type = userDataIn.readByte();
                 Message m = serializer.deserialize(userDataIn, type);
-                listener.getMessageQueue().put(m);
+                listener.getMessageQueue().put(m); //TODO: get Messagequeue somehow
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
