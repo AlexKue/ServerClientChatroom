@@ -1,27 +1,33 @@
 package chatroom.client;
 
 import chatroom.model.Message;
+import chatroom.serializer.Serializer;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.InputStream;
 
 public class ClientListeningThread extends Thread {
-    ObjectInputStream dataIn;
+    InputStream in;
+    Serializer serializer;
 
-    public ClientListeningThread(ObjectInputStream dataIn) throws IOException, ClassNotFoundException {
-        this.dataIn = dataIn;
+    public ClientListeningThread(InputStream in) throws IOException, ClassNotFoundException {
+        this.in = in;
+        serializer = new Serializer();
     }
 
     public void run(){
-        try{
-            Message m = (Message) dataIn.readObject();
-            //TODO: Deserialize incoming message
-        } catch (IOException e) {
-            System.err.println("Error: Failed to retrieve message!");
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            System.err.println("Error: Received unknown object!");
-            e.printStackTrace();
+        DataInputStream dataIn = new DataInputStream(new BufferedInputStream(in));
+        while(true){
+            try {
+                byte type = dataIn.readByte();
+                Message m = serializer.deserialize(in, type);
+                //TODO: Display text
+                
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
