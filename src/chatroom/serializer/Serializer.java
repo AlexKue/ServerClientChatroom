@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package chatroom.serializer;
 
 import chatroom.model.Message;
@@ -11,10 +6,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 
-/**
- *
- * @author ri93xuc
- */
 public class Serializer {
 
     private final HashMap<Byte, MessageSerializer> serializerHashMap;
@@ -26,10 +17,10 @@ public class Serializer {
         serializerHashMap.put((byte) 2, new TargetedTextMessageSerializer());
     }
     
-    public void serialize(OutputStream out, Byte type){
-        serializerHashMap.get(type).serialize(out);
+    public void serialize(OutputStream out, byte type, Message m){
+        serializerHashMap.get(type).serialize(out, m);
     }
-    public Message deserialize(InputStream in, Byte type) throws IOException{
-        serializerHashMap.get(type).deserialize(in);
+    public Message deserialize(InputStream in, byte type) throws IOException{
+        return serializerHashMap.get(type).deserialize(in);
     }
 }
