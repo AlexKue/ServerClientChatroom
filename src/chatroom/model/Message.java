@@ -1,9 +1,16 @@
 package chatroom.model;
 
 public abstract class Message {
-    protected Byte type; // helps the Serializer to (de-)serialize accordingly
+    protected byte type;
 
-    public Byte getType(){
+    /**
+     * Returns the type of Message, defined by a byte. 
+     * Possible values: 0: ServerMessage
+     *                  1: PublicTextMessage
+     *                  2: TargetedTextMessage
+     * @return 
+     */
+    public byte getType(){
         return type;
     }
 }
