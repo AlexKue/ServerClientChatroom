@@ -17,7 +17,7 @@ public abstract class MessageSerializer {
      * <code>OutputStream</code>.
      * @param out an <code>OutputStream</code> to send the message through 
      */
-    abstract public void serialize(OutputStream out);
+    abstract public void serialize(OutputStream out, Message m);
     
     /**
      * Deserializes an incoming message of a client.
