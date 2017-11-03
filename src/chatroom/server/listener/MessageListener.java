@@ -35,6 +35,7 @@ public class MessageListener extends Thread {
     }
 
     public void sendToTarget(Message m){
+        //TODO Serialize
         
     }
 
