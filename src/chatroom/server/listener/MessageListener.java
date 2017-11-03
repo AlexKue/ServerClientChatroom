@@ -1,17 +1,18 @@
 package chatroom.server.listener;
 
-import java.io.IOException;
-import java.util.concurrent.SynchronousQueue;
-
 import chatroom.model.Message;
+import chatroom.serializer.Serializer;
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class MessageListener extends Thread {
-    private SynchronousQueue<Message> messageQueue;
-    private NetworkListener networkListener;
+    private final ArrayBlockingQueue<Message> messageQueue;
+    private final NetworkListener networkListener;
+    private final Serializer serializer;
 
     public MessageListener(NetworkListener networkListener) {
-        messageQueue = new SynchronousQueue<>();        //Synchronized queue containing messages from clients
+        messageQueue = new ArrayBlockingQueue<>(100);  //Synchronized queue containing messages from clients
         this.networkListener = networkListener;
+        serializer = new Serializer();
     }
     
     @Override
@@ -20,7 +21,12 @@ public class MessageListener extends Thread {
             if(!getMessageQueue().isEmpty()){
                 try {
                     Message m = messageQueue.take();
-                    //TODO: Deserialize message
+                    //Byte sent by client decides which type of message is sent
+                    switch(m.getType()){
+                        case 0: sendToAll(m);
+                        case 1: sendToTarget(m);
+                        case 2: sendToAll(m);
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -28,18 +34,18 @@ public class MessageListener extends Thread {
         }
     }
 
-    public void sendToTarget(){
-    //TODO sendToTarget function
+    public void sendToTarget(Message m){
+        
     }
 
-    public void sentToAll(Message m){
+    public void sendToAll(Message m){
         for(UserListeningThread u : networkListener.getUserListeningThreadList()){
             //TODO Serialize
         }
     }
 
 
-    public SynchronousQueue<Message> getMessageQueue() {
+    public ArrayBlockingQueue<Message> getMessageQueue() {
         return messageQueue;
     }
 }
