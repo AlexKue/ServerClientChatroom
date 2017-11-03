@@ -12,8 +12,8 @@ public class User {
     public User(Socket socket) {
         this.socket = socket;
         try{
-            in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-            out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+            in = socket.getInputStream();
+            out = socket.getOutputStream();
         } catch (IOException ex){
             System.err.println("Error: Failed to get I/O Streams of client!");
             ex.printStackTrace();
