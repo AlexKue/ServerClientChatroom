@@ -18,7 +18,7 @@ public class PublicTextMessageSerializer extends UserMessageSerializer {
     public void serialize(OutputStream out, Message m) {
         try {
             DataOutputStream dataOut = new DataOutputStream(new BufferedOutputStream(out));
-            dataOut.writeByte((byte)2);
+            dataOut.writeByte((byte)1);
             dataOut.writeUTF(((PublicTextMessage)m).getMessage());
             dataOut.writeUTF(((PublicTextMessage)m).getSender());
             dataOut.flush();
