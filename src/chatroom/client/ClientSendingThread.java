@@ -26,7 +26,7 @@ public class ClientSendingThread extends Thread {
         while (true){
             String stringMessage = sc.nextLine();
             PublicTextMessage message = new PublicTextMessage(stringMessage, name);
-            serializer.serialize(out,(byte)2, message);
+            serializer.serialize(out,(byte)1, message);
             
         }
     }
