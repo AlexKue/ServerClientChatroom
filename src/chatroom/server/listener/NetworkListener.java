@@ -28,13 +28,17 @@ public class NetworkListener extends Thread {
                 getUserListeningThreadList().add(u);
                 u.start();
             } catch (IOException ex) {
-                System.out.println();
+                System.out.println("*** Connection Error!" + ex.toString() + ") ***");
                 //.accept() will throw if server is closing
             }
 
         }
         shutdown();
     }
+    //TODO: Proper Logout of Client
+//    public void removeClient(){
+//
+//    }
 
     public ArrayList<UserListeningThread> getUserListeningThreadList() {
         return userListeningThreadList;
