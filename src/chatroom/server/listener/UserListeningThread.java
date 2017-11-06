@@ -1,8 +1,11 @@
 package chatroom.server.listener;
 
 import chatroom.model.Message;
+import chatroom.model.PublicTextMessage;
 import chatroom.model.User;
 import chatroom.serializer.Serializer;
+import chatroom.server.Server;
+
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 
@@ -12,26 +15,27 @@ import java.util.HashMap;
 public class UserListeningThread extends Thread {
 
     private final User user;
-    private MessageListener listener;
-    private final DataInputStream userDataIn;
+    private Server server;
     private final Serializer serializer;
 
-    public UserListeningThread(User user) {
+    public UserListeningThread(User user, Server server) {
+        this.server = server;
         this.user = user;
-        userDataIn = new DataInputStream(new BufferedInputStream(user.getIn()));
         serializer = new Serializer();
 
     }
 
     @Override
     public void run() {
-        while (true) {
+        boolean isRunning = true;
+        while (isRunning) {
             try {               
-                byte type = userDataIn.readByte();
-                Message m = serializer.deserialize(userDataIn, type);
-                listener.getMessageQueue().put(m); //TODO: get Messagequeue somehow
+                byte type = (byte)user.getIn().read();
+                Message m = serializer.deserialize(user.getIn(), type);
+                server.getMessageListener().getMessageQueue().put(m);
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println("Lost Connection to client!");
+                isRunning = false; //Stop the Thread if connection is lost
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
