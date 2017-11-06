@@ -1,5 +1,6 @@
 package chatroom.client;
 
+import chatroom.model.MessageTypeDictionary;
 import chatroom.model.PublicTextMessage;
 import chatroom.serializer.Serializer;
 
@@ -10,23 +11,20 @@ public class ClientSendingThread extends Thread {
     private OutputStream out;
     private Scanner sc = new Scanner(System.in);
     private final Serializer serializer;
-    private String name;
+    private final Client client;
 
-    public ClientSendingThread(OutputStream out){
+    public ClientSendingThread(OutputStream out, Client client){
+        this.client = client;
         this.out = out;
         serializer = new Serializer();
     }
 
     @Override
     public void run(){
-        //send a name (TODO: Proper Anthentification serverside)
-        System.out.println("Enter your name");
-        name = sc.nextLine();
-        
         while (true){
             String stringMessage = sc.nextLine();
-            PublicTextMessage message = new PublicTextMessage(stringMessage, name);
-            serializer.serialize(out,(byte)1, message);
+            PublicTextMessage message = new PublicTextMessage(stringMessage, client.getName());
+            serializer.serialize(out, (byte)1, message);
             
         }
     }
