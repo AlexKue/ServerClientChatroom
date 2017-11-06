@@ -1,12 +1,16 @@
 package chatroom.client;
 
-import chatroom.model.MessageTypeDictionary;
+import chatroom.model.LogoutMessage;
 import chatroom.model.PublicTextMessage;
 import chatroom.serializer.Serializer;
 
 import java.io.OutputStream;
 import java.util.Scanner;
 
+/**
+ * Handles sending messages by deserializing them properly based on
+ * type of message
+ */
 public class ClientSendingThread extends Thread {
     private OutputStream out;
     private Scanner sc = new Scanner(System.in);
@@ -23,6 +27,12 @@ public class ClientSendingThread extends Thread {
     public void run(){
         while (true){
             String stringMessage = sc.nextLine();
+            if(stringMessage.trim().equals("!quit")){
+                LogoutMessage l = new LogoutMessage();
+                //TODO: implement serialize of logout
+                //serializer.serialize(out, );
+                client.stop();
+            }
             PublicTextMessage message = new PublicTextMessage(stringMessage, client.getName());
             serializer.serialize(out, (byte)1, message);
             
