@@ -9,6 +9,10 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Handles incoming messages by deserializing the data and putting them in a Message Object,
+ * displaying them afterwards
+ */
 public class ClientListeningThread extends Thread {
     private Client client;
     private InputStream in;
