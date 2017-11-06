@@ -30,7 +30,6 @@ public class Server {
             System.out.println("Server Online!");
             getNetworkListener().start();
             getMessageListener().start();
-
         } catch (IOException ex) {
             System.err.println("Error while starting the server!");
             ex.printStackTrace();
@@ -38,11 +37,11 @@ public class Server {
 
         while(isRunning()){
             if(sc.nextLine().trim().equals("!quit")){
-                stop(listener);
+                stop();
             }
         }
     }
-    private void stop(ServerSocket listener){
+    private void stop(){
         System.out.println("*** Shutting down Server... ***");
         isRunning = false;
         try {
