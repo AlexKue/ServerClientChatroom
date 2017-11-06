@@ -11,14 +11,15 @@ public class Client {
     private MessageTypeDictionary messageTypeDictionary;
     private Scanner sc;
     private String name;
-
+    private ClientListeningThread clientListener;
+    private ClientSendingThread clientSender;
     public Client(){
         messageTypeDictionary = new MessageTypeDictionary();
         sc = new Scanner(System.in);
     }
 
     public void stop(){
-
+        //TODO
     }
 
     public void start() {
@@ -36,8 +37,8 @@ public class Client {
             InputStream dataIn = server.getInputStream();
             OutputStream dataOut = server.getOutputStream();
 
-            ClientListeningThread clientListener = new ClientListeningThread(dataIn, this);
-            ClientSendingThread clientSender = new ClientSendingThread(dataOut, this);
+            clientListener = new ClientListeningThread(dataIn, this);
+            clientSender = new ClientSendingThread(dataOut, this);
             
             clientListener.start();
             clientSender.start();
@@ -64,5 +65,13 @@ public class Client {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public ClientListeningThread getClientListener() {
+        return clientListener;
+    }
+
+    public ClientSendingThread getClientSender() {
+        return clientSender;
     }
 }
