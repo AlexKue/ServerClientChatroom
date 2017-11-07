@@ -3,9 +3,6 @@ package chatroom.client;
 import chatroom.model.*;
 import chatroom.serializer.Serializer;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -57,9 +54,9 @@ public class ClientListeningThread extends Thread {
                 String publicString = publicTextMessage.getSender() + ": " + publicTextMessage.getMessage();
                 System.out.println(publicString);
                 break;
-            case SERVERMSG:
-                ServerMessage serverMessage = ((ServerMessage) message);
-                System.out.println("*** " + serverMessage.getMessage() + " ***");
+            case PUBLICSERVERMSG:
+                PublicServerMessage publicServerMessage = ((PublicServerMessage) message);
+                System.out.println("*** " + publicServerMessage.getMessage() + " ***");
                 break;
             case TARGETTEXTMSG:
                 TargetedTextMessage targetedTextMessage = ((TargetedTextMessage) message);
