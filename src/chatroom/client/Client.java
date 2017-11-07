@@ -13,9 +13,12 @@ public class Client {
     private String name;
     private ClientListeningThread clientListener;
     private ClientSendingThread clientSender;
+    private boolean isLoggedIn;
+
     public Client(){
         messageTypeDictionary = new MessageTypeDictionary();
         sc = new Scanner(System.in);
+        isLoggedIn = false;
     }
 
     public void stop(){
@@ -73,5 +76,13 @@ public class Client {
 
     public ClientSendingThread getClientSender() {
         return clientSender;
+    }
+
+    public boolean isLoggedIn() {
+        return isLoggedIn;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        isLoggedIn = loggedIn;
     }
 }
