@@ -2,6 +2,7 @@ package chatroom.server.listener;
 
 import chatroom.model.Message;
 import chatroom.model.PublicTextMessage;
+import chatroom.model.ServerMessage;
 import chatroom.model.User;
 import chatroom.serializer.Serializer;
 import chatroom.server.Server;
@@ -27,11 +28,26 @@ public class UserListeningThread extends Thread {
 
     @Override
     public void run() {
+        while(!getUser().isLoggedIn()){
+            ServerMessage m = new ServerMessage("Please enter your login name: ");
+            server.getMessageListener().sendToTarget(m, user.getId());
+            String loginName = serializer.deserialize(user.getIn(), )
+            //TODO: login process
+
+        }
+
+    }
+
+    private void listen() {
         boolean isRunning = true;
         while (isRunning) {
-            try {               
-                byte type = (byte)user.getIn().read();
+            try {
+                //ready byte to decide which type of message is sent
+                byte type = (byte) user.getIn().read();
+
+                //deserialize message, create new Message Object
                 Message m = serializer.deserialize(user.getIn(), type);
+
                 server.getMessageListener().getMessageQueue().put(m);
             } catch (IOException e) {
                 System.err.println("Lost Connection to client!");
