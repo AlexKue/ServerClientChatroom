@@ -46,24 +46,24 @@ public class MessageListener extends Thread {
     public void sendToTarget(Message m, int id){
         //TODO: optimization
         for(UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()){
-            if(u.getUser().getId() == id){
-                serializer.serialize(u.getUser().getOut(), m.getType(), m);
+            if(u.getUserConnectionInfo().getId() == id){
+                serializer.serialize(u.getUserConnectionInfo().getOut(), m.getType(), m);
                 break;
             }
         }
     }
     public void sendToTarget(Message m, String loginName){
         for(UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()){
-            if(u.getUser().getLoginName().equals(loginName)){
-                serializer.serialize(u.getUser().getOut(), m.getType(), m);
+            if(u.getUserConnectionInfo().getLoginName().equals(loginName)){
+                serializer.serialize(u.getUserConnectionInfo().getOut(), m.getType(), m);
                 break;
             }
         }
     }
     public void sendToAll(Message m){
         for(UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()){
-            if(u.getUser().isLoggedIn()){
-                serializer.serialize(u.getUser().getOut(), m.getType(), m);
+            if(u.getUserConnectionInfo().isLoggedIn()){
+                serializer.serialize(u.getUserConnectionInfo().getOut(), m.getType(), m);
             }
         }
     }

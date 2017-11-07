@@ -1,7 +1,7 @@
 package chatroom.server.listener;
 
 import chatroom.model.Message;
-import chatroom.model.User;
+import chatroom.model.UserConnectionInfo;
 import chatroom.serializer.Serializer;
 import chatroom.server.Server;
 
@@ -9,20 +9,20 @@ import java.io.IOException;
 
 public class UserListeningThread extends Thread {
 
-    private final User user;
+    private final UserConnectionInfo userConnectionInfo;
     private Server server;
     private final Serializer serializer;
 
-    public UserListeningThread(User user, Server server) {
+    public UserListeningThread(UserConnectionInfo userConnectionInfo, Server server) {
         this.server = server;
-        this.user = user;
+        this.userConnectionInfo = userConnectionInfo;
         serializer = new Serializer();
 
     }
 
     @Override
     public void run() {
-        if(getUser().isLoggedIn()){
+        if(getUserConnectionInfo().isLoggedIn()){
             listen();
         }
 
@@ -33,13 +33,13 @@ public class UserListeningThread extends Thread {
         while (isRunning) {
             try {
                 //ready byte to decide which type of message is sent
-                byte type = (byte) user.getIn().read();
+                byte type = (byte) userConnectionInfo.getIn().read();
 
                 //deserialize message, create new Message Object
-                Message m = serializer.deserialize(user.getIn(), type);
+                Message m = serializer.deserialize(userConnectionInfo.getIn(), type);
 
                 //put id into the message
-                m.setId(user.getId());
+                m.setId(userConnectionInfo.getId());
 
                 //put message into queue
                 server.getMessageListener().getMessageQueue().put(m);
@@ -53,7 +53,7 @@ public class UserListeningThread extends Thread {
         }
     }
 
-    public User getUser() {
-        return user;
+    public UserConnectionInfo getUserConnectionInfo() {
+        return userConnectionInfo;
     }
 }

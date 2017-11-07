@@ -10,9 +10,9 @@ public class UserStorage {
     }
 
     /**
-     * Registres a new User to the server, saving the loginname and the password
-     * @param loginname The loginname the User wants to register with
-     * @param password The password the User wishes to use
+     * Registres a new UserConnectionInfo to the server, saving the loginname and the password
+     * @param loginname The loginname the UserConnectionInfo wants to register with
+     * @param password The password the UserConnectionInfo wishes to use
      */
     public void addClient(String loginname, String password){
         userInfo.add(new UserAccountInfo(loginname, password));

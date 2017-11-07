@@ -3,7 +3,7 @@ package chatroom.model;
 import java.io.*;
 import java.net.Socket;
 
-public class User {
+public class UserConnectionInfo {
     private String loginName;
     private final Socket socket;
     private InputStream in;
@@ -11,7 +11,7 @@ public class User {
     private int id;
     private boolean isLoggedIn;
 
-    public User(Socket socket, int id) {
+    public UserConnectionInfo(Socket socket, int id) {
         this.socket = socket;
         this.id = id;
         setLoggedIn(false);

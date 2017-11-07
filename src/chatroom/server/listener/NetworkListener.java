@@ -1,12 +1,9 @@
 package chatroom.server.listener;
 
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import chatroom.model.User;
+import chatroom.model.UserConnectionInfo;
 import chatroom.model.UserStorage;
 import chatroom.server.Server;
 
@@ -28,11 +25,11 @@ public class NetworkListener extends Thread {
     public void run() {
         while (server.isRunning()) {
             try {
-                User user = new User(server.getListener().accept(), idCounter);
+                UserConnectionInfo userConnectionInfo = new UserConnectionInfo(server.getListener().accept(), idCounter);
                 ++idCounter;
                 //TODO: Thread pools (see executer)
                 //Create new Thread for the MessageListener for each new client
-                UserListeningThread u = new UserListeningThread(user, server);
+                UserListeningThread u = new UserListeningThread(userConnectionInfo, server);
                 getUserListeningThreadList().add(u);
                 u.start();
             } catch (IOException ex) {
@@ -58,9 +55,9 @@ public class NetworkListener extends Thread {
         System.out.println("- Closing sockets of Client in List");
         for(UserListeningThread u : userListeningThreadList){
             try {
-                u.getUser().getIn().close();
-                u.getUser().getOut().close();
-                u.getUser().getSocket().close();
+                u.getUserConnectionInfo().getIn().close();
+                u.getUserConnectionInfo().getOut().close();
+                u.getUserConnectionInfo().getSocket().close();
             } catch (IOException e) {
                 //No need to handle since we close the server anyways
             }
