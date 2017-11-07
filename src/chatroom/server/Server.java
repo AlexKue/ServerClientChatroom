@@ -43,7 +43,6 @@ public class Server {
     }
     private void stop(){
         System.out.println("*** Shutting down Server... ***");
-        isRunning = false;
         try {
             System.out.println("- Closing the Server Socket");
             listener.close();
@@ -52,6 +51,7 @@ public class Server {
             System.err.println("*** Error while closing the server! ***");
             e.printStackTrace();
         }
+        isRunning = false;
     }
     public boolean isRunning(){
         return isRunning;
