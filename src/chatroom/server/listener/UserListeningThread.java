@@ -48,7 +48,7 @@ public class UserListeningThread extends Thread {
                 byte type = (byte) user.getIn().read();
                 //deserialize message, create new Message Object
                 Message m = serializer.deserialize(user.getIn(), type);
-
+                m.setId(user.getId());
                 server.getMessageListener().getMessageQueue().put(m);
             } catch (IOException e) {
                 System.err.println("Lost Connection to client!");
