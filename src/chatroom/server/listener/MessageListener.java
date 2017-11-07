@@ -32,7 +32,7 @@ public class MessageListener extends Thread {
                             sendToAll(m);
                             break;
                         case TARGETTEXTMSG:
-                            sendToTarget(m);
+                            //TODO: sendToTarget(m);
                             break;
                     }
                 } catch (InterruptedException e) {
@@ -41,14 +41,22 @@ public class MessageListener extends Thread {
         }
     }
 
-    public void sendToTarget(Message m){
-        //TODO
+    public void sendToTarget(Message m, int id){
+        //TODO: optimization
+        for(UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()){
+            if(u.getUser().getId() == id){
+                serializer.serialize(u.getUser().getOut(), m.getType(), m);
+                break;
+            }
+        }
         
     }
 
     public void sendToAll(Message m){
         for(UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()){
-            serializer.serialize(u.getUser().getOut(), m.getType(), m);
+            if(u.getUser().isLoggedIn()){
+                serializer.serialize(u.getUser().getOut(), m.getType(), m);
+            }
         }
     }
 
