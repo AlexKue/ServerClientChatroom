@@ -1,6 +1,7 @@
 package chatroom.server.listener;
 
 import chatroom.model.Message;
+import chatroom.model.TargetedTextMessage;
 import chatroom.serializer.Serializer;
 import chatroom.server.Server;
 
@@ -23,16 +24,17 @@ public class MessageListener extends Thread {
         while(server.isRunning()){
                 try {
                     Message m = messageQueue.poll(1, TimeUnit.SECONDS);
-                    //Byte sent by client decides which type of message is sent
                     if (m == null){
                         continue;
                     }
+
+                    //Byte sent by client decides which type of message is sent
                     switch(server.getMessageTypeDictionary().getType(m.getType())){
-                        case SERVERMSG: case PUBLICTEXTMSG:
+                        case PUBLICSERVERMSG: case PUBLICTEXTMSG:
                             sendToAll(m);
                             break;
                         case TARGETTEXTMSG:
-                            //TODO: sendToTarget(m);
+                            sendToTarget(m, ((TargetedTextMessage)m).getReceiver());
                             break;
                     }
                 } catch (InterruptedException e) {
@@ -49,9 +51,15 @@ public class MessageListener extends Thread {
                 break;
             }
         }
-        
     }
-
+    public void sendToTarget(Message m, String loginName){
+        for(UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()){
+            if(u.getUser().getLoginName().equals(loginName)){
+                serializer.serialize(u.getUser().getOut(), m.getType(), m);
+                break;
+            }
+        }
+    }
     public void sendToAll(Message m){
         for(UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()){
             if(u.getUser().isLoggedIn()){
