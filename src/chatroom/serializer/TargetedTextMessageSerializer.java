@@ -1,22 +1,18 @@
 package chatroom.serializer;
 
 import chatroom.model.Message;
+import chatroom.model.MessageTypeDictionary;
 import chatroom.model.TargetedTextMessage;
-import java.io.BufferedOutputStream;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 public class TargetedTextMessageSerializer extends UserMessageSerializer {
 
     @Override
     public Message deserialize(InputStream in) throws IOException {
-        String message = ((DataInputStream) in).readUTF();
-        String sender = ((DataInputStream) in).readUTF();
-        String receiver = ((DataInputStream) in).readUTF();
+        DataInputStream dataIn = new DataInputStream(new BufferedInputStream(in));
+        String message = dataIn.readUTF();
+        String sender = dataIn.readUTF();
+        String receiver = dataIn.readUTF();
         return new TargetedTextMessage(message, sender, receiver);
     }
 
@@ -24,7 +20,7 @@ public class TargetedTextMessageSerializer extends UserMessageSerializer {
     public void serialize(OutputStream out, Message m) {
         try {
             DataOutputStream dataOut = new DataOutputStream(new BufferedOutputStream(out));
-            dataOut.writeByte((byte) 2);
+            dataOut.writeByte(dict.getByte(MessageTypeDictionary.MessageType.TARGETTEXTMSG));
             dataOut.writeUTF(((TargetedTextMessage) m).getMessage());
             dataOut.writeUTF(((TargetedTextMessage) m).getSender());
             dataOut.writeUTF(((TargetedTextMessage) m).getReceiver());
