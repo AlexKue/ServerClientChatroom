@@ -26,6 +26,7 @@ public class ClientSendingThread extends Thread {
     @Override
     public void run(){
         while (true){
+            //read input of System.in
             String stringMessage = sc.nextLine();
             if(stringMessage.trim().equals("!quit")){
                 LogoutMessage l = new LogoutMessage();
