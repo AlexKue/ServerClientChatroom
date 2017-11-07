@@ -4,13 +4,17 @@ import java.io.*;
 import java.net.Socket;
 
 public class User {
-    private String name;
+    private String loginName;
     private final Socket socket;
     private InputStream in;
     private OutputStream out;
+    private int id;
+    private boolean isLoggedIn;
 
-    public User(Socket socket) {
+    public User(Socket socket, int id) {
         this.socket = socket;
+        this.id = id;
+        setLoggedIn(false);
         try{
             in = socket.getInputStream();
             out = socket.getOutputStream();
@@ -21,8 +25,8 @@ public class User {
     }
 
 
-    public String getName() {
-        return name;
+    public String getLoginName() {
+        return loginName;
     }
 
     public Socket getSocket() {
@@ -35,5 +39,21 @@ public class User {
 
     public OutputStream getOut() {
         return out;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public boolean isLoggedIn() {
+        return isLoggedIn;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        isLoggedIn = loggedIn;
     }
 }
