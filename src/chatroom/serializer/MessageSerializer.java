@@ -1,6 +1,7 @@
 package chatroom.serializer;
 
 import chatroom.model.Message;
+import chatroom.model.MessageTypeDictionary;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +13,9 @@ import java.io.OutputStream;
  */
 
 public abstract class MessageSerializer {
+    protected final MessageTypeDictionary dict = new MessageTypeDictionary();
+
+
     /**
      * Prepares an Message object so that it can be sent through an 
      * <code>OutputStream</code>.
