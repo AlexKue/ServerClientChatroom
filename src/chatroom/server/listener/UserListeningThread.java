@@ -33,7 +33,9 @@ public class UserListeningThread extends Thread {
             server.getMessageListener().sendToTarget(m, user.getId());
             String loginName = serializer.deserialize(user.getIn(), )
             //TODO: login process
-
+        }
+        if(getUser().isLoggedIn()){
+            listen()
         }
 
     }
@@ -44,7 +46,6 @@ public class UserListeningThread extends Thread {
             try {
                 //ready byte to decide which type of message is sent
                 byte type = (byte) user.getIn().read();
-
                 //deserialize message, create new Message Object
                 Message m = serializer.deserialize(user.getIn(), type);
 
