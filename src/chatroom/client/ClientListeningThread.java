@@ -31,7 +31,7 @@ public class ClientListeningThread extends Thread {
             try {
                 byte type = (byte)in.read();
                 Message m = serializer.deserialize(in, type);
-                display(m, type);
+                display(m);
 
             } catch (IOException ex) {
                 System.err.println("Connection Lost!");
@@ -41,8 +41,12 @@ public class ClientListeningThread extends Thread {
         }
     }
 
-    private void display(Message message, byte type) {
-        switch (client.getMessageTypeDictionary().getType(type)) {
+    /**
+     * Prints a String, created depending on which type of Message you want to print.
+     * @param message The message which should be transformed into a String to be displayed
+     */
+    private void display(Message message) {
+        switch (client.getMessageTypeDictionary().getType(message.getType())) {
             case PUBLICTEXTMSG:
                 PublicTextMessage publicTextMessage = ((PublicTextMessage) message);
                 String publicString = publicTextMessage.getSender() + ": " + publicTextMessage.getMessage();
