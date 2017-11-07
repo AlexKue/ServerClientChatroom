@@ -1,8 +1,8 @@
 package chatroom.model;
 
-public class ServerMessage extends Message {
+public class PublicServerMessage extends Message {
     private String message;
-    public ServerMessage(String message) {
+    public PublicServerMessage(String message) {
         type = 0;
         this.message = message;
     }
