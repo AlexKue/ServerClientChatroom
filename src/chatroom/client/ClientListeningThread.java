@@ -29,8 +29,13 @@ public class ClientListeningThread extends Thread {
         boolean isRunning = true;
         while (isRunning) {
             try {
+                //Read byte from stream to decide on which type of message is incoming
                 byte type = (byte)in.read();
+
+                //deserialize message from stream and put it into an message
                 Message m = serializer.deserialize(in, type);
+
+                //display the message
                 display(m);
 
             } catch (IOException ex) {
