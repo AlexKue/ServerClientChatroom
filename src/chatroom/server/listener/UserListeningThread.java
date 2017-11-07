@@ -35,7 +35,7 @@ public class UserListeningThread extends Thread {
             //TODO: login process
         }
         if(getUser().isLoggedIn()){
-            listen()
+            listen();
         }
 
     }
