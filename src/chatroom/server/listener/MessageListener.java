@@ -2,6 +2,7 @@ package chatroom.server.listener;
 
 import chatroom.model.Message;
 import chatroom.model.TargetedTextMessage;
+import chatroom.model.UserStorage;
 import chatroom.serializer.Serializer;
 import chatroom.server.Server;
 
@@ -12,11 +13,13 @@ public class MessageListener extends Thread {
     private final ArrayBlockingQueue<Message> messageQueue;
     private Server server;
     private final Serializer serializer;
+    private UserStorage userStorage;
 
     public MessageListener(Server server) {
         messageQueue = new ArrayBlockingQueue<>(100);  //Synchronized queue containing messages from clients
         this.server = server;
         serializer = new Serializer();
+        userStorage = new UserStorage();
     }
     
     @Override
@@ -36,6 +39,8 @@ public class MessageListener extends Thread {
                         case TARGETTEXTMSG:
                             sendToTarget(m, ((TargetedTextMessage)m).getReceiver());
                             break;
+                        case LOGINMSG:
+                            authentificate(m);
                     }
                 } catch (InterruptedException e) {
                     System.err.println("*** MessageListener interrupted by server! ***");
@@ -43,18 +48,13 @@ public class MessageListener extends Thread {
         }
     }
 
-    public void sendToTarget(Message m, int id){
-        //TODO: optimization
-        for(UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()){
-            if(u.getUserConnectionInfo().getId() == id){
-                serializer.serialize(u.getUserConnectionInfo().getOut(), m.getType(), m);
-                break;
-            }
-        }
+    private void authentificate(Message m) {
+
     }
+
     public void sendToTarget(Message m, String loginName){
         for(UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()){
-            if(u.getUserConnectionInfo().getLoginName().equals(loginName)){
+            if(u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(loginName)){
                 serializer.serialize(u.getUserConnectionInfo().getOut(), m.getType(), m);
                 break;
             }
