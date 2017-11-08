@@ -38,8 +38,8 @@ public class UserListeningThread extends Thread {
                 //deserialize message, create new Message Object
                 Message m = serializer.deserialize(userConnectionInfo.getIn(), type);
 
-                //put id into the message
-                m.setId(userConnectionInfo.getId());
+                //put UserConnectionInfo into the message
+                m.setUserConnectionInfo(userConnectionInfo);
 
                 //put message into queue
                 server.getMessageListener().getMessageQueue().put(m);
