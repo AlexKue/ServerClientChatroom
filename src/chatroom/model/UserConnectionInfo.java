@@ -4,16 +4,14 @@ import java.io.*;
 import java.net.Socket;
 
 public class UserConnectionInfo {
-    private String loginName;
+    private UserAccountInfo userAccountInfo;
     private final Socket socket;
     private InputStream in;
     private OutputStream out;
-    private int id;
     private boolean isLoggedIn;
 
-    public UserConnectionInfo(Socket socket, int id) {
+    public UserConnectionInfo(Socket socket) {
         this.socket = socket;
-        this.id = id;
         setLoggedIn(false);
         try{
             in = socket.getInputStream();
@@ -25,9 +23,6 @@ public class UserConnectionInfo {
     }
 
 
-    public String getLoginName() {
-        return loginName;
-    }
 
     public Socket getSocket() {
         return socket;
@@ -41,19 +36,19 @@ public class UserConnectionInfo {
         return out;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public boolean isLoggedIn() {
         return isLoggedIn;
     }
 
     public void setLoggedIn(boolean loggedIn) {
         isLoggedIn = loggedIn;
+    }
+
+    public UserAccountInfo getUserAccountInfo() {
+        return userAccountInfo;
+    }
+
+    public void setUserAccountInfo(UserAccountInfo userAccountInfo) {
+        this.userAccountInfo = userAccountInfo;
     }
 }
