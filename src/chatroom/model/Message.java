@@ -2,17 +2,17 @@ package chatroom.model;
 
 public abstract class Message {
     protected byte type;
-    private transient int id;
+    private transient UserConnectionInfo source;
 
     public byte getType(){
         return type;
     }
 
-    public int getId() {
-        return id;
+    public UserConnectionInfo getId() {
+        return source;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setUserConnectionInfo(UserConnectionInfo source) {
+        this.source = source;
     }
 }
