@@ -18,15 +18,13 @@ public class NetworkListener extends Thread {
         this.userListeningThreadList = new ArrayList<>();
         this.server = server;
         this.userStorage = new UserStorage();
-        idCounter = 0;
     }
 
     @Override
     public void run() {
         while (server.isRunning()) {
             try {
-                UserConnectionInfo userConnectionInfo = new UserConnectionInfo(server.getListener().accept(), idCounter);
-                ++idCounter;
+                UserConnectionInfo userConnectionInfo = new UserConnectionInfo(server.getListener().accept());
                 //TODO: Thread pools (see executer)
                 //Create new Thread for the MessageListener for each new client
                 UserListeningThread u = new UserListeningThread(userConnectionInfo, server);
