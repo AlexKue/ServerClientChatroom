@@ -1,6 +1,6 @@
 package chatroom.client;
 
-import chatroom.model.*;
+import chatroom.model.message.*;
 import chatroom.serializer.Serializer;
 
 import java.io.IOException;
@@ -21,10 +21,10 @@ public class ClientListeningThread extends Thread {
         this.client = client;
     }
 
+
     @Override
     public void run() {
-        boolean isRunning = true;
-        while (isRunning) {
+        while (client.isRunning()) {
             try {
                 //Read byte from stream to decide on which type of message is incoming
                 byte type = (byte)in.read();
@@ -32,22 +32,20 @@ public class ClientListeningThread extends Thread {
                 //deserialize message from stream and put it into an message
                 Message m = serializer.deserialize(in, type);
 
-                //display the message
-                display(m);
-
+                handleMessage(m);
             } catch (IOException ex) {
-                System.err.println("Connection Lost!");
+                System.err.println("Connection Lost! Shutting down client!");
                 ex.printStackTrace();
-                isRunning = false;
+                client.setRunning(false);
             }
         }
     }
 
     /**
-     * Prints a String, created depending on which type of Message you want to print.
-     * @param message The message which should be transformed into a String to be displayed
+     * Prints the message incoming from the server and does further actions if needed
+     * @param message The message which should be handled
      */
-    private void display(Message message) {
+    private void handleMessage(Message message) {
         switch (client.getMessageTypeDictionary().getType(message.getType())) {
             case PUBLICTEXTMSG:
                 PublicTextMessage publicTextMessage = ((PublicTextMessage) message);
@@ -58,10 +56,34 @@ public class ClientListeningThread extends Thread {
                 PublicServerMessage publicServerMessage = ((PublicServerMessage) message);
                 System.out.println("*** " + publicServerMessage.getMessage() + " ***");
                 break;
+            case TARGETSERVERMSG:
+                TargetedServerMessage targetedServerMessage = ((TargetedServerMessage) message);
+                System.out.println("*** " + targetedServerMessage.getMessage() + " ***");
+                break;
             case TARGETTEXTMSG:
                 TargetedTextMessage targetedTextMessage = ((TargetedTextMessage) message);
                 String targetedString = targetedTextMessage.getSender() + " (whispered): " + targetedTextMessage.getMessage();
                 System.out.println(targetedString);
+            case LOGINRESPONSEMSG:
+                switch (((LoginResponseMessage)message).getResponse()){
+                    case SUCCESS:
+                        client.setLoggedIn(true);
+                        System.out.println("*** You are logged in! ***");
+                        break;
+                    case CREATED_ACCOUNT:
+                        client.setLoggedIn(true);
+                        System.out.println("*** This name was not given. Created a new Account! ***");
+                        break;
+                    case ALREADY_LOGGED_IN:
+                        System.out.println("*** Someone is already using your Account!!!! ***");
+                        System.out.println("*** Your Account might be in danger. Contact an admin! ***");
+                        client.setRunning(false);
+                        break;
+                    case WRONG_PASSWORD:
+                        System.out.println("*** Wrong password! Please try again! ***");
+                        client.getClientSender().authenticate();
+                        break;
+                } break;
         }
 
     }

@@ -1,7 +1,7 @@
 package chatroom.client;
 
-import chatroom.model.LogoutMessage;
-import chatroom.model.PublicTextMessage;
+import chatroom.model.message.LoginMessage;
+import chatroom.model.message.PublicTextMessage;
 import chatroom.serializer.Serializer;
 
 import java.io.OutputStream;
@@ -25,29 +25,23 @@ public class ClientSendingThread extends Thread {
 
     @Override
     public void run() {
-        //run authentificationprocess
-        authentificate();
-        while (client.isLoggedIn()) {
-            //read input of System.in
-            String stringMessage = sc.nextLine();
-
-            if (stringMessage.trim().equals("!quit")) {
-                LogoutMessage l = new LogoutMessage();
-                //TODO: implement serialize of logout
-                //serializer.serialize(out, );
-                client.stop();
+        authenticate();
+        while (client.isRunning()) {
+            if (client.isLoggedIn()) {
+                //read input of System.in
+                String stringMessage = sc.nextLine();
+                PublicTextMessage message = new PublicTextMessage(stringMessage, client.getLoginName());
+                serializer.serialize(out, message);
             }
-
-            PublicTextMessage message = new PublicTextMessage(stringMessage, client.getName());
-            serializer.serialize(out, (byte) 1, message);
         }
     }
-
-    private void authentificate() {
-        while(!client.isLoggedIn()){
-            //TODO: authentification process
-
-        }
+    public void authenticate() {
+        System.out.print("Enter your login name: ");
+        String loginName = sc.nextLine();
+        client.setLoginName(loginName);
+        System.out.print("Enter your password: ");
+        String password = sc.nextLine();
+        serializer.serialize(out, new LoginMessage(loginName, password));
     }
 
 }
