@@ -27,7 +27,9 @@ public class Client {
     }
 
     public void stop(){
-        //TODO
+        System.exit(0);
+//        isLoggedIn = false;
+//        isRunning = false;
     }
 
     public void start() {

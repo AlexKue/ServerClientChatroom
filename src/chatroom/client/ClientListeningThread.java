@@ -27,19 +27,19 @@ public class ClientListeningThread extends Thread {
         while (client.isRunning()) {
             try {
                 //Read byte from stream to decide on which type of message is incoming
-                byte type = (byte)in.read();
+            //    byte type = (byte)in.read();
 
                 //deserialize message from stream and put it into an message
-                Message m = serializer.deserialize(in, type);
+                Message m = serializer.deserialize(in, (byte)in.read());
 
                 handleMessage(m);
             } catch (IOException ex) {
                 System.err.println("Connection Lost! Shutting down client!");
                 ex.printStackTrace();
-                client.setRunning(false);
+                client.stop();
             }
         }
-        System.out.println("Shutting down receiving handler!");
+        System.err.println("Shutting down receiving handler!");
     }
 
     /**
@@ -59,7 +59,7 @@ public class ClientListeningThread extends Thread {
                 break;
             case TARGETSERVERMSG:
                 TargetedServerMessage targetedServerMessage = ((TargetedServerMessage) message);
-                System.out.println("*** " + targetedServerMessage.getMessage() + " ***");
+                System.out.println("Server: " + targetedServerMessage.getMessage());
                 break;
             case TARGETTEXTMSG:
                 TargetedTextMessage targetedTextMessage = ((TargetedTextMessage) message);
