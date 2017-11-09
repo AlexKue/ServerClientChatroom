@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Scanner;
 
-import chatroom.model.MessageTypeDictionary;
+import chatroom.model.message.MessageTypeDictionary;
 import chatroom.server.listener.MessageListener;
 import chatroom.server.listener.NetworkListener;
 
