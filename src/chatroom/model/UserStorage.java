@@ -32,6 +32,28 @@ public class UserStorage {
         }
         return false;
     }
+    public UserAccountInfo getUserAccountInfo(String loginName){
+        for(UserAccountInfo u : userInfo){
+            if(u.getLoginName().equals(loginName)){
+                return u;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Checks in the Storage if the user is registred on this server
+     * @param loginname
+     * @return true if the loginname exists on this server, false otherwise
+     */
+    public boolean loginNameExists(String loginname){
+        for(UserAccountInfo u : userInfo){
+            if(u.getLoginName().equals(loginname)){
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Return the displayname of the logged in user

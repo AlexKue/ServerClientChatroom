@@ -23,7 +23,6 @@ public class UserConnectionInfo {
     }
 
 
-
     public Socket getSocket() {
         return socket;
     }
