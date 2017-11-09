@@ -37,10 +37,7 @@ public class NetworkListener extends Thread {
         shutdown();
     }
 
-    //TODO: Proper Logout of Client
-//    public void removeClient(){
-//
-//    }
+
 
     public ArrayList<UserListeningThread> getUserListeningThreadList() {
         return userListeningThreadList;
@@ -59,5 +56,19 @@ public class NetworkListener extends Thread {
             }
 
         }
+    }
+
+    public void removeClient(UserListeningThread userThread) {
+        UserConnectionInfo info = userThread.getUserConnectionInfo();
+        try {
+            info.getIn().close();
+            info.getOut().close();
+            info.getSocket().close();
+        } catch (IOException e) {
+            //We are closing sockets anyways
+        } finally {
+            info.setLoggedIn(false);
+        }
+        userListeningThreadList.remove(userThread);
     }
 }
