@@ -2,7 +2,9 @@ package chatroom.server.listener;
 
 import chatroom.model.*;
 import chatroom.model.message.*;
+import chatroom.model.message.Message;
 import chatroom.serializer.Serializer;
+import chatroom.serializer.TargetedServerMessageSerializer;
 import chatroom.server.Server;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -20,7 +22,7 @@ public class MessageListener extends Thread {
         serializer = new Serializer();
         userStorage = new UserStorage();
     }
-
+    //TODO: UserListMessage
     @Override
     public void run() {
         while (server.isRunning()) {
@@ -30,6 +32,8 @@ public class MessageListener extends Thread {
                     continue;
                 }
                 //Byte sent by client decides which type of message is sent
+                System.out.println("Current message from queue: " + server.getMessageTypeDictionary().getType(m.getType()));
+
                 switch (server.getMessageTypeDictionary().getType(m.getType())) {
                     case PUBLICSERVERMSG:
                     case PUBLICTEXTMSG:
@@ -44,6 +48,7 @@ public class MessageListener extends Thread {
                         authenticate(m);
                         break;
                 }
+                sleep(100);
             } catch (InterruptedException e) {
                 System.err.println("*** MessageListener interrupted by server! ***");
             }
@@ -78,6 +83,9 @@ public class MessageListener extends Thread {
             m.getUserConnectionInfo().setUserAccountInfo(userInfo);
 
             System.out.println("Created new account for " + loginMessage.getLoginName());
+
+            //send list of users
+            messageQueue.put(buildUserListMessage(m.getUserConnectionInfo()));
             return;
 
         } else {
@@ -101,6 +109,7 @@ public class MessageListener extends Thread {
                         LoginResponseMessage message = new LoginResponseMessage(LoginResponses.ALREADY_LOGGED_IN);
                         message.setUserConnectionInfo(m.getUserConnectionInfo());
                         messageQueue.put(message);
+
                         System.out.println("A client tried to log into an account which was already online! ");
                         return;
                     }
@@ -114,6 +123,10 @@ public class MessageListener extends Thread {
                 UserAccountInfo accountInfo = userStorage.getUserAccountInfo(loginMessage.getLoginName());
                 m.getUserConnectionInfo().setUserAccountInfo(accountInfo);
                 System.out.println("User " + loginMessage.getLoginName() + " has logged in");
+
+                //Send new User list of already logged in users
+                messageQueue.put(buildUserListMessage(m.getUserConnectionInfo()));
+
             } else {
                 response = new LoginResponseMessage(LoginResponses.WRONG_PASSWORD);
                 System.out.println("Someone failed to login into the account of " + loginMessage.getLoginName());
@@ -125,7 +138,19 @@ public class MessageListener extends Thread {
 
     }
 
-    public void sendToTarget(Message m) {
+    public TargetedServerMessage buildUserListMessage(UserConnectionInfo info){
+        String userlist = "Following users are logged in: \n";
+        for(UserListeningThread userListeningThread : server.getNetworkListener().getUserListeningThreadList()){
+            if(userListeningThread.getUserConnectionInfo().isLoggedIn()){
+                userlist += userListeningThread.getUserConnectionInfo().getUserAccountInfo().getDisplayName() + "\n";
+            }
+        }
+        TargetedServerMessage targetedServerMessage = new TargetedServerMessage(userlist);
+        targetedServerMessage.setUserConnectionInfo(info);
+        return targetedServerMessage;
+    }
+
+    public void sendToTarget(Message m) throws InterruptedException {
         switch (server.getMessageTypeDictionary().getType(m.getType())) {
             case TARGETTEXTMSG:
                 //Check, if user has permission to send something to the server
@@ -164,17 +189,17 @@ public class MessageListener extends Thread {
      *
      * @param m The message containing information of the sender in question
      */
-    private boolean hasPermission(Message m) {
+    private boolean hasPermission(Message m) throws InterruptedException {
         if (!m.getUserConnectionInfo().isLoggedIn()) {
             TargetedServerMessage serverMessage = new TargetedServerMessage("Rejected: You are not logged in! login with \"!login\" command!");
             serverMessage.setUserConnectionInfo(m.getUserConnectionInfo());
-            serializer.serialize(m.getUserConnectionInfo().getOut(), serverMessage);
+            messageQueue.put(serverMessage);
             return false;
         }
         return true;
     }
 
-    public void sendToAll(Message m) {
+    public void sendToAll(Message m) throws InterruptedException {
         //Check, if user has permission to send something to the server
         if (!hasPermission(m)) {
             return;
