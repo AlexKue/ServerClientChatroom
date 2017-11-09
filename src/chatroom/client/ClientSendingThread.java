@@ -34,6 +34,7 @@ public class ClientSendingThread extends Thread {
                 serializer.serialize(out, message);
             }
         }
+        System.out.println("Shutting down sending handler!");
     }
     public void authenticate() {
         System.out.print("Enter your login name: ");

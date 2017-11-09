@@ -39,6 +39,7 @@ public class ClientListeningThread extends Thread {
                 client.setRunning(false);
             }
         }
+        System.out.println("Shutting down receiving handler!");
     }
 
     /**
