@@ -60,21 +60,6 @@ public class MessageListener extends Thread {
     private void authenticate(Message m) throws InterruptedException {
         LoginMessage loginMessage = (LoginMessage) m;
 
-        //check if another user is already using the account
-        for (UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()) {
-            //Get the Connectioninfo of the client
-            UserConnectionInfo userInfo = u.getUserConnectionInfo();
-
-            //check in the list if an user has already taken the name
-            if (userInfo.isLoggedIn() && userInfo.getUserAccountInfo().getLoginName().equals(loginMessage.getLoginName())) {
-                LoginResponseMessage message = new LoginResponseMessage(LoginResponses.ALREADY_LOGGED_IN);
-                message.setUserConnectionInfo(m.getUserConnectionInfo());
-                messageQueue.put(message);
-                System.out.println("A client tried to log into an account which was already online! ");
-                return;
-            }
-
-        }
 
         //check if username is registered on this server
         if (!userStorage.loginNameExists(loginMessage.getLoginName())) {
@@ -102,7 +87,27 @@ public class MessageListener extends Thread {
 
             //check if login was successful, prepare ServerMessage
             LoginResponseMessage response;
+
             if (success) {
+
+                //check if another user is already using the account
+                for (UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()) {
+
+                    //Get the ConnectionInfo of the client
+                    UserConnectionInfo userInfo = u.getUserConnectionInfo();
+
+                    //check in the list if an user has already taken the name
+                    if (userInfo.isLoggedIn() && userInfo.getUserAccountInfo().getLoginName().equals(loginMessage.getLoginName())) {
+                        LoginResponseMessage message = new LoginResponseMessage(LoginResponses.ALREADY_LOGGED_IN);
+                        message.setUserConnectionInfo(m.getUserConnectionInfo());
+                        messageQueue.put(message);
+                        System.out.println("A client tried to log into an account which was already online! ");
+                        return;
+                    }
+
+                }
+
+                //No one else uses this account, grant access
                 response = new LoginResponseMessage(LoginResponses.SUCCESS);
 
                 m.getUserConnectionInfo().setLoggedIn(true);
@@ -111,7 +116,7 @@ public class MessageListener extends Thread {
                 System.out.println("User " + loginMessage.getLoginName() + " has logged in");
             } else {
                 response = new LoginResponseMessage(LoginResponses.WRONG_PASSWORD);
-                System.out.println("Some failed to login into the account of " + loginMessage.getLoginName());
+                System.out.println("Someone failed to login into the account of " + loginMessage.getLoginName());
             }
             response.setUserConnectionInfo(loginMessage.getUserConnectionInfo());
             messageQueue.put(response);
