@@ -1,4 +1,4 @@
-package chatroom.model;
+package chatroom.model.message;
 
 public class TargetedTextMessage extends UserMessage {
     private String message;

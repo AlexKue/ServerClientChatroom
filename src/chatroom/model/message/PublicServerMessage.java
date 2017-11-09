@@ -1,4 +1,4 @@
-package chatroom.model;
+package chatroom.model.message;
 
 public class PublicServerMessage extends Message {
     private String message;

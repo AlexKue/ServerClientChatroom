@@ -1,15 +1,11 @@
-package chatroom.model;
+package chatroom.model.message;
 
 public class TargetedServerMessage extends Message {
-    private int id;
     private String message;
 
-    public TargetedServerMessage(int id, String message){
-        this.id = id;
+    public TargetedServerMessage(String message){
+        type = 5;
         this.message = message;
-    }
-    public int getId(){
-        return id;
     }
     public String getMessage(){
         return message;

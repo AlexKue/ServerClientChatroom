@@ -1,4 +1,4 @@
-package chatroom.model;
+package chatroom.model.message;
 
 public abstract class UserMessage extends Message {
     protected String sender;
