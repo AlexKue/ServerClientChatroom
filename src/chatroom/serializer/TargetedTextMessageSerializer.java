@@ -1,8 +1,9 @@
 package chatroom.serializer;
 
-import chatroom.model.Message;
-import chatroom.model.MessageTypeDictionary;
-import chatroom.model.TargetedTextMessage;
+import chatroom.model.message.Message;
+import chatroom.model.message.MessageType;
+import chatroom.model.message.MessageTypeDictionary;
+import chatroom.model.message.TargetedTextMessage;
 import java.io.*;
 
 public class TargetedTextMessageSerializer extends UserMessageSerializer {
@@ -20,7 +21,7 @@ public class TargetedTextMessageSerializer extends UserMessageSerializer {
     public void serialize(OutputStream out, Message m) {
         try {
             DataOutputStream dataOut = new DataOutputStream(new BufferedOutputStream(out));
-            dataOut.writeByte(dict.getByte(MessageTypeDictionary.MessageType.TARGETTEXTMSG));
+            dataOut.writeByte(dict.getByte(MessageType.TARGETTEXTMSG));
             dataOut.writeUTF(((TargetedTextMessage) m).getMessage());
             dataOut.writeUTF(((TargetedTextMessage) m).getSender());
             dataOut.writeUTF(((TargetedTextMessage) m).getReceiver());

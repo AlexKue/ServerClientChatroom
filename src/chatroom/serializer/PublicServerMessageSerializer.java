@@ -1,14 +1,10 @@
 package chatroom.serializer;
 
-import chatroom.model.Message;
-import chatroom.model.PublicServerMessage;
-import java.io.BufferedOutputStream;
+import chatroom.model.message.Message;
+import chatroom.model.message.MessageType;
+import chatroom.model.message.PublicServerMessage;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 public class PublicServerMessageSerializer extends MessageSerializer{
 
@@ -17,7 +13,7 @@ public class PublicServerMessageSerializer extends MessageSerializer{
     public void serialize(OutputStream out, Message m) {
         try {
             DataOutputStream dataOut = new DataOutputStream(new BufferedOutputStream(out));
-            dataOut.writeByte((byte)0);
+            dataOut.writeByte(dict.getByte(MessageType.PUBLICSERVERMSG));
             dataOut.writeUTF(((PublicServerMessage)m).getMessage());
             dataOut.flush();
         } catch (IOException ex) {
@@ -28,6 +24,7 @@ public class PublicServerMessageSerializer extends MessageSerializer{
 
     @Override
     public Message deserialize(InputStream in) throws IOException {
-        return new PublicServerMessage(((DataInputStream)in).readUTF());
+        DataInputStream dataIn = new DataInputStream(new BufferedInputStream(in));
+        return new PublicServerMessage(dataIn.readUTF());
     }
 }

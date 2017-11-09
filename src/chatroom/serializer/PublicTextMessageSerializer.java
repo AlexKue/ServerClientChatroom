@@ -1,7 +1,8 @@
 package chatroom.serializer;
 
-import chatroom.model.Message;
-import chatroom.model.PublicTextMessage;
+import chatroom.model.message.Message;
+import chatroom.model.message.MessageType;
+import chatroom.model.message.PublicTextMessage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -18,7 +19,7 @@ public class PublicTextMessageSerializer extends UserMessageSerializer {
     public void serialize(OutputStream out, Message m) {
         try {
             DataOutputStream dataOut = new DataOutputStream(new BufferedOutputStream(out));
-            dataOut.writeByte((byte)1);
+            dataOut.writeByte(dict.getByte(MessageType.PUBLICTEXTMSG));
             dataOut.writeUTF(((PublicTextMessage)m).getMessage());
             dataOut.writeUTF(((PublicTextMessage)m).getSender());
             dataOut.flush();

@@ -1,7 +1,8 @@
 package chatroom.serializer;
 
-import chatroom.model.Message;
-import chatroom.model.MessageTypeDictionary;
+import chatroom.model.message.Message;
+import chatroom.model.message.MessageType;
+import chatroom.model.message.MessageTypeDictionary;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,15 +17,17 @@ public class Serializer {
     public Serializer() {
         dict = new MessageTypeDictionary();
         serializerHashMap = new HashMap<>();
-        serializerHashMap.put(dict.getByte(MessageTypeDictionary.MessageType.PUBLICSERVERMSG), new PublicServerMessageSerializer());
-        serializerHashMap.put(dict.getByte(MessageTypeDictionary.MessageType.PUBLICTEXTMSG), new PublicTextMessageSerializer());
-        serializerHashMap.put(dict.getByte(MessageTypeDictionary.MessageType.TARGETTEXTMSG), new TargetedTextMessageSerializer());
-        serializerHashMap.put(dict.getByte(MessageTypeDictionary.MessageType.LOGINMSG), new LoginMessageSerializer());
-        serializerHashMap.put(dict.getByte(MessageTypeDictionary.MessageType.LOGOUTMSG), new LogoutMessageSerializer());
+        serializerHashMap.put(dict.getByte(MessageType.PUBLICSERVERMSG), new PublicServerMessageSerializer());
+        serializerHashMap.put(dict.getByte(MessageType.PUBLICTEXTMSG), new PublicTextMessageSerializer());
+        serializerHashMap.put(dict.getByte(MessageType.TARGETTEXTMSG), new TargetedTextMessageSerializer());
+        serializerHashMap.put(dict.getByte(MessageType.LOGINMSG), new LoginMessageSerializer());
+        serializerHashMap.put(dict.getByte(MessageType.LOGOUTMSG), new LogoutMessageSerializer());
+        serializerHashMap.put(dict.getByte(MessageType.LOGINRESPONSEMSG), new LoginResponseSerializer());
+        serializerHashMap.put(dict.getByte(MessageType.TARGETSERVERMSG), new TargetedServerMessageSerializer());
     }
     
-    public void serialize(OutputStream out, byte type, Message m){
-        serializerHashMap.get(type).serialize(out, m);
+    public void serialize(OutputStream out, Message m){
+        serializerHashMap.get(m.getType()).serialize(out, m);
     }
     public Message deserialize(InputStream in, byte type) throws IOException{
         return serializerHashMap.get(type).deserialize(in);

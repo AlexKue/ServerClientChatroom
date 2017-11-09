@@ -1,29 +1,29 @@
 package chatroom.serializer;
 
-import chatroom.model.message.Message;
-import chatroom.model.message.MessageType;
-import chatroom.model.message.MessageTypeDictionary;
-import chatroom.model.message.TargetedServerMessage;
+import chatroom.model.message.*;
 
 import java.io.*;
+import java.util.HashMap;
 
-public class TargetedServerMessageSerializer extends MessageSerializer {
+public class LoginResponseSerializer extends MessageSerializer {
+    LoginResponsesDictionary responseDict = new LoginResponsesDictionary();
+
     @Override
     public void serialize(OutputStream out, Message m) {
         DataOutputStream dataOut = new DataOutputStream(new BufferedOutputStream(out));
         try {
-            dataOut.writeByte(dict.getByte(MessageType.TARGETSERVERMSG));
-            dataOut.writeUTF(((TargetedServerMessage)m).getMessage());
+            dataOut.writeByte(dict.getByte(MessageType.LOGINRESPONSEMSG));
+            dataOut.writeByte(responseDict.getByte(((LoginResponseMessage) m).getResponse()));
             dataOut.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     @Override
     public Message deserialize(InputStream in) throws IOException {
         DataInputStream dataIn = new DataInputStream(new BufferedInputStream(in));
-        String message = dataIn.readUTF();
-        return new TargetedServerMessage(message);
+        return new LoginResponseMessage(responseDict.getType(dataIn.readByte()));
     }
 }

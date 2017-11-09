@@ -1,7 +1,7 @@
 package chatroom.serializer;
 
-import chatroom.model.Message;
-import chatroom.model.MessageTypeDictionary;
+import chatroom.model.message.Message;
+import chatroom.model.message.MessageTypeDictionary;
 
 import java.io.IOException;
 import java.io.InputStream;
