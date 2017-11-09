@@ -1,11 +1,11 @@
-package chatroom.model;
+package chatroom.model.message;
 
 public class LoginMessage extends Message {
-    //TODO: find parent
     private String loginName;
     private String password;
 
     public LoginMessage(String loginName, String password){
+        type = 3;
         this.loginName = loginName;
         this.password = password;
     }
