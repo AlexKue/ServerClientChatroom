@@ -1,10 +1,12 @@
 package chatroom.server.listener;
 
-import chatroom.model.Message;
+import chatroom.model.message.Message;
 import chatroom.model.UserConnectionInfo;
 import chatroom.serializer.Serializer;
 import chatroom.server.Server;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 
 public class UserListeningThread extends Thread {
@@ -17,15 +19,11 @@ public class UserListeningThread extends Thread {
         this.server = server;
         this.userConnectionInfo = userConnectionInfo;
         serializer = new Serializer();
-
     }
 
     @Override
     public void run() {
-        if(getUserConnectionInfo().isLoggedIn()){
             listen();
-        }
-
     }
 
     private void listen() {

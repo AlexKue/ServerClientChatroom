@@ -11,13 +11,10 @@ public class NetworkListener extends Thread {
 
     private Server server;
     private ArrayList<UserListeningThread> userListeningThreadList;
-    private UserStorage userStorage;
-    private int idCounter;
 
     public NetworkListener(Server server) {
         this.userListeningThreadList = new ArrayList<>();
         this.server = server;
-        this.userStorage = new UserStorage();
     }
 
     @Override
@@ -25,6 +22,7 @@ public class NetworkListener extends Thread {
         while (server.isRunning()) {
             try {
                 UserConnectionInfo userConnectionInfo = new UserConnectionInfo(server.getListener().accept());
+                System.out.println("Client connected: " + userConnectionInfo.getSocket().getInetAddress());
                 //TODO: Thread pools (see executer)
                 //Create new Thread for the MessageListener for each new client
                 UserListeningThread u = new UserListeningThread(userConnectionInfo, server);
