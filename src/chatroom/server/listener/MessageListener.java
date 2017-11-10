@@ -68,10 +68,10 @@ public class MessageListener extends Thread {
         LoginMessage loginMessage = (LoginMessage) m;
 
 
-        //check if username is registered on this server
+        //check the storage if username is registered on this server
         if (!userStorage.loginNameExists(loginMessage.getLoginName())) {
 
-            //send Response Message
+            //send Response Message: No one uses this name
             LoginResponseMessage message = new LoginResponseMessage(LoginResponses.CREATED_ACCOUNT);
             message.setUserConnectionInfo(m.getUserConnectionInfo());
             messageQueue.put(message);
@@ -86,8 +86,11 @@ public class MessageListener extends Thread {
 
             System.out.println("Created new account for " + loginMessage.getLoginName());
 
-            //send list of users
+            //send list of users to new Client
             messageQueue.put(buildUserListMessage(m.getUserConnectionInfo()));
+
+            //Notify other users that someone connected
+            messageQueue.put(new PublicServerMessage(userInfo.getDisplayName() + " has connected to the Server!"));
             return;
 
         } else {
@@ -95,11 +98,8 @@ public class MessageListener extends Thread {
             //check if password is correct
             boolean success = userStorage.checkLogin(loginMessage.getLoginName(), loginMessage.getPassword());
 
-            //check if login was successful, prepare ServerMessage
             LoginResponseMessage response;
-
             if (success) {
-
                 //check if another user is already using the account
                 for (UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()) {
 
@@ -120,8 +120,9 @@ public class MessageListener extends Thread {
 
                 //No one else uses this account, grant access
                 response = new LoginResponseMessage(LoginResponses.SUCCESS);
-
                 m.getUserConnectionInfo().setLoggedIn(true);
+
+                //set AccountInfo for the connection
                 UserAccountInfo accountInfo = userStorage.getUserAccountInfo(loginMessage.getLoginName());
                 m.getUserConnectionInfo().setUserAccountInfo(accountInfo);
                 System.out.println("User " + loginMessage.getLoginName() + " has logged in");
@@ -129,10 +130,13 @@ public class MessageListener extends Thread {
                 //Send new User list of already logged in users
                 messageQueue.put(buildUserListMessage(m.getUserConnectionInfo()));
 
+                //Notify other users that someone connected
+                messageQueue.put(new PublicServerMessage(accountInfo.getDisplayName() + " has connected to the Server!"));
             } else {
                 response = new LoginResponseMessage(LoginResponses.WRONG_PASSWORD);
                 System.out.println("Someone failed to login into the account of " + loginMessage.getLoginName());
             }
+            //send LoginResponse to the Client
             response.setUserConnectionInfo(loginMessage.getUserConnectionInfo());
             messageQueue.put(response);
 
@@ -141,13 +145,13 @@ public class MessageListener extends Thread {
     }
 
     public TargetedServerMessage buildUserListMessage(UserConnectionInfo info){
-        String userlist = "Following users are logged in: \n";
+        String userList = "Following users are logged in: \n";
         for(UserListeningThread userListeningThread : server.getNetworkListener().getUserListeningThreadList()){
             if(userListeningThread.getUserConnectionInfo().isLoggedIn()){
-                userlist += userListeningThread.getUserConnectionInfo().getUserAccountInfo().getDisplayName() + "\n";
+                userList += userListeningThread.getUserConnectionInfo().getUserAccountInfo().getDisplayName() + "\n";
             }
         }
-        TargetedServerMessage targetedServerMessage = new TargetedServerMessage(userlist);
+        TargetedServerMessage targetedServerMessage = new TargetedServerMessage(userList);
         targetedServerMessage.setUserConnectionInfo(info);
         return targetedServerMessage;
     }
@@ -156,9 +160,9 @@ public class MessageListener extends Thread {
         switch (server.getMessageTypeDictionary().getType(m.getType())) {
             case TARGETTEXTMSG:
                 //Check, if user has permission to send something to the server
-                if (!hasPermission(m)) {
-                    return;
-                }
+//                if (!hasPermission(m)) {
+//                    return;
+//                }
                 //cast message
                 TargetedTextMessage textMessage = (TargetedTextMessage) m;
                 String receiver = textMessage.getReceiver();
@@ -203,9 +207,9 @@ public class MessageListener extends Thread {
 
     public void sendToAll(Message m) throws InterruptedException {
         //Check, if user has permission to send something to the server
-        if (!hasPermission(m)) {
-            return;
-        }
+//        if (!hasPermission(m)) {
+//            return;
+//        }
         for (UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()) {
             if (u.getUserConnectionInfo().isLoggedIn()) {
                 serializer.serialize(u.getUserConnectionInfo().getOut(), m);

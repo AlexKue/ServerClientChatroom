@@ -47,13 +47,7 @@ public class NetworkListener extends Thread {
         System.out.println("*** Shutting down network listener ***");
         System.out.println("- Closing sockets of Client in List");
         for(UserListeningThread u : userListeningThreadList){
-            try {
-                u.getUserConnectionInfo().getIn().close();
-                u.getUserConnectionInfo().getOut().close();
-                u.getUserConnectionInfo().getSocket().close();
-            } catch (IOException e) {
-                //No need to handle since we close the server anyways
-            }
+                removeClient(u);
 
         }
     }

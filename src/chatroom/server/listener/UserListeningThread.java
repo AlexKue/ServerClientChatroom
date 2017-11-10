@@ -31,7 +31,7 @@ public class UserListeningThread extends Thread {
                 //ready byte to decide which type of message is sent
                 byte type = (byte) userConnectionInfo.getIn().read();
                 if(type == (byte)-1){
-                    throw new IOException("usersocket closed");
+                    throw new IOException("Socket closed");
                 }
                 //deserialize message, create new Message Object
                 Message m = serializer.deserialize(userConnectionInfo.getIn(), type);
@@ -44,11 +44,11 @@ public class UserListeningThread extends Thread {
             } catch (IOException e) {
                 System.err.println("Lost Connection to client!");
                 isRunning = false; //Stop the Thread if connection is lost
-               // server.getNetworkListener().removeClient(this);
+                server.getNetworkListener().removeClient(this);
             } catch (InterruptedException e) {
                 System.out.println("UserListening Thread interrupted!");
                 e.printStackTrace();
-              //  server.getNetworkListener().removeClient(this);
+                server.getNetworkListener().removeClient(this);
                 isRunning = false;
             }
         }
