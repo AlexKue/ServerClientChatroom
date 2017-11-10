@@ -31,8 +31,9 @@ public class MessageListener extends Thread {
                 if (m == null) {
                     continue;
                 }
+                String messageTypeString = server.getMessageTypeDictionary().getType(m.getType()).toString();
                 //Byte sent by client decides which type of message is sent
-                System.out.println("Current message from queue: " + server.getMessageTypeDictionary().getType(m.getType()));
+                System.out.println("MessageListener: Now working on: " + messageTypeString);
 
                 switch (server.getMessageTypeDictionary().getType(m.getType())) {
                     case PUBLICSERVERMSG:
@@ -48,7 +49,8 @@ public class MessageListener extends Thread {
                         authenticate(m);
                         break;
                 }
-                sleep(100);
+                System.out.println("MessageListener: Sent message(s): " + messageTypeString);
+                sleep(50);
             } catch (InterruptedException e) {
                 System.err.println("*** MessageListener interrupted by server! ***");
             }

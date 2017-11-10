@@ -30,7 +30,9 @@ public class UserListeningThread extends Thread {
             try {
                 //ready byte to decide which type of message is sent
                 byte type = (byte) userConnectionInfo.getIn().read();
-
+                if(type == (byte)-1){
+                    throw new IOException("usersocket closed");
+                }
                 //deserialize message, create new Message Object
                 Message m = serializer.deserialize(userConnectionInfo.getIn(), type);
 
