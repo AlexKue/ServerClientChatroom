@@ -7,10 +7,14 @@ import chatroom.server.Server;
 
 import java.io.IOException;
 
+/**
+ * This Thread's purpose is listening from a stream of a Client and putting them
+ * into the MessageQueue of an <code>MessageListener</code> after serialization.
+ */
 public class UserListeningThread extends Thread {
 
     private final UserConnectionInfo userConnectionInfo;
-    private Server server;
+    private final Server server;
     private final Serializer serializer;
 
     public UserListeningThread(UserConnectionInfo userConnectionInfo, Server server) {
@@ -23,7 +27,12 @@ public class UserListeningThread extends Thread {
     public void run() {
             listen();
     }
-
+    
+    /**
+     * This method first reads a byte from the stream of the Client, and sends
+     * it through the <code>Serializer</code>, putting it into an MessageQueue
+     * afterwards.
+     */
     private void listen() {
         boolean isRunning = true;
         while (isRunning) {
@@ -53,7 +62,11 @@ public class UserListeningThread extends Thread {
             }
         }
     }
-
+    
+    /**
+     * Returns the <code>UserConnectionInfo</code> of the client
+     * @return Connectioninfo of the client
+     */
     public UserConnectionInfo getUserConnectionInfo() {
         return userConnectionInfo;
     }

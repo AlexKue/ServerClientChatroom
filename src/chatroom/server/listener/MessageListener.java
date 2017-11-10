@@ -4,23 +4,28 @@ import chatroom.model.*;
 import chatroom.model.message.*;
 import chatroom.model.message.Message;
 import chatroom.serializer.Serializer;
-import chatroom.serializer.TargetedServerMessageSerializer;
 import chatroom.server.Server;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This receives messages from all Clients connected on the server, puts them
+ * into a queue and sends the message to one ore more Clients.
+ * If the message is for example login-related, it also handles registration
+ * and authentication of the Client.
+ */
 public class MessageListener extends Thread {
     private final ArrayBlockingQueue<Message> messageQueue;
-    private Server server;
+    private final Server server;
     private final Serializer serializer;
-    private UserStorage userStorage;
+    private final UserStorage userStorage;
 
     public MessageListener(Server server) {
         messageQueue = new ArrayBlockingQueue<>(100);  //Synchronized queue containing messages from clients
         this.server = server;
-        serializer = new Serializer();
-        userStorage = new UserStorage();
+        serializer = new Serializer(); //Serializes and sends messages through stream
+        userStorage = new UserStorage(); //Contains data of user registered on this server, at runtime for now
     }
     //TODO: UserListMessage
     @Override
@@ -31,10 +36,11 @@ public class MessageListener extends Thread {
                 if (m == null) {
                     continue;
                 }
-                String messageTypeString = server.getMessageTypeDictionary().getType(m.getType()).toString();
-                //Byte sent by client decides which type of message is sent
+                //Display on server what it is working: 
+                String messageTypeString = server.getMessageTypeDictionary().getType(m.getType()).toString();               
                 System.out.println("MessageListener: Now working on: " + messageTypeString);
-
+                
+                //Byte sent by client decides which type of message is sent
                 switch (server.getMessageTypeDictionary().getType(m.getType())) {
                     case PUBLICSERVERMSG:
                     case PUBLICTEXTMSG:
@@ -50,6 +56,8 @@ public class MessageListener extends Thread {
                         break;
                 }
                 System.out.println("MessageListener: Sent message(s): " + messageTypeString);
+                //Issues may occur on clients that message are sent too fast.
+                //TODO: find more elegant fix, if there is any
                 sleep(50);
             } catch (InterruptedException e) {
                 System.err.println("*** MessageListener interrupted by server! ***");
@@ -62,7 +70,7 @@ public class MessageListener extends Thread {
      * back to the user
      *
      * @param m the message containing loginname and password
-     * @throws InterruptedException
+     * @throws InterruptedException if the queue gets interrupted
      */
     private void authenticate(Message m) throws InterruptedException {
         LoginMessage loginMessage = (LoginMessage) m;
@@ -144,7 +152,13 @@ public class MessageListener extends Thread {
 
     }
 
-    public TargetedServerMessage buildUserListMessage(UserConnectionInfo info){
+    /**
+     * Creates a message for a new Client, containing a list of all connected, 
+     * logged in users.
+     * @param info the ConnectionInfo of the client receiving the message
+     * @return A TargetedServerMessage containing a String with a list of users
+     */
+    private TargetedServerMessage buildUserListMessage(UserConnectionInfo info){
         String userList = "Following users are logged in: \n";
         for(UserListeningThread userListeningThread : server.getNetworkListener().getUserListeningThreadList()){
             if(userListeningThread.getUserConnectionInfo().isLoggedIn()){
@@ -155,14 +169,14 @@ public class MessageListener extends Thread {
         targetedServerMessage.setUserConnectionInfo(info);
         return targetedServerMessage;
     }
-
+    /**
+     * Sends a message to a specific target connected on this server
+     * @param m the Message which should be sent to an user
+     * @throws InterruptedException if the queue gets interrupted
+     */
     public void sendToTarget(Message m) throws InterruptedException {
         switch (server.getMessageTypeDictionary().getType(m.getType())) {
             case TARGETTEXTMSG:
-                //Check, if user has permission to send something to the server
-//                if (!hasPermission(m)) {
-//                    return;
-//                }
                 //cast message
                 TargetedTextMessage textMessage = (TargetedTextMessage) m;
                 String receiver = textMessage.getReceiver();
@@ -192,24 +206,9 @@ public class MessageListener extends Thread {
 
     /**
      * Check if the sender of this message has permission to send Messages to other users
-     *
      * @param m The message containing information of the sender in question
      */
-    private boolean hasPermission(Message m) throws InterruptedException {
-        if (!m.getUserConnectionInfo().isLoggedIn()) {
-            TargetedServerMessage serverMessage = new TargetedServerMessage("Rejected: You are not logged in! login with \"!login\" command!");
-            serverMessage.setUserConnectionInfo(m.getUserConnectionInfo());
-            messageQueue.put(serverMessage);
-            return false;
-        }
-        return true;
-    }
-
     public void sendToAll(Message m) throws InterruptedException {
-        //Check, if user has permission to send something to the server
-//        if (!hasPermission(m)) {
-//            return;
-//        }
         for (UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()) {
             if (u.getUserConnectionInfo().isLoggedIn()) {
                 serializer.serialize(u.getUserConnectionInfo().getOut(), m);
@@ -217,7 +216,10 @@ public class MessageListener extends Thread {
         }
     }
 
-
+    /**
+     * Returns the MessageQueue
+     * @return the MessageQueue of the MessageListener
+     */
     public ArrayBlockingQueue<Message> getMessageQueue() {
         return messageQueue;
     }

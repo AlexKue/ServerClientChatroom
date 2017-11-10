@@ -9,6 +9,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 
+/**
+ * This handles mapping of of <code>byte</code>s to a corresponding 
+ * <code>MessageSerializer</code> and sending a message to the correct 
+ * serializer.
+ * NOTE: this class only maps and sends the message of an MessagSerializer! It
+ * DOES NOT serializer itself.
+ */
 public class Serializer {
 
     private final HashMap<Byte, MessageSerializer> serializerHashMap;
@@ -26,9 +33,22 @@ public class Serializer {
         serializerHashMap.put(dict.getByte(MessageType.TARGETSERVERMSG), new TargetedServerMessageSerializer());
     }
     
+    /**
+     * Sends a message to its corresponding Serializer
+     * @param out the OutputStream of the client receiving the Message
+     * @param m the Message being serialized
+     */
     public void serialize(OutputStream out, Message m){
         serializerHashMap.get(m.getType()).serialize(out, m);
     }
+    
+    /**
+     * Returns the message sent to the server by an client.
+     * @param in the InputStream of the sender of the message
+     * @param type the byte representing the type of message
+     * @return the message being Sent
+     * @throws IOException 
+     */
     public Message deserialize(InputStream in, byte type) throws IOException{
         return serializerHashMap.get(type).deserialize(in);
     }

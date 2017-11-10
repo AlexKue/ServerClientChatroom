@@ -4,12 +4,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import chatroom.model.UserConnectionInfo;
-import chatroom.model.UserStorage;
 import chatroom.server.Server;
 
+/**
+ * This Thread handles accepting new Client on this server and removing Clients
+ * when disconnecting.
+ * @author ri93xuc
+ */
 public class NetworkListener extends Thread {
 
-    private Server server;
+    private final Server server;
     private ArrayList<UserListeningThread> userListeningThreadList;
 
     public NetworkListener(Server server) {
@@ -38,11 +42,15 @@ public class NetworkListener extends Thread {
     }
 
 
-
+    /**
+     * Returns the Threadlist of ALL clients, even them being NOT logged in into
+     * an account
+     * @return a list of <code>UserListeningThreads</code>
+     */
     public ArrayList<UserListeningThread> getUserListeningThreadList() {
         return userListeningThreadList;
     }
-
+    
     public void shutdown(){
         System.out.println("*** Shutting down network listener ***");
         System.out.println("- Closing sockets of Client in List");
@@ -51,7 +59,11 @@ public class NetworkListener extends Thread {
 
         }
     }
-
+    /**
+     * Removes a Client from the UserlisteningThreadList by closing all of its
+     * sockets and then removing it from the list
+     * @param userThread the UserThread which should be removed
+     */
     public void removeClient(UserListeningThread userThread) {
         UserConnectionInfo info = userThread.getUserConnectionInfo();
         try {
@@ -61,7 +73,7 @@ public class NetworkListener extends Thread {
         } catch (IOException e) {
             //We are closing sockets anyways
         } finally {
-            info.setLoggedIn(false);
+            info.setLoggedIn(false); //might not be necessary
         }
         userListeningThreadList.remove(userThread);
     }
