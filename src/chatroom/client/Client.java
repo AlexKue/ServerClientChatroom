@@ -23,7 +23,7 @@ public class Client {
         messageTypeDictionary = new MessageTypeDictionary();
         sc = new Scanner(System.in);
         isRunning = true;
-        isLoggedIn = false;
+        setLoggedIn(false);
     }
 
     public void stop(){
@@ -87,11 +87,11 @@ public class Client {
         isRunning = running;
     }
 
-    public boolean isLoggedIn() {
+    public synchronized boolean isLoggedIn() {
         return isLoggedIn;
     }
 
-    public void setLoggedIn(boolean loggedIn) {
+    public synchronized void setLoggedIn(boolean loggedIn) {
         isLoggedIn = loggedIn;
     }
 }

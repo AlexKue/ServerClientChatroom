@@ -27,10 +27,12 @@ public class ClientListeningThread extends Thread {
         while (client.isRunning()) {
             try {
                 //Read byte from stream to decide on which type of message is incoming
-            //    byte type = (byte)in.read();
-
+                byte type = (byte)in.read();
+                if(type == (byte)-1){
+                    throw new IOException("Socket closed");
+                }
                 //deserialize message from stream and put it into an message
-                Message m = serializer.deserialize(in, (byte)in.read());
+                Message m = serializer.deserialize(in, type);
 
                 handleMessage(m);
             } catch (IOException ex) {
@@ -78,7 +80,7 @@ public class ClientListeningThread extends Thread {
                     case ALREADY_LOGGED_IN:
                         System.out.println("*** Someone is already using your Account!!!! ***");
                         System.out.println("*** Your Account might be in danger. Contact an admin! ***");
-                        client.setRunning(false);
+                        client.stop();
                         break;
                     case WRONG_PASSWORD:
                         System.out.println("*** Wrong password! Please try again! ***");
