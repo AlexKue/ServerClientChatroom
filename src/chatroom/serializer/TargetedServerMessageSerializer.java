@@ -9,15 +9,11 @@ import java.io.*;
 
 public class TargetedServerMessageSerializer extends MessageSerializer {
     @Override
-    public void serialize(OutputStream out, Message m) {
+    public void serialize(OutputStream out, Message m) throws IOException {
         DataOutputStream dataOut = new DataOutputStream(new BufferedOutputStream(out));
-        try {
             dataOut.writeByte(dict.getByte(MessageType.TARGETSERVERMSG));
             dataOut.writeUTF(((TargetedServerMessage)m).getMessage());
             dataOut.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

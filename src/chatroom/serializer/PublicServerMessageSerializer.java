@@ -10,16 +10,11 @@ public class PublicServerMessageSerializer extends MessageSerializer{
 
 
     @Override
-    public void serialize(OutputStream out, Message m) {
-        try {
+    public void serialize(OutputStream out, Message m) throws IOException {
             DataOutputStream dataOut = new DataOutputStream(new BufferedOutputStream(out));
             dataOut.writeByte(dict.getByte(MessageType.PUBLICSERVERMSG));
             dataOut.writeUTF(((PublicServerMessage)m).getMessage());
             dataOut.flush();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        
     }
 
     @Override

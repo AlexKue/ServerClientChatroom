@@ -4,6 +4,7 @@ import chatroom.model.message.Message;
 import chatroom.model.message.MessageType;
 import chatroom.model.message.MessageTypeDictionary;
 import chatroom.model.message.TargetedTextMessage;
+
 import java.io.*;
 
 public class TargetedTextMessageSerializer extends UserMessageSerializer {
@@ -18,16 +19,12 @@ public class TargetedTextMessageSerializer extends UserMessageSerializer {
     }
 
     @Override
-    public void serialize(OutputStream out, Message m) {
-        try {
-            DataOutputStream dataOut = new DataOutputStream(new BufferedOutputStream(out));
-            dataOut.writeByte(dict.getByte(MessageType.TARGETTEXTMSG));
-            dataOut.writeUTF(((TargetedTextMessage) m).getMessage());
-            dataOut.writeUTF(((TargetedTextMessage) m).getSender());
-            dataOut.writeUTF(((TargetedTextMessage) m).getReceiver());
-            dataOut.flush();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+    public void serialize(OutputStream out, Message m) throws IOException {
+        DataOutputStream dataOut = new DataOutputStream(new BufferedOutputStream(out));
+        dataOut.writeByte(dict.getByte(MessageType.TARGETTEXTMSG));
+        dataOut.writeUTF(((TargetedTextMessage) m).getMessage());
+        dataOut.writeUTF(((TargetedTextMessage) m).getSender());
+        dataOut.writeUTF(((TargetedTextMessage) m).getReceiver());
+        dataOut.flush();
     }
 }

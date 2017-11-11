@@ -38,7 +38,7 @@ public class Serializer {
      * @param out the OutputStream of the client receiving the Message
      * @param m the Message being serialized
      */
-    public void serialize(OutputStream out, Message m){
+    public void serialize(OutputStream out, Message m) throws IOException{
         serializerHashMap.get(m.getType()).serialize(out, m);
     }
     

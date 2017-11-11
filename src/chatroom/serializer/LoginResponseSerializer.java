@@ -9,15 +9,11 @@ public class LoginResponseSerializer extends MessageSerializer {
     LoginResponsesDictionary responseDict = new LoginResponsesDictionary();
 
     @Override
-    public void serialize(OutputStream out, Message m) {
+    public void serialize(OutputStream out, Message m) throws IOException {
         DataOutputStream dataOut = new DataOutputStream(new BufferedOutputStream(out));
-        try {
-            dataOut.writeByte(dict.getByte(MessageType.LOGINRESPONSEMSG));
-            dataOut.writeByte(responseDict.getByte(((LoginResponseMessage) m).getResponse()));
-            dataOut.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        dataOut.writeByte(dict.getByte(MessageType.LOGINRESPONSEMSG));
+        dataOut.writeByte(responseDict.getByte(((LoginResponseMessage) m).getResponse()));
+        dataOut.flush();
 
     }
 
