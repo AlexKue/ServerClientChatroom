@@ -53,19 +53,19 @@ public class UserListeningThread extends Thread {
             } catch (IOException e) {
                 System.err.println("Lost Connection to client!");
                 isRunning = false; //Stop the Thread if connection is lost
-                server.getNetworkListener().removeClient(this);
             } catch (InterruptedException e) {
-                System.out.println("UserListening Thread interrupted!");
-                e.printStackTrace();
-                server.getNetworkListener().removeClient(this);
+                System.out.println("Error in Listing Thread: " + e.toString());
                 isRunning = false;
             }
         }
+        server.getNetworkListener().removeClient(this);
+
+
     }
     
     /**
      * Returns the <code>UserConnectionInfo</code> of the client
-     * @return Connectioninfo of the client
+     * @return ConnectionInfo of the client
      */
     public UserConnectionInfo getUserConnectionInfo() {
         return userConnectionInfo;

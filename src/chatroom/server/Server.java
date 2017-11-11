@@ -66,11 +66,9 @@ public class Server {
         return listener;
     }
 
-
     public NetworkListener getNetworkListener() {
         return networkListener;
     }
-
 
     public MessageListener getMessageListener() {
         return messageListener;

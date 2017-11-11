@@ -79,11 +79,11 @@ public class Client {
         return clientSender;
     }
 
-    public boolean isRunning() {
+    public synchronized boolean isRunning() {
         return isRunning;
     }
 
-    public void setRunning(boolean running) {
+    public synchronized void setRunning(boolean running) {
         isRunning = running;
     }
 

@@ -6,6 +6,7 @@ import chatroom.model.message.Message;
 import chatroom.serializer.Serializer;
 import chatroom.server.Server;
 
+import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -54,6 +55,9 @@ public class MessageListener extends Thread {
                     case LOGINMSG:
                         authenticate(m);
                         break;
+                    case LOGOUTMSG:
+                        logOut(m);
+                        break;
                 }
                 System.out.println("MessageListener: Sent message(s): " + messageTypeString);
                 //Issues may occur on clients that message are sent too fast.
@@ -61,10 +65,22 @@ public class MessageListener extends Thread {
                 sleep(50);
             } catch (InterruptedException e) {
                 System.err.println("*** MessageListener interrupted by server! ***");
+            } catch (IOException e) {
+                System.err.println("*** Error while serializing! ***");
             }
         }
     }
 
+    /**
+     * Sends a message to all clients that a user has disconnected and removes the client
+     * wishing to disconnect from the server
+     * @param m the LogoutMessage from the Client
+     * @throws InterruptedException
+     */
+    private void logOut(Message m) throws InterruptedException, IOException {
+        String username = m.getUserConnectionInfo().getUserAccountInfo().getDisplayName();
+        server.getNetworkListener().removeClient(username);
+    }
     /**
      * Checks the login data of an user and sends <code>LoginResponseMessages</code>
      * back to the user
@@ -74,7 +90,6 @@ public class MessageListener extends Thread {
      */
     private void authenticate(Message m) throws InterruptedException {
         LoginMessage loginMessage = (LoginMessage) m;
-
 
         //check the storage if username is registered on this server
         if (!userStorage.loginNameExists(loginMessage.getLoginName())) {
@@ -170,11 +185,12 @@ public class MessageListener extends Thread {
         return targetedServerMessage;
     }
     /**
-     * Sends a message to a specific target connected on this server
+     * Sends a message to a specific target connected on this server.
+     * This method handles differently based on message received
      * @param m the Message which should be sent to an user
      * @throws InterruptedException if the queue gets interrupted
      */
-    public void sendToTarget(Message m) throws InterruptedException {
+    public void sendToTarget(Message m) throws InterruptedException, IOException {
         switch (server.getMessageTypeDictionary().getType(m.getType())) {
             case TARGETTEXTMSG:
                 //cast message
@@ -208,7 +224,8 @@ public class MessageListener extends Thread {
      * Check if the sender of this message has permission to send Messages to other users
      * @param m The message containing information of the sender in question
      */
-    public void sendToAll(Message m) throws InterruptedException {
+    public void sendToAll(Message m) throws InterruptedException, IOException {
+        //Go trough the list of Threads and send to loggedin users
         for (UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()) {
             if (u.getUserConnectionInfo().isLoggedIn()) {
                 serializer.serialize(u.getUserConnectionInfo().getOut(), m);

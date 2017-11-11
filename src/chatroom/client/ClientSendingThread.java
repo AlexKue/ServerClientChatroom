@@ -1,9 +1,12 @@
 package chatroom.client;
 
 import chatroom.model.message.LoginMessage;
+import chatroom.model.message.LogoutMessage;
+import chatroom.model.message.Message;
 import chatroom.model.message.PublicTextMessage;
 import chatroom.serializer.Serializer;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Scanner;
 
@@ -30,19 +33,33 @@ public class ClientSendingThread extends Thread {
             if (client.isLoggedIn()) {
                 //read input of System.in
                 String stringMessage = sc.nextLine();
-                PublicTextMessage message = new PublicTextMessage(stringMessage, client.getLoginName());
-                serializer.serialize(out, message);
+                Message message;
+                if (stringMessage.trim().equals("!quit")) {
+                    message = new LogoutMessage();
+                } else {
+                    message = new PublicTextMessage(stringMessage, client.getLoginName());
+                }
+                try {
+                    serializer.serialize(out, message);
+                } catch (IOException e) {
+                    System.err.println("Error while serializing!");                }
             }
         }
         System.out.println("Shutting down sending handler!");
+        client.stop();
     }
+
     public void authenticate() {
         System.out.print("Enter your login name: ");
         String loginName = sc.nextLine();
         client.setLoginName(loginName);
         System.out.print("Enter your password: ");
         String password = sc.nextLine();
-        serializer.serialize(out, new LoginMessage(loginName, password));
+        try {
+            serializer.serialize(out, new LoginMessage(loginName, password));
+        } catch (IOException e) {
+            System.err.println("Error while serializing!");
+        }
     }
 
 }
