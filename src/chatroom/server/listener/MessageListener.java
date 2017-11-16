@@ -72,6 +72,56 @@ public class MessageListener extends Thread {
     }
 
     /**
+     * Sends a message to a specific target connected on this server.
+     * This method handles differently based on message received
+     * @param m the Message which should be sent to an user
+     * @throws InterruptedException if the queue gets interrupted
+     */
+    public void sendToTarget(Message m) throws InterruptedException, IOException {
+        switch (server.getMessageTypeDictionary().getType(m.getType())) {
+            case TARGETTEXTMSG:
+                //cast message
+                TargetedTextMessage textMessage = (TargetedTextMessage) m;
+                String receiver = textMessage.getReceiver();
+
+                //Iterate through the list to find the receiver
+                for (UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()) {
+                    //Get the AccountInfo of the thread, find receiver of message
+                    if (u != null && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(receiver)) {
+                        serializer.serialize(u.getUserConnectionInfo().getOut(), m);
+                        return;
+                    }
+                }
+                //If receiver wasnt found, he isnt online. Send message to sender that sending failed
+                TargetedServerMessage serverMessage = new TargetedServerMessage("Failed to send message: " + ((TargetedTextMessage) m).getReceiver() + "is not online!");
+                serverMessage.setUserConnectionInfo(m.getUserConnectionInfo());
+                serializer.serialize(m.getUserConnectionInfo().getOut(), serverMessage);
+                break;
+
+            //because in case of a login process, we dont know the name of the client, so we get the connectioninfo of message
+            case TARGETSERVERMSG:
+            case LOGINRESPONSEMSG:
+                serializer.serialize(m.getUserConnectionInfo().getOut(), m);
+                break;
+        }
+
+    }
+
+    /**
+     * Check if the sender of this message has permission to send Messages to other users
+     * @param m The message containing information of the sender in question
+     */
+    public void sendToAll(Message m) throws InterruptedException, IOException {
+        //Go trough the list of Threads and send to loggedin users
+        for (UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()) {
+            if (u != null && u.getUserConnectionInfo().isLoggedIn()) {
+                serializer.serialize(u.getUserConnectionInfo().getOut(), m);
+            }
+        }
+    }
+
+
+    /**
      * Sends a message to all clients that a user has disconnected and removes the client
      * wishing to disconnect from the server
      * @param m the LogoutMessage from the Client
@@ -168,7 +218,7 @@ public class MessageListener extends Thread {
     }
 
     /**
-     * Creates a message for a new Client, containing a list of all connected, 
+     * Creates a message for a new Client, containing a list of all connected,
      * logged in users.
      * @param info the ConnectionInfo of the client receiving the message
      * @return A TargetedServerMessage containing a String with a list of users
@@ -184,54 +234,7 @@ public class MessageListener extends Thread {
         targetedServerMessage.setUserConnectionInfo(info);
         return targetedServerMessage;
     }
-    /**
-     * Sends a message to a specific target connected on this server.
-     * This method handles differently based on message received
-     * @param m the Message which should be sent to an user
-     * @throws InterruptedException if the queue gets interrupted
-     */
-    public void sendToTarget(Message m) throws InterruptedException, IOException {
-        switch (server.getMessageTypeDictionary().getType(m.getType())) {
-            case TARGETTEXTMSG:
-                //cast message
-                TargetedTextMessage textMessage = (TargetedTextMessage) m;
-                String receiver = textMessage.getReceiver();
 
-                //Iterate through the list to find the receiver
-                for (UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()) {
-                    //Get the AccountInfo of the thread, find receiver of message
-                    if (u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(receiver)) {
-                        serializer.serialize(u.getUserConnectionInfo().getOut(), m);
-                        return;
-                    }
-                }
-                //If receiver wasnt found, he isnt online. Send message to sender that sending failed
-                TargetedServerMessage serverMessage = new TargetedServerMessage("Failed to send message: " + ((TargetedTextMessage) m).getReceiver() + "is not online!");
-                serverMessage.setUserConnectionInfo(m.getUserConnectionInfo());
-                serializer.serialize(m.getUserConnectionInfo().getOut(), serverMessage);
-                break;
-
-            //because in case of a login process, we dont know the name of the client, so we get the connectioninfo of message
-            case TARGETSERVERMSG:
-            case LOGINRESPONSEMSG:
-                serializer.serialize(m.getUserConnectionInfo().getOut(), m);
-                break;
-        }
-
-    }
-
-    /**
-     * Check if the sender of this message has permission to send Messages to other users
-     * @param m The message containing information of the sender in question
-     */
-    public void sendToAll(Message m) throws InterruptedException, IOException {
-        //Go trough the list of Threads and send to loggedin users
-        for (UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()) {
-            if (u.getUserConnectionInfo().isLoggedIn()) {
-                serializer.serialize(u.getUserConnectionInfo().getOut(), m);
-            }
-        }
-    }
 
     /**
      * Returns the MessageQueue

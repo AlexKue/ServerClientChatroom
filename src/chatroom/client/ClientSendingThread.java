@@ -35,6 +35,9 @@ public class ClientSendingThread extends Thread {
                 String stringMessage = sc.nextLine();
                 Message message;
                 if (stringMessage.trim().equals("!quit")) {
+                    System.out.println("You are now logging out!\nShutting down Client!");
+                    client.setLoggedIn(false);
+                    client.setRunning(false);
                     message = new LogoutMessage();
                 } else {
                     message = new PublicTextMessage(stringMessage, client.getLoginName());

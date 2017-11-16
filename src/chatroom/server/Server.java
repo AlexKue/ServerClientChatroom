@@ -24,7 +24,10 @@ public class Server {
 
     public void start(){
         try {
+            // Open new Socket
             listener = new ServerSocket(54322);
+
+            //Start listening Threads
             networkListener = new NetworkListener(this);
             messageListener = new MessageListener(this);
             System.out.println("Server Online!");
@@ -50,8 +53,9 @@ public class Server {
         } catch (IOException e) {
             System.err.println("*** Error while closing the server! ***");
             e.printStackTrace();
+        } finally {
+            isRunning = false;
         }
-        isRunning = false;
     }
     public boolean isRunning(){
         return isRunning;

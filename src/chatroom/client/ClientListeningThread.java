@@ -87,11 +87,6 @@ public class ClientListeningThread extends Thread {
                         client.getClientSender().authenticate();
                         break;
                 } break;
-            case LOGOUTMSG:
-                System.out.println("You have logged out! Shutting down!");
-                client.setLoggedIn(false);
-                client.setRunning(false);
-                break;
         }
 
     }

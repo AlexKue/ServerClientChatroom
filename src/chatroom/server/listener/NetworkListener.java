@@ -2,6 +2,9 @@ package chatroom.server.listener;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import chatroom.model.UserConnectionInfo;
 import chatroom.model.message.PublicServerMessage;
@@ -10,15 +13,14 @@ import chatroom.server.Server;
 /**
  * This Thread handles accepting new Client on this server and removing Clients
  * when disconnecting.
- *
  */
 public class NetworkListener extends Thread {
 
     private final Server server;
-    private ArrayList<UserListeningThread> userListeningThreadList;
+    private List<UserListeningThread> userListeningThreadList;
 
     public NetworkListener(Server server) {
-        this.userListeningThreadList = new ArrayList<>();
+        this.userListeningThreadList = Collections.synchronizedList(new ArrayList<>());
         this.server = server;
     }
 
@@ -43,12 +45,12 @@ public class NetworkListener extends Thread {
 
 
     /**
-     * Returns the Threadlist of ALL clients, even them being NOT logged in into
+     * Returns the ThreadList of ALL clients, even them being NOT logged in into
      * an account
      *
      * @return a list of <code>UserListeningThreads</code>
      */
-    public ArrayList<UserListeningThread> getUserListeningThreadList() {
+    public List<UserListeningThread> getUserListeningThreadList() {
         return userListeningThreadList;
     }
 
@@ -69,15 +71,14 @@ public class NetworkListener extends Thread {
      * @param userThread the UserThread which should be removed
      */
     public void removeClient(UserListeningThread userThread) {
+        //set loggedInStatus to False
         UserConnectionInfo info = userThread.getUserConnectionInfo();
-        try {
-            info.getIn().close();
-            info.getOut().close();
-            info.getSocket().close();
-        } catch (IOException e) {
-            //We are closing sockets anyways
-        } finally {
-            info.setLoggedIn(false); //might not be necessary
+        info.setLoggedIn(false); //might not be necessary
+
+        //remove from List
+        if (userListeningThreadList.remove(userThread)) {
+
+            //Notify logged in users that someone left
             String username = info.getUserAccountInfo().getDisplayName();
             PublicServerMessage msg = new PublicServerMessage(username + " has left the server!");
             try {
@@ -85,15 +86,27 @@ public class NetworkListener extends Thread {
             } catch (InterruptedException e) {
                 System.err.println("Error while sending Msg: " + e.toString());
             }
+
+            try {
+                info.getIn().close();
+                info.getOut().close();
+                info.getSocket().close();
+            } catch (IOException e) {
+                //We are closing sockets anyways
+            }
         }
-        userListeningThreadList.remove(userThread);
+
     }
 
     public void removeClient(String loginName) {
-        for (UserListeningThread u : userListeningThreadList) {
+        Iterator<UserListeningThread> iter = userListeningThreadList.iterator();
+
+        while (iter.hasNext()) {
+            UserListeningThread u = iter.next();
             UserConnectionInfo info = u.getUserConnectionInfo();
             if (info.isLoggedIn() && info.getUserAccountInfo().getLoginName().equals(loginName)) {
                 removeClient(u);
+                break;
             }
         }
     }
