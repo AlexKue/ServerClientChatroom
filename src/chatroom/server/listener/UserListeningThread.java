@@ -51,10 +51,9 @@ public class UserListeningThread extends Thread {
                 //put message into queue
                 server.getMessageListener().getMessageQueue().put(m);
             } catch (IOException e) {
-                System.err.println("Lost Connection to client!");
+                System.err.println("UserListeningThread: Lost Connection to client!");
                 isRunning = false; //Stop the Thread if connection is lost
                 server.getNetworkListener().removeClient(this);
-                System.out.println("TEST1");
 
             } catch (InterruptedException e) {
                 System.out.println("Error in ListeningThread: " + e.toString());
@@ -62,7 +61,6 @@ public class UserListeningThread extends Thread {
                 server.getNetworkListener().removeClient(this);
             }
         }
-
 
     }
     
@@ -72,5 +70,18 @@ public class UserListeningThread extends Thread {
      */
     public UserConnectionInfo getUserConnectionInfo() {
         return userConnectionInfo;
+    }
+
+    /**
+     * Closes the Sockets of this Client
+     */
+    public void close() {
+        try {
+            userConnectionInfo.getSocket().close();
+            userConnectionInfo.getOut().close();
+            userConnectionInfo.getIn().close();
+        } catch (IOException e) {
+            //We are closing anyways
+        }
     }
 }
