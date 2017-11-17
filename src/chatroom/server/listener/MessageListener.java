@@ -33,10 +33,13 @@ public class MessageListener extends Thread {
     public void run() {
         while (server.isRunning()) {
             try {
+                //If Queue is empty, wait for a new Message for at most 1 second, so that we can check
+                //regularly if the server is still running
                 Message m = messageQueue.poll(1, TimeUnit.SECONDS);
                 if (m == null) {
                     continue;
                 }
+
                 //Display on server what it is working: 
                 String messageTypeString = server.getMessageTypeDictionary().getType(m.getType()).toString();               
                 System.out.println("MessageListener: Now working on: " + messageTypeString);
@@ -60,6 +63,7 @@ public class MessageListener extends Thread {
                         break;
                 }
                 System.out.println("MessageListener: Sent message(s): " + messageTypeString);
+
                 //Issues may occur on clients that message are sent too fast.
                 //TODO: find more elegant fix, if there is any
                 sleep(50);
@@ -92,7 +96,7 @@ public class MessageListener extends Thread {
                         return;
                     }
                 }
-                //If receiver wasnt found, he isnt online. Send message to sender that sending failed
+                //If receiver was not found, he is not online. Send message to sender that sending failed
                 TargetedServerMessage serverMessage = new TargetedServerMessage("Failed to send message: " + ((TargetedTextMessage) m).getReceiver() + "is not online!");
                 serverMessage.setUserConnectionInfo(m.getUserConnectionInfo());
                 serializer.serialize(m.getUserConnectionInfo().getOut(), serverMessage);
@@ -227,7 +231,7 @@ public class MessageListener extends Thread {
         String userList = "Following users are logged in: \n";
         for(UserListeningThread userListeningThread : server.getNetworkListener().getUserListeningThreadList()){
             if(userListeningThread.getUserConnectionInfo().isLoggedIn()){
-                userList += userListeningThread.getUserConnectionInfo().getUserAccountInfo().getDisplayName() + "\n";
+                userList = userList + (userListeningThread.getUserConnectionInfo().getUserAccountInfo().getDisplayName() + "\n");
             }
         }
         TargetedServerMessage targetedServerMessage = new TargetedServerMessage(userList);

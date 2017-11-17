@@ -13,7 +13,7 @@ import java.io.IOException;
  */
 public class UserListeningThread extends Thread {
 
-    private final UserConnectionInfo userConnectionInfo;
+    private final UserConnectionInfo userConnectionInfo; // Contains information about Sockets and Streams
     private final Server server;
     private final Serializer serializer;
 

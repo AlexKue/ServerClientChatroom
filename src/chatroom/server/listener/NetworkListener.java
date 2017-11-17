@@ -17,7 +17,7 @@ import chatroom.server.Server;
 public class NetworkListener extends Thread {
 
     private final Server server;
-    private List<UserListeningThread> userListeningThreadList;
+    private List<UserListeningThread> userListeningThreadList; //List of all (also not logged in) clients
 
     public NetworkListener(Server server) {
         this.userListeningThreadList = Collections.synchronizedList(new ArrayList<>());
@@ -28,14 +28,17 @@ public class NetworkListener extends Thread {
     public void run() {
         while (server.isRunning()) {
             try {
+
+                //Accept new Client and create new ConnectionInfo
                 UserConnectionInfo userConnectionInfo = new UserConnectionInfo(server.getListener().accept());
                 System.out.println("Client connected: " + userConnectionInfo.getSocket().getInetAddress());
+
                 //Create new Thread for the MessageListener for each new client
                 UserListeningThread u = new UserListeningThread(userConnectionInfo, server);
                 getUserListeningThreadList().add(u);
                 u.start();
             } catch (IOException ex) {
-                System.out.println("*** Connection Error! " + ex.toString() + ") ***");
+                System.out.println("*** Connection Error! " + ex.toString() + " ***");
                 //.accept() will throw if server is closing
             }
 
@@ -47,14 +50,16 @@ public class NetworkListener extends Thread {
     /**
      * Returns the ThreadList of ALL clients, even them being NOT logged in into
      * an account
-     *
      * @return a list of <code>UserListeningThreads</code>
      */
     public List<UserListeningThread> getUserListeningThreadList() {
         return userListeningThreadList;
     }
 
-    public void shutdown() {
+    /**
+     * Closes the sockets and Streams of all users in the UserListeningThreadList
+     */
+    private void shutdown() {
         System.out.println("*** Shutting down network listener ***");
         System.out.println("*** Closing sockets of Client in List ***");
         Iterator<UserListeningThread> iter = userListeningThreadList.iterator();

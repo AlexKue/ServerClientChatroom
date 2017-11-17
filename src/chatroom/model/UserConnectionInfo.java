@@ -3,6 +3,10 @@ package chatroom.model;
 import java.io.*;
 import java.net.Socket;
 
+/**
+ * This contains information about the client of an user related to the connection like sockets and if the user is logged in.
+ * It also contains an UserAccountInfo, which contains information about the user himself like names and the password.
+ */
 public class UserConnectionInfo {
     private UserAccountInfo userAccountInfo;
     private final Socket socket;

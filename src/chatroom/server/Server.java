@@ -16,13 +16,13 @@ public class Server {
     private Scanner sc;
     private boolean isRunning;
 
-    public Server(){
+    private Server(){
         messageTypeDictionary = new MessageTypeDictionary();
         sc = new Scanner(System.in);
         isRunning = true;
     }
 
-    public void start(){
+    private void start(){
         try {
             // Open new Socket
             listener = new ServerSocket(54322);

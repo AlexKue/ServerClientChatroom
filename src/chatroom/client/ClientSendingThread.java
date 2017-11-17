@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 /**
  * Handles sending messages by deserializing them properly based on
- * type of message
+ * type of Message
  */
 public class ClientSendingThread extends Thread {
     private OutputStream out;
@@ -31,15 +31,19 @@ public class ClientSendingThread extends Thread {
         authenticate();
         while (client.isRunning()) {
             if (client.isLoggedIn()) {
+
                 //read input of System.in
                 String stringMessage = sc.nextLine();
                 Message message;
+
+                //Check, if the line was a command
                 if (stringMessage.trim().equals("!quit")) {
                     System.out.println("You are now logging out!\nShutting down Client!");
                     client.setLoggedIn(false);
                     client.setRunning(false);
                     message = new LogoutMessage();
                 } else {
+                    //handle input as normal TextMessage
                     message = new PublicTextMessage(stringMessage, client.getLoginName());
                 }
                 try {
@@ -52,6 +56,9 @@ public class ClientSendingThread extends Thread {
         client.stop();
     }
 
+    /**
+     * Asks the User to enter his loginName and his password, and sends a LoginMessage to the server.
+     */
     public void authenticate() {
         System.out.print("Enter your login name: ");
         String loginName = sc.nextLine();

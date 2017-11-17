@@ -1,5 +1,8 @@
 package chatroom.model;
 
+/**
+ * This contains Information about an user, like names and the password.
+ */
 public class UserAccountInfo {
     private String loginName;
     private String displayName;
@@ -34,6 +37,7 @@ public class UserAccountInfo {
     public void setPassword(String password) {
         this.password = password;
     }
+
     public boolean isPasswordCorrect(String password){
         return this.password.equals(password);
     }

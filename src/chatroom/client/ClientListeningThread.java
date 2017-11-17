@@ -28,16 +28,17 @@ public class ClientListeningThread extends Thread {
             try {
                 //Read byte from stream to decide on which type of message is incoming
                 byte type = (byte)in.read();
+
+                //Socket is closed if the Stream returns -1
                 if(type == (byte)-1){
-                    throw new IOException("Socket closed");
+                    throw new IOException("Cannot reach server");
                 }
                 //deserialize message from stream and put it into an message
                 Message m = serializer.deserialize(in, type);
 
                 handleMessage(m);
             } catch (IOException ex) {
-                System.err.println("Connection Lost! Shutting down client!");
-                ex.printStackTrace();
+                System.err.println("Connection Lost: " + ex.toString() + "\nShutting down client!");
                 client.stop();
             }
         }
