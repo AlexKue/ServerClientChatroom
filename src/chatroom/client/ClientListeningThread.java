@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Handles incoming messages by deserializing the data and putting them in a Message Object,
+ * Deserialize data from Stream and puts it in a Message Object,
  * displaying them afterwards
  */
 public class ClientListeningThread extends Thread {

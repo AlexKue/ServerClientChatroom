@@ -77,7 +77,7 @@ public class MessageListener extends Thread {
      * @param m the Message which should be sent to an user
      * @throws InterruptedException if the queue gets interrupted
      */
-    public void sendToTarget(Message m) throws InterruptedException, IOException {
+    private void sendToTarget(Message m) throws InterruptedException, IOException {
         switch (server.getMessageTypeDictionary().getType(m.getType())) {
             case TARGETTEXTMSG:
                 //cast message
@@ -98,7 +98,7 @@ public class MessageListener extends Thread {
                 serializer.serialize(m.getUserConnectionInfo().getOut(), serverMessage);
                 break;
 
-            //because in case of a login process, we dont know the name of the client, so we get the connectioninfo of message
+            //because in case of a login process, we don't know the name of the client, so we get the connectionInfo of message
             case TARGETSERVERMSG:
             case LOGINRESPONSEMSG:
                 serializer.serialize(m.getUserConnectionInfo().getOut(), m);
@@ -108,11 +108,11 @@ public class MessageListener extends Thread {
     }
 
     /**
-     * Check if the sender of this message has permission to send Messages to other users
-     * @param m The message containing information of the sender in question
+     * Sends a message to all currently loggedIn users
+     * @param m The message being sent to all clients
      */
-    public void sendToAll(Message m) throws InterruptedException, IOException {
-        //Go trough the list of Threads and send to loggedin users
+    private void sendToAll(Message m) throws InterruptedException, IOException {
+        //Go trough the list of Threads and send to loggedIn users
         for (UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()) {
             if (u != null && u.getUserConnectionInfo().isLoggedIn()) {
                 serializer.serialize(u.getUserConnectionInfo().getOut(), m);
@@ -123,9 +123,9 @@ public class MessageListener extends Thread {
 
     /**
      * Sends a message to all clients that a user has disconnected and removes the client
-     * wishing to disconnect from the server
+     * wishing to disconnect from the ThreadList of the server
      * @param m the LogoutMessage from the Client
-     * @throws InterruptedException
+     * @throws InterruptedException if an Interrupt occurs
      */
     private void logOut(Message m) throws InterruptedException, IOException {
         String username = m.getUserConnectionInfo().getUserAccountInfo().getDisplayName();
@@ -135,13 +135,13 @@ public class MessageListener extends Thread {
      * Checks the login data of an user and sends <code>LoginResponseMessages</code>
      * back to the user
      *
-     * @param m the message containing loginname and password
+     * @param m the message containing loginName and password
      * @throws InterruptedException if the queue gets interrupted
      */
     private void authenticate(Message m) throws InterruptedException {
         LoginMessage loginMessage = (LoginMessage) m;
 
-        //check the storage if username is registered on this server
+        //Look up if loginName is already in Use
         if (!userStorage.loginNameExists(loginMessage.getLoginName())) {
 
             //send Response Message: No one uses this name
@@ -167,11 +167,12 @@ public class MessageListener extends Thread {
             return;
 
         } else {
-            //case: username is registered
-            //check if password is correct
-            boolean success = userStorage.checkLogin(loginMessage.getLoginName(), loginMessage.getPassword());
 
+            //Now we know that the loginName is already in user. In case that the password is correct,
+            //check, if another user is already using this account.
+            boolean success = userStorage.checkLogin(loginMessage.getLoginName(), loginMessage.getPassword());
             LoginResponseMessage response;
+
             if (success) {
                 //check if another user is already using the account
                 for (UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()) {
@@ -185,7 +186,7 @@ public class MessageListener extends Thread {
                         message.setUserConnectionInfo(m.getUserConnectionInfo());
                         messageQueue.put(message);
 
-                        System.out.println("A client tried to log into an account which was already online! ");
+                        System.out.println("A client tried to log into the Account of "+loginMessage.getLoginName()+" while it was already online!");
                         return;
                     }
 
@@ -198,7 +199,7 @@ public class MessageListener extends Thread {
                 //set AccountInfo for the connection
                 UserAccountInfo accountInfo = userStorage.getUserAccountInfo(loginMessage.getLoginName());
                 m.getUserConnectionInfo().setUserAccountInfo(accountInfo);
-                System.out.println("User " + loginMessage.getLoginName() + " has logged in");
+                System.out.println("User " + loginMessage.getLoginName() + " has logged in!");
 
                 //Send new User list of already logged in users
                 messageQueue.put(buildUserListMessage(m.getUserConnectionInfo()));
@@ -206,15 +207,14 @@ public class MessageListener extends Thread {
                 //Notify other users that someone connected
                 messageQueue.put(new PublicServerMessage(accountInfo.getDisplayName() + " has connected to the Server!"));
             } else {
+                //We know that the password is wrong. Notify user.
                 response = new LoginResponseMessage(LoginResponses.WRONG_PASSWORD);
                 System.out.println("Someone failed to login into the account of " + loginMessage.getLoginName());
             }
             //send LoginResponse to the Client
             response.setUserConnectionInfo(loginMessage.getUserConnectionInfo());
             messageQueue.put(response);
-
         }
-
     }
 
     /**

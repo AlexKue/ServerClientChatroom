@@ -56,11 +56,11 @@ public class NetworkListener extends Thread {
 
     public void shutdown() {
         System.out.println("*** Shutting down network listener ***");
-        System.out.println("- Closing sockets of Client in List");
-        for (UserListeningThread u : userListeningThreadList) {
-            if (u != null) {
-                removeClient(u);
-            }
+        System.out.println("*** Closing sockets of Client in List ***");
+        Iterator<UserListeningThread> iter = userListeningThreadList.iterator();
+        while (iter.hasNext()) {
+            UserListeningThread u = iter.next();
+            u.close();
         }
     }
 
@@ -73,31 +73,32 @@ public class NetworkListener extends Thread {
     public void removeClient(UserListeningThread userThread) {
         //set loggedInStatus to False
         UserConnectionInfo info = userThread.getUserConnectionInfo();
-        info.setLoggedIn(false); //might not be necessary
+        info.setLoggedIn(false);
 
         //remove from List
         if (userListeningThreadList.remove(userThread)) {
-
-            //Notify logged in users that someone left
-            String username = info.getUserAccountInfo().getDisplayName();
-            PublicServerMessage msg = new PublicServerMessage(username + " has left the server!");
-            try {
-                server.getMessageListener().getMessageQueue().put(msg);
-            } catch (InterruptedException e) {
-                System.err.println("Error while sending Msg: " + e.toString());
+            //Check if user is logged in
+            if (info.isLoggedIn()) {
+                //Notify logged in users that another logged in user left
+                String username = info.getUserAccountInfo().getDisplayName();
+                PublicServerMessage msg = new PublicServerMessage(username + " has left the server!");
+                try {
+                    server.getMessageListener().getMessageQueue().put(msg);
+                } catch (InterruptedException e) {
+                    System.err.println("NetworkListener: Error while sending Msg: " + e.toString());
+                }
             }
-
-            try {
-                info.getIn().close();
-                info.getOut().close();
-                info.getSocket().close();
-            } catch (IOException e) {
-                //We are closing sockets anyways
-            }
+            //close Sockets
+            userThread.close();
         }
 
     }
 
+    /**
+     * Removes a Client from the ThreadList by looking up the loginName, retrieving the Thread of the corresponding
+     * name and passing it to <code>removeClient(UserListeningThread userThrad)</code>.
+     * @param loginName the loginName of the User who should be removed
+     */
     public void removeClient(String loginName) {
         Iterator<UserListeningThread> iter = userListeningThreadList.iterator();
 

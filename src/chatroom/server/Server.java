@@ -30,12 +30,13 @@ public class Server {
             //Start listening Threads
             networkListener = new NetworkListener(this);
             messageListener = new MessageListener(this);
-            System.out.println("Server Online!");
+            System.out.println("*** Server Online! ***");
             getNetworkListener().start();
             getMessageListener().start();
         } catch (IOException ex) {
-            System.err.println("Error while starting the server!");
+            System.err.println("*** Error while starting the server! ***");
             ex.printStackTrace();
+            System.exit(1);
         }
 
         while(isRunning()){
@@ -47,9 +48,8 @@ public class Server {
     private void stop(){
         System.out.println("*** Shutting down Server... ***");
         try {
-            System.out.println("- Closing the Server Socket");
+            System.out.println("*** Closing the Server Socket ***");
             listener.close();
-            getMessageListener().interrupt();
         } catch (IOException e) {
             System.err.println("*** Error while closing the server! ***");
             e.printStackTrace();
@@ -57,13 +57,13 @@ public class Server {
             isRunning = false;
         }
     }
-    public boolean isRunning(){
-        return isRunning;
-    }
 
     public static void main (String args[]){
         Server server = new Server();
         server.start();
+    }
+    public boolean isRunning(){
+        return isRunning;
     }
 
     public ServerSocket getListener() {

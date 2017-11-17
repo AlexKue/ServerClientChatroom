@@ -13,16 +13,15 @@ import java.util.HashMap;
  * This handles mapping of of <code>byte</code>s to a corresponding 
  * <code>MessageSerializer</code> and sending a message to the correct 
  * serializer.
- * NOTE: this class only maps and sends the message of an MessagSerializer! It
+ * NOTE: this class only maps and sends the message of an MessageSerializer! It
  * DOES NOT serializer itself.
  */
 public class Serializer {
 
     private final HashMap<Byte, MessageSerializer> serializerHashMap;
-    private final MessageTypeDictionary dict;
 
     public Serializer() {
-        dict = new MessageTypeDictionary();
+        MessageTypeDictionary dict = new MessageTypeDictionary();
         serializerHashMap = new HashMap<>();
         serializerHashMap.put(dict.getByte(MessageType.PUBLICSERVERMSG), new PublicServerMessageSerializer());
         serializerHashMap.put(dict.getByte(MessageType.PUBLICTEXTMSG), new PublicTextMessageSerializer());
@@ -32,7 +31,7 @@ public class Serializer {
         serializerHashMap.put(dict.getByte(MessageType.LOGINRESPONSEMSG), new LoginResponseSerializer());
         serializerHashMap.put(dict.getByte(MessageType.TARGETSERVERMSG), new TargetedServerMessageSerializer());
     }
-    
+
     /**
      * Sends a message to its corresponding Serializer
      * @param out the OutputStream of the client receiving the Message
@@ -47,7 +46,7 @@ public class Serializer {
      * @param in the InputStream of the sender of the message
      * @param type the byte representing the type of message
      * @return the message being Sent
-     * @throws IOException 
+     * @throws IOException if issues appear with the in/output streams
      */
     public Message deserialize(InputStream in, byte type) throws IOException{
         return serializerHashMap.get(type).deserialize(in);

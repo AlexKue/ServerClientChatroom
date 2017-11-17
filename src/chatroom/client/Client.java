@@ -1,8 +1,6 @@
 package chatroom.client;
 
-import chatroom.model.message.LoginMessage;
 import chatroom.model.message.MessageTypeDictionary;
-import chatroom.serializer.Serializer;
 
 import java.io.*;
 import java.net.Socket;
@@ -19,7 +17,7 @@ public class Client {
     private boolean isLoggedIn;
 
 
-    public Client(){
+    private Client(){
         messageTypeDictionary = new MessageTypeDictionary();
         sc = new Scanner(System.in);
         isRunning = true;
@@ -32,7 +30,7 @@ public class Client {
 //        isRunning = false;
     }
 
-    public void start() {
+    private void start() {
         System.out.print("Please enter the address of the server to connect to: ");
         String address = sc.nextLine();
 
@@ -67,6 +65,7 @@ public class Client {
     public String getLoginName() {
         return loginName;
     }
+
     public void setLoginName(String loginName){
         this.loginName = loginName;
     }
