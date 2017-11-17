@@ -78,12 +78,11 @@ public class NetworkListener extends Thread {
     public void removeClient(UserListeningThread userThread) {
         //set loggedInStatus to False
         UserConnectionInfo info = userThread.getUserConnectionInfo();
-        info.setLoggedIn(false);
-
         //remove from List
         if (userListeningThreadList.remove(userThread)) {
             //Check if user is logged in
             if (info.isLoggedIn()) {
+                info.setLoggedIn(false);
                 //Notify logged in users that another logged in user left
                 String username = info.getUserAccountInfo().getDisplayName();
                 PublicServerMessage msg = new PublicServerMessage(username + " has left the server!");
