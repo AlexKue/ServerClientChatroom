@@ -1,6 +1,6 @@
 package chatroom.model.message;
 
-public class TargetedServerMessage extends Message {
+public class TargetedServerMessage extends Message implements Displayable {
     private String message;
 
     public TargetedServerMessage(String message){

@@ -1,6 +1,6 @@
 package chatroom.model.message;
 
-public class PublicTextMessage extends UserMessage{
+public class PublicTextMessage extends UserMessage implements Displayable{
     private String message;
 
     public PublicTextMessage(String message, String sender){
