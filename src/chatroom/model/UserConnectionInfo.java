@@ -1,5 +1,7 @@
 package chatroom.model;
 
+import chatroom.server.room.Room;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -13,6 +15,7 @@ public class UserConnectionInfo {
     private InputStream in;
     private OutputStream out;
     private boolean isLoggedIn;
+    private Room activeRoom;
 
     public UserConnectionInfo(Socket socket) {
         this.socket = socket;
@@ -25,7 +28,6 @@ public class UserConnectionInfo {
             ex.printStackTrace();
         }
     }
-
 
     public Socket getSocket() {
         return socket;
@@ -53,5 +55,13 @@ public class UserConnectionInfo {
 
     public void setUserAccountInfo(UserAccountInfo userAccountInfo) {
         this.userAccountInfo = userAccountInfo;
+    }
+
+    public Room getActiveRoom() {
+        return activeRoom;
+    }
+
+    public void setActiveRoom(Room activeRoom) {
+        this.activeRoom = activeRoom;
     }
 }
