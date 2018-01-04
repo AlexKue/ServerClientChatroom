@@ -8,9 +8,10 @@ import java.util.HashMap;
  */
 public class UserStorage {
     private ArrayList<UserAccountInfo> userInfo; //The list of all the Data of Users
-
+    private ArrayList<UserAccountInfo> banList; //list of users being banned
     public UserStorage(){
         userInfo = new ArrayList<>();
+        banList = new ArrayList<>();
     }
 
     /**
