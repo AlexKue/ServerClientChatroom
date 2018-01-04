@@ -7,6 +7,7 @@ import java.util.Scanner;
 import chatroom.model.message.MessageTypeDictionary;
 import chatroom.server.listener.MessageListener;
 import chatroom.server.listener.NetworkListener;
+import chatroom.server.room.RoomHandler;
 
 public class Server {
     private ServerSocket listener;
@@ -15,6 +16,7 @@ public class Server {
     private MessageTypeDictionary messageTypeDictionary;
     private Scanner sc;
     private boolean isRunning;
+    private RoomHandler roomHandler;
 
     private Server(){
         messageTypeDictionary = new MessageTypeDictionary();
@@ -30,9 +32,13 @@ public class Server {
             //Start listening Threads
             networkListener = new NetworkListener(this);
             messageListener = new MessageListener(this);
-            System.out.println("*** Server Online! ***");
             getNetworkListener().start();
             getMessageListener().start();
+
+            //Create roomHandler with default room
+            roomHandler = new RoomHandler();
+
+            System.out.println("*** Server Online! ***");
         } catch (IOException ex) {
             System.err.println("*** Error while starting the server! ***");
             ex.printStackTrace();
@@ -80,5 +86,9 @@ public class Server {
 
     public MessageTypeDictionary getMessageTypeDictionary() {
         return messageTypeDictionary;
+    }
+
+    public RoomHandler getRoomHandler(){
+        return roomHandler;
     }
 }
