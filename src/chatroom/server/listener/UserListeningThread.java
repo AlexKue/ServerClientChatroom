@@ -21,6 +21,8 @@ public class UserListeningThread extends Thread {
         this.server = server;
         this.userConnectionInfo = userConnectionInfo;
         serializer = new Serializer();
+        userConnectionInfo.setActiveRoom(server.getRoomHandler().getRoom("lobby"));
+        userConnectionInfo.getActiveRoom().addUser(userConnectionInfo);
     }
 
     @Override
@@ -50,6 +52,7 @@ public class UserListeningThread extends Thread {
 
                 //put message into queue
                 server.getMessageListener().getMessageQueue().put(m);
+
             } catch (IOException e) {
                 System.err.println("UserListeningThread: Lost Connection to client!");
                 isRunning = false; //Stop the Thread if connection is lost
