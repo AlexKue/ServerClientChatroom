@@ -34,26 +34,34 @@ public class ClientSendingThread extends Thread {
 
                 //read input of System.in
                 String stringMessage = sc.nextLine();
-                Message message;
-
-                //Check, if the line was a command
-                if (stringMessage.trim().equals("!quit")) {
-                    System.out.println("You are now logging out!\nShutting down Client!");
-                    client.setLoggedIn(false);
-                    client.setRunning(false);
-                    message = new LogoutMessage();
-                } else {
-                    //handle input as normal TextMessage
-                    message = new PublicTextMessage(stringMessage, client.getLoginName());
-                }
-                try {
-                    serializer.serialize(out, message);
-                } catch (IOException e) {
-                    System.err.println("Error while serializing!");                }
+                sendMessage(stringMessage);
             }
         }
         System.out.println("Shutting down sending handler!");
         client.stop();
+    }
+
+    /**
+     * Checks the String for commands and serializes the message
+     * @param m the Message
+     */
+    private void sendMessage(String m){
+        Message message;
+        //Check, if the line was a command
+        if (m.trim().equals("!quit")) {
+            System.out.println("You are now logging out!\nShutting down Client!");
+            client.setLoggedIn(false);
+            client.setRunning(false);
+            message = new LogoutMessage();
+        } else {
+            //handle input as normal TextMessage
+            message = new PublicTextMessage(m, client.getLoginName());
+        }
+        try {
+            serializer.serialize(out, message);
+        } catch (IOException e) {
+            System.err.println("Error while serializing!");
+        }
     }
 
     /**

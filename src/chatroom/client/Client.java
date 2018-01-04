@@ -17,14 +17,14 @@ public class Client {
     private boolean isLoggedIn;
 
 
-    private Client(){
+    private Client() {
         messageTypeDictionary = new MessageTypeDictionary();
         sc = new Scanner(System.in);
         isRunning = true;
         setLoggedIn(false);
     }
 
-    public void stop(){
+    public void stop() {
         System.exit(0);
 //        isLoggedIn = false;
 //        isRunning = false;
@@ -33,7 +33,10 @@ public class Client {
     private void start() {
         System.out.print("Please enter the address of the server to connect to: ");
         String address = sc.nextLine();
+        connect(address);
+    }
 
+    private void connect(String address) {
         try {
             Socket server = new Socket(address, 54322);
             System.out.println("Connected to server!");
@@ -43,7 +46,7 @@ public class Client {
 
             clientListener = new ClientListeningThread(dataIn, this);
             clientSender = new ClientSendingThread(dataOut, this);
-            
+
             clientListener.start();
             clientSender.start();
         } catch (IOException ex) {
@@ -66,7 +69,7 @@ public class Client {
         return loginName;
     }
 
-    public void setLoginName(String loginName){
+    public void setLoginName(String loginName) {
         this.loginName = loginName;
     }
 
