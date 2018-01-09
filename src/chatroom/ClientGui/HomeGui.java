@@ -1,4 +1,4 @@
-package chatroom.client;
+package chatroom.ClientGui;
 
 import javafx.scene.layout.BorderPane;
 

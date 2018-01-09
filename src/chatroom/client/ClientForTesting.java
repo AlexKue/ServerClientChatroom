@@ -1,4 +1,7 @@
 package chatroom.client;
+
+import chatroom.ClientGui.Bridge;
+
 //Diese Klasse Kann dann entfernt Werden und alle methoden vom richtigen Client in die Bridge Kopieren :)
 public class ClientForTesting {
     Bridge bridge;

@@ -1,8 +1,7 @@
-package chatroom.client;
+package chatroom.ClientGui;
 
+import chatroom.client.Client;
 import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class main extends Application{

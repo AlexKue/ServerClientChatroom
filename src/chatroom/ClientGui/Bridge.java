@@ -1,10 +1,12 @@
-package chatroom.client;
+package chatroom.ClientGui;
+
+import chatroom.client.ClientForTesting;
 
 public class Bridge {
-    Client model;
+    ClientForTesting model;
     GuiMain gui;
 
-    public Bridge(Client client, GuiMain guiMain){
+    public Bridge(ClientForTesting client, GuiMain guiMain){
         this.model = client;
         this.gui = guiMain;
     }
