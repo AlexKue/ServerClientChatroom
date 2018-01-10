@@ -50,4 +50,19 @@ public class Bridge {
         model.LeaveRooms(selected);
     }
 
+    public ArrayList<String> getAllUsers(){
+        return model.getAllUsers();
+    }
+
+    public ArrayList<String> getUsersFromSelection(ArrayList<String> rooms){
+        return model.getAllUsers();
+    }
+
+    public void ConnectToAdress(String adress) {
+        model.ConnectToAdress(adress);
+    }
+
+    public void onConnect(boolean b) {
+        gui.onConnect(b);
+    }
 }

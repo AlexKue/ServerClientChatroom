@@ -46,9 +46,11 @@ public class HomeGui {
 
     private ListView<String> joinedRooms;
     private ListView<String> availableRooms;
+    private ListView<String> users;
 
     private Button joinRooms;
     private Button leaveRooms;
+    private Label userRequest;
 
     //This is the start Method of this class
     private  void LoadHome(){
@@ -87,19 +89,39 @@ public class HomeGui {
 
         joinRooms = new Button("join");
         leaveRooms = new Button("leave");
-
         //Leaves or joins Selected Rooms
         joinRooms.setOnAction(e -> JoinRooms());
         leaveRooms.setOnAction(e -> LeaveRooms());
 
-        joinRooms.setAlignment(Pos.CENTER);
-        leaveRooms.setAlignment(Pos.CENTER);
+        HBox JoinLeaveRooms = new HBox();
+        JoinLeaveRooms.setAlignment(Pos.CENTER);
+        JoinLeaveRooms.getChildren().addAll(joinRooms, leaveRooms);
+
+        Button showAllUsers, showUsersFromSelection;
+        showAllUsers = new Button("Show all users");
+        showUsersFromSelection = new Button("Show users From Selected Rooms");
+        showAllUsers.setOnAction(e->ShowAllUsers());
+        showUsersFromSelection.setOnAction(e->ShowUsersFromSelection());
+
+        HBox UserButtons = new HBox();
+        UserButtons.setAlignment(Pos.CENTER);
+        UserButtons.getChildren().addAll(showAllUsers, showUsersFromSelection);
+
+
+
+
 
         joinedRoomsBox.getChildren().addAll(new Label("Joined Rooms"),joinedRooms);
         availableRoomsBox.getChildren().addAll(new Label("Available Rooms"), availableRooms);
-        RoomsBox.getChildren().addAll(joinedRoomsBox, availableRoomsBox);
-        outerRight.getChildren().addAll(RoomsBox, joinRooms, leaveRooms);
 
+        users = new ListView<>();
+        userRequest = new Label();
+        userRequest.getStyleClass().add("UserSelection");
+
+
+
+        RoomsBox.getChildren().addAll(joinedRoomsBox, availableRoomsBox);
+        outerRight.getChildren().addAll(RoomsBox, JoinLeaveRooms, new Label("Users"),UserButtons ,userRequest, users);
         outerRight.setAlignment(Pos.TOP_CENTER);
 
         borderPane.setRight(outerRight);
@@ -124,7 +146,31 @@ public class HomeGui {
         }
     }
 
+    private void ShowAllUsers(){
+        users.getItems().clear();
+        ArrayList<String> allusers = bridge.getAllUsers();
+        for (String k: allusers){
+            users.getItems().add(k);
+            userRequest.setText("AllUsers");
+        }
+    }
 
+    private void ShowUsersFromSelection(){
+        ObservableList<String> Selected =  availableRooms.getSelectionModel().getSelectedItems();
+        ArrayList<String> SelectedRooms = new ArrayList<>();
+        String LabelTextRooms = "";
+        SelectedRooms.addAll(Selected);
+        users.getItems().clear();
+        ArrayList<String> allusers = bridge.getUsersFromSelection(SelectedRooms);
+        for (String k: SelectedRooms){
+            LabelTextRooms += " " + k;
+        }
+
+        for (String k: allusers){
+            users.getItems().add(k);
+            userRequest.setText("Users from rooms: " + LabelTextRooms);
+        }
+    }
 
     private void initChatBox(Bridge bridge){
         ChatBoxContainer.setPrefSize(400, 600);
@@ -164,19 +210,14 @@ public class HomeGui {
 
     private void JoinRooms(){
         ArrayList<String> selected = new ArrayList<>();
-        ObservableList<String> Selection = availableRooms.getSelectionModel().getSelectedItems();
+        ObservableList<String> Selection = joinedRooms.getSelectionModel().getSelectedItems();
         selected.addAll(Selection);
-
-
         bridge.JoinRooms(selected);
     }
     private void LeaveRooms(){
         ArrayList<String> selected = new ArrayList<>();
         ObservableList<String> Selection = joinedRooms.getSelectionModel().getSelectedItems();
         selected.addAll(Selection);
-
         bridge.LeaveRooms(selected);
     }
-
-
 }

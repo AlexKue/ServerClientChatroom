@@ -29,8 +29,8 @@ public class GuiMain{
        window.setTitle("The Chat Client");
 
 
-       Pane loginBox = Login.LoginBox(bridge);
-       Scene scene = new Scene(loginBox);
+       Pane ipBox = ServerBox.ServerInput(bridge);
+       Scene scene = new Scene(ipBox);
 
        window.setScene(scene);
        window.show();
@@ -54,4 +54,12 @@ public class GuiMain{
     }
 
 
+    public void onConnect(boolean b) {
+       if(b) {
+           Pane loginBox = Login.LoginBox(bridge);
+           Scene scene = new Scene(loginBox);
+           window.setScene(scene);
+       }
+
+    }
 }

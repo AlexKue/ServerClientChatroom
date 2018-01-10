@@ -12,6 +12,11 @@ public class ClientForTesting {
         add(new String[]{"lobby", "1"});
         add(new String[]{"slim shady", "0"});
     }};
+    ArrayList<String> users = new ArrayList<String>(){{
+        add("slim");
+        add("shady");
+        add("bla");
+    }};
 
     public void setBridge(Bridge bridge){
         this.bridge = bridge;
@@ -63,9 +68,16 @@ public class ClientForTesting {
                 System.out.println(k[0]);
                 System.out.println(k[1]);
             }
-
         }
+    }
 
+    public ArrayList<String> getAllUsers(){
+        return users;
+    }
+
+    public void ConnectToAdress(String adress) {
+        System.out.println(adress);
+        bridge.onConnect(true);
     }
 
 }

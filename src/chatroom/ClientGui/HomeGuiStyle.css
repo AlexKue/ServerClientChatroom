@@ -12,3 +12,7 @@
 .background{
     -fx-background-color:#333333;
 }
+.UserSelection{
+    -fx-text-fill: #8F0900;
+    -fx-background-color: white;
+}
