@@ -38,16 +38,16 @@ public class HomeGui {
     private TextArea message = new TextArea();
 
     //The right side Elements
-    VBox outerRight;
-    HBox RoomsBox;
-    VBox joinedRoomsBox;
-    VBox availableRoomsBox;
+    private VBox outerRight;
+    private HBox RoomsBox;
+    private VBox joinedRoomsBox;
+    private VBox availableRoomsBox;
 
-    ListView<String> joinedRooms;
-    ListView<String> availableRooms;
+    private ListView<String> joinedRooms;
+    private ListView<String> availableRooms;
 
-    Button joinRooms;
-    Button leaveRooms;
+    private Button joinRooms;
+    private Button leaveRooms;
 
     //This is the start Method of this class
     private  void LoadHome(){
@@ -58,10 +58,12 @@ public class HomeGui {
         initRightMenu(bridge);
 
         ChatBoxContainer.setContent(chatBox);
-        container.getChildren().addAll(chatBox, message, sendMessage);
+        ChatBoxContainer.setFitToWidth(true);
+        ChatBoxContainer.setPrefViewportHeight(500);
+        ChatBoxContainer.getStyleClass().add("background");
+        container.getChildren().addAll(ChatBoxContainer, message, sendMessage);
 
-
-        borderPane.setPrefSize(700, 900);
+        //borderPane.setPrefSize(700, 900);
         borderPane.setCenter(container);
 
         Scene scene = new Scene(borderPane);
@@ -119,37 +121,36 @@ public class HomeGui {
     }
 
 
-    private void initChatBox(Bridge bridge){
 
-        chatBox.setPrefSize(400, 600);
+    private void initChatBox(Bridge bridge){
+        ChatBoxContainer.setPrefSize(400, 600);
         chatBox.getStyleClass().add("chatbox");
 
         sendMessage.setOnAction(evt->{
             bridge.SendMessage(message.getText());
+            message.clear();
         });
         ChatBoxContainer.setContent(chatBox);
     }
+
+
     public void AddMessage(String username, String message){
         messages.add(new String[]{username, message});
         Label label;
         if(username.equals(bridge.getUsername())){
 
             label = new Label(messages.get(index)[0]+ ": \n" + messages.get(index)[1]);
-            label.setMinWidth(400);
             label.setStyle("-fx-background-color:green;");
             label.setAlignment(Pos.CENTER_LEFT);
-            System.out.println("1");
 
         }else{
 
             label = new Label(messages.get(index)[0]+ ": \n" + messages.get(index)[1]);
-            label.setMinWidth(400);
             label.setAlignment(Pos.CENTER_RIGHT);
-            System.out.println("2");
 
         }
 
-
+        label.setWrapText(true);
         chatBox.getChildren().add(label);
         index++;
     }
