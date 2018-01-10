@@ -2,6 +2,8 @@ package chatroom.ClientGui;
 
 import chatroom.client.ClientForTesting;
 
+import java.util.ArrayList;
+
 public class Bridge {
     ClientForTesting model;
     GuiMain gui;
@@ -22,5 +24,30 @@ public class Bridge {
         gui.onLoginAnswer(answer);
     }
 
+    public void SendMessage(String message){
+        model.sendMessage(message);
+    }
+
+    public void AddMessageToView(String username, String message){
+        gui.AddMessage(username, message);
+    }
+    public String getUsername(){
+      return model.getUsername();
+    }
+    public ArrayList<String[]> getRooms(){
+        return model.getRooms();
+    }
+
+    public void onRoomUpdate(ArrayList<String[]> rooms){
+        gui.onRoomUpdate(rooms);
+    }
+
+    public void JoinRooms( ArrayList<String> selected){
+
+    }
+
+    public void LeaveRooms( ArrayList<String> selected){
+
+    }
 
 }

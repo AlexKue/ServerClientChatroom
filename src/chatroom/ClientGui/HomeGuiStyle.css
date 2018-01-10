@@ -1,0 +1,13 @@
+.chatbox{
+
+    -fx-background-color:#333333;
+    -fx-min-height:400px;
+    -fx-min-width:200px;
+
+}
+
+.label{
+
+    -fx-background-color:purple;
+    -fx-text-fill:white;
+}
