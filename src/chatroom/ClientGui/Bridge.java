@@ -43,11 +43,11 @@ public class Bridge {
     }
 
     public void JoinRooms( ArrayList<String> selected){
-
+        model.JoinRooms(selected);
     }
 
     public void LeaveRooms( ArrayList<String> selected){
-
+        model.LeaveRooms(selected);
     }
 
 }

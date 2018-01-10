@@ -18,6 +18,7 @@ public class HomeGui {
 
     Bridge bridge;
     Stage window;
+    ArrayList<String []> rooms;
 
     public HomeGui(Bridge bridge, Stage window){
         this.bridge = bridge;
@@ -72,6 +73,11 @@ public class HomeGui {
 
     private void initRightMenu(Bridge bridge){
         ArrayList<String[]> rooms =  bridge.getRooms();
+        this.rooms = rooms;
+        this.joinedRooms = new ListView<>();
+        this.availableRooms = new ListView<>();
+        joinedRooms.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        availableRooms.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         UpdateRooms(rooms);
 
         outerRight = new VBox();
@@ -101,23 +107,21 @@ public class HomeGui {
 
     //Updates the room View
     public void UpdateRooms(ArrayList<String[]> rooms){
-        joinedRooms = new ListView<>();
-        availableRooms = new ListView<>();
-
-
+        this.rooms = rooms;
+        availableRooms.getItems().clear();
+        joinedRooms.getItems().clear();
 
         for(String[] k : rooms){
+
             if(k[1].equals("1")){
-                joinedRooms.getItems().add(k[1]);
+
+                joinedRooms.getItems().add(k[0]);
             }
             else
             {
                 availableRooms.getItems().add(k[0]);
             }
         }
-
-        joinedRooms.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        availableRooms.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
 

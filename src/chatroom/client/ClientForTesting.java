@@ -8,6 +8,11 @@ import java.util.ArrayList;
 public class ClientForTesting {
     Bridge bridge;
     String username;
+    ArrayList<String[]> rooms = new ArrayList<String[]>(){{
+        add(new String[]{"lobby", "1"});
+        add(new String[]{"slim shady", "0"});
+    }};
+
     public void setBridge(Bridge bridge){
         this.bridge = bridge;
     }
@@ -26,10 +31,41 @@ public class ClientForTesting {
         return this.username;
     }
     public ArrayList<String[]> getRooms(){
-        return new ArrayList<String[]>(){{
-            add(new String[]{"lobby", "1"});
-            add(new String[]{"slim shady", "0"});
-        }};
+        return rooms;
+    }
+    public void JoinRooms( ArrayList<String> selected){
+        for(int i = 0; i < rooms.size(); i++){
+            for(String l: selected){
+                if(rooms.get(i)[0].equals(l)){
+                    String k [] = new String[]{rooms.get(i)[0], "1"};
+                    rooms.set(i, k);
+                    bridge.onRoomUpdate(rooms);
+                }
+            }
+            for (String []k : rooms){
+                System.out.println(k[0]);
+                System.out.println(k[1]);
+            }
+
+        }
+    }
+
+    public void LeaveRooms( ArrayList<String> selected){
+        for(int i = 0; i < rooms.size(); i++){
+            for(String l: selected){
+                if(rooms.get(i)[0].equals(l)){
+                    String k [] = new String[]{rooms.get(i)[0], "0"};
+                    rooms.set(i, k);
+                    bridge.onRoomUpdate(rooms);
+                }
+            }
+            for (String []k : rooms){
+                System.out.println(k[0]);
+                System.out.println(k[1]);
+            }
+
+        }
+
     }
 
 }
