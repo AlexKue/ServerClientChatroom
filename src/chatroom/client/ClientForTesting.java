@@ -1,6 +1,6 @@
 package chatroom.client;
 
-import chatroom.ClientGui.Bridge;
+import chatroom.client.gui.Bridge;
 
 import java.util.ArrayList;
 

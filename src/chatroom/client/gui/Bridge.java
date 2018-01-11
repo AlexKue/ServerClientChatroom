@@ -1,4 +1,4 @@
-package chatroom.ClientGui;
+package chatroom.client.gui;
 
 import chatroom.client.ClientForTesting;
 

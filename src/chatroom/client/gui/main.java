@@ -1,6 +1,5 @@
-package chatroom.ClientGui;
+package chatroom.client.gui;
 
-import chatroom.client.Client;
 import chatroom.client.ClientForTesting;
 import javafx.application.Application;
 import javafx.stage.Stage;

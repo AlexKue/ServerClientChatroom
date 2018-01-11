@@ -1,4 +1,4 @@
-package chatroom.ClientGui;
+package chatroom.client.gui;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
