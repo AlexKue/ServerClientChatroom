@@ -24,45 +24,72 @@ public class Bridge {
         gui.onLoginAnswer(answer);
     }
 
+    //sends the message
     public void SendMessage(String message){
         model.sendMessage(message);
     }
 
+    //Adds new Message to the View... Attention!!! The Own message will not be displayed automaticly please add it to the view
     public void AddMessageToView(String username, String message){
         gui.AddMessage(username, message);
     }
+
+    //gets The username from the Model
     public String getUsername(){
       return model.getUsername();
     }
+
+    //gets the rooms from the Model
     public ArrayList<String[]> getRooms(){
         return model.getRooms();
     }
 
+    //Updates the room view by adding or removing rooms
     public void onRoomUpdate(ArrayList<String[]> rooms){
         gui.onRoomUpdate(rooms);
     }
 
-    public void JoinRooms( ArrayList<String> selected){
-        model.JoinRooms(selected);
-    }
-
-    public void LeaveRooms( ArrayList<String> selected){
-        model.LeaveRooms(selected);
-    }
-
+    //requests all users
     public ArrayList<String> getAllUsers(){
         return model.getAllUsers();
     }
 
-    public ArrayList<String> getUsersFromSelection(ArrayList<String> rooms){
+    //requests users from current room
+    public ArrayList<String> getUsersFromSelection(String room){
         return model.getAllUsers();
     }
 
+    //connects to the input adress
     public void ConnectToAdress(String adress) {
         model.ConnectToAdress(adress);
     }
 
+    //has to be triggered after succesfull connection
     public void onConnect(boolean b) {
         gui.onConnect(b);
+    }
+
+    //requests room change
+    public void requestRoomChange(String room) {
+        gui.onRoomChange(room);
+    }
+
+    //updates the all users view
+    public void allUsersUpdate(ArrayList<String> newAllUsers){
+        gui.homeGui.allUsersUpdate(newAllUsers);
+    }
+
+    //updates current room users view
+    public void userRoomUpdate(ArrayList<String> newCurrentUsers){
+       gui.homeGui.userRoomUpdate(newCurrentUsers);
+    }
+    //this method is for alertboxes. Like kicked message, warning or banned
+    public void issueBox(String message){
+        gui.homeGui.showIssueAlert(message);
+    }
+
+    //this method is for operations that have to be run befor closing the window
+    public void runClosinOperations() {
+
     }
 }

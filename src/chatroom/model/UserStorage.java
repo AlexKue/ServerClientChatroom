@@ -2,6 +2,7 @@ package chatroom.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 
 /**
  * This contains UserData like passwords, loginNames and DisplayNames of all users registered on the server.
@@ -71,13 +72,13 @@ public class UserStorage {
      * @param loginName the loginName of an User
      * @return the name displayed for other clients
      */
-    public String getDisplayName(String loginName){
+    public Optional<String> getDisplayName(String loginName){
         for (UserAccountInfo u : userInfo){
             if(u.getLoginName().equals(loginName)){
-                return u.getDisplayName();
+                return Optional.of(u.getDisplayName());
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -85,7 +86,7 @@ public class UserStorage {
      * @param loginName the loginName of the User
      * @param displayName the new displayName for the corresponding loginName
      */
-    public void getDisplayName(String loginName, String displayName){
+    public void setDisplayName(String loginName, String displayName){
         for (UserAccountInfo u : userInfo){
             if(u.getLoginName().equals(loginName)){
                 u.setDisplayName(displayName);
