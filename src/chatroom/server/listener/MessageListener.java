@@ -61,6 +61,12 @@ public class MessageListener extends Thread {
                     case LOGOUTMSG:
                         logOut(m);
                         break;
+                    case ROOMCHANGEREQMSG:
+                        changeRoom(m);
+                        break;
+                    case ROOMLISTMSG:
+                        updateUserLists(m);
+                        break;
                 }
                 System.out.println("MessageListener: Sent message(s): " + messageTypeString);
 
@@ -73,6 +79,14 @@ public class MessageListener extends Thread {
                 System.err.println("*** Error while serializing! ***");
             }
         }
+    }
+
+    private void updateUserLists(Message m) {
+        //TODO
+    }
+
+    private void changeRoom(Message m) {
+        //TODO
     }
 
     /**
