@@ -78,6 +78,7 @@ public class NetworkListener extends Thread {
     public void removeClient(UserListeningThread userThread) {
         //set loggedInStatus to False
         UserConnectionInfo info = userThread.getUserConnectionInfo();
+        info.getActiveRoom().removeUser(info);
         //remove from List
         if (userListeningThreadList.remove(userThread)) {
             //Check if user is logged in

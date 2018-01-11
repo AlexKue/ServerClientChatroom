@@ -45,7 +45,7 @@ public class ClientSendingThread extends Thread {
      * Checks the String for commands and serializes the message
      * @param m the Message
      */
-    private void sendMessage(String m){
+    public void sendMessage(String m){
         Message message;
         //Check, if the line was a command
         if (m.trim().equals("!quit")) {
@@ -73,6 +73,13 @@ public class ClientSendingThread extends Thread {
         client.setLoginName(loginName);
         System.out.print("Enter your password: ");
         String password = sc.nextLine();
+        try {
+            serializer.serialize(out, new LoginMessage(loginName, password));
+        } catch (IOException e) {
+            System.err.println("Error while serializing!");
+        }
+    }
+    public void login(String loginName, String password){
         try {
             serializer.serialize(out, new LoginMessage(loginName, password));
         } catch (IOException e) {

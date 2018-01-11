@@ -1,9 +1,11 @@
 package chatroom.client;
 
 import chatroom.model.message.MessageTypeDictionary;
+import chatroom.model.message.RoomMessage;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.List;
 import java.util.Scanner;
 
 public class Client {
@@ -15,6 +17,9 @@ public class Client {
     private ClientSendingThread clientSender;
     private boolean isRunning;
     private boolean isLoggedIn;
+    private String activeRoom;
+    private List<String> userList;
+    private List<RoomMessage> roomMessageList;
 
 
     private Client() {
@@ -36,7 +41,7 @@ public class Client {
         connect(address);
     }
 
-    private void connect(String address) {
+    public void connect(String address) {
         try {
             Socket server = new Socket(address, 54322);
             System.out.println("Connected to server!");
@@ -95,5 +100,29 @@ public class Client {
 
     public synchronized void setLoggedIn(boolean loggedIn) {
         isLoggedIn = loggedIn;
+    }
+
+    public String getActiveRoom() {
+        return activeRoom;
+    }
+
+    public void setActiveRoom(String activeRoom) {
+        this.activeRoom = activeRoom;
+    }
+
+    public List<String> getUserList() {
+        return userList;
+    }
+
+    public void setUserList(List<String> userList) {
+        this.userList = userList;
+    }
+
+    public List<RoomMessage> getRoomMessageList() {
+        return roomMessageList;
+    }
+
+    public void setRoomMessageList(List<RoomMessage> roomMessageList) {
+        this.roomMessageList = roomMessageList;
     }
 }
