@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 
-public class GuiMain{
+public class ClientGuiMain {
 
    Bridge bridge;
    Stage window;
@@ -45,7 +45,7 @@ public class GuiMain{
         homeGui.addMessage(username, message);
     }
 
-    public void onRoomUpdate(ArrayList<String[]> rooms){
+    public void onRoomUpdate(ArrayList<String> rooms){
        homeGui.onRoomUpdate(rooms);
     }
 

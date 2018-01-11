@@ -19,7 +19,7 @@ public class HomeGui {
     Bridge bridge;
     Stage window;
     String currentRoom = "";
-    ArrayList<String[]> rooms;
+    ArrayList<String> rooms;
     //---------The View Components
     //The Base Element
     BorderPane borderPane = new BorderPane();
@@ -77,7 +77,7 @@ public class HomeGui {
     }
 
     private void initRightMenu(Bridge bridge) {
-        ArrayList<String[]> rooms = bridge.getRooms();
+        ArrayList<String> rooms = bridge.getRooms();
         this.rooms = rooms;
         Separator roomUserSeparator = new Separator();
         roomUserSeparator.setPadding(new Insets(10, 0, 10, 0));
@@ -112,11 +112,11 @@ public class HomeGui {
     }
 
     //Updates the room View
-    public void updateRooms(ArrayList<String[]> rooms) {
+    public void updateRooms(ArrayList<String> rooms) {
         this.rooms = rooms;
 
-        for (String[] k : rooms) {
-            roomSelection.getItems().add(k[0]);
+        for (String k : rooms) {
+            roomSelection.getItems().add(k);
         }
 
 /*
@@ -168,7 +168,7 @@ public class HomeGui {
         index++;
     }
 
-    public void onRoomUpdate(ArrayList<String[]> rooms) {
+    public void onRoomUpdate(ArrayList<String> rooms) {
         updateRooms(rooms);
     }
 

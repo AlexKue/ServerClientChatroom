@@ -8,9 +8,9 @@ import java.util.ArrayList;
 public class ClientForTesting {
     Bridge bridge;
     String username;
-    ArrayList<String[]> rooms = new ArrayList<String[]>(){{
-        add(new String[]{"lobby", "1"});
-        add(new String[]{"slim shady", "0"});
+    ArrayList<String> rooms = new ArrayList<String>(){{
+        add(new String("lobby"));
+        add(new String("slim shady"));
     }};
     ArrayList<String> users = new ArrayList<String>(){{
         add("slim");
@@ -35,10 +35,10 @@ public class ClientForTesting {
     public String getUsername(){
         return this.username;
     }
-    public ArrayList<String[]> getRooms(){
+    public ArrayList<String> getRooms(){
         return rooms;
     }
-    public void JoinRooms( ArrayList<String> selected){
+/*    public void JoinRooms( ArrayList<String> selected){
         for(int i = 0; i < rooms.size(); i++){
             for(String l: selected){
                 if(rooms.get(i)[0].equals(l)){
@@ -69,7 +69,7 @@ public class ClientForTesting {
                 System.out.println(k[1]);
             }
         }
-    }
+    }*/
 
     public ArrayList<String> getAllUsers(){
         return users;
@@ -78,6 +78,9 @@ public class ClientForTesting {
     public void ConnectToAdress(String adress) {
         System.out.println(adress);
         bridge.onConnect(true);
+    }
+    public void requestRoomChange(String room){
+        bridge.onRoomChangeRequestAccepted(room);
     }
 
 }

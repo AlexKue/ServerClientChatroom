@@ -13,11 +13,11 @@ public class main extends Application{
     @Override
     public void start(Stage primeStage) throws Exception {
         ClientForTesting client = new ClientForTesting();
-        GuiMain guiMain = new GuiMain();
-        Bridge bridge = new Bridge(client, guiMain);
+        ClientGuiMain clientGuiMain = new ClientGuiMain();
+        Bridge bridge = new Bridge(client, clientGuiMain);
 
         client.setBridge(bridge);
 
-        guiMain.runGui(primeStage, bridge);
+        clientGuiMain.runGui(primeStage, bridge);
     }
 }
