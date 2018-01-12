@@ -1,5 +1,6 @@
 package chatroom.server.gui;
 
+import chatroom.server.Server;
 import chatroom.server.ServerForTesting;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -8,10 +9,10 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class Bridge {
-    ServerForTesting model;
+    Server model;
     ServerGuiMain gui;
 
-    public Bridge(ServerForTesting server, ServerGuiMain serverGuiMain){
+    public Bridge(Server server, ServerGuiMain serverGuiMain){
         this.model = server;
         this.gui = serverGuiMain;
     }

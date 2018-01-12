@@ -1,5 +1,6 @@
 package chatroom.server.gui;
 
+import chatroom.server.Server;
 import chatroom.server.ServerForTesting;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -13,7 +14,7 @@ public class Main extends Application{
     @Override
     public void start(Stage primaryStage) {
         ServerGuiMain serverGuiMain = new ServerGuiMain();
-        ServerForTesting server = new ServerForTesting();
+        Server server = new Server();
         Bridge bridge = new Bridge(server, serverGuiMain);
 
         server.setBridge(bridge);

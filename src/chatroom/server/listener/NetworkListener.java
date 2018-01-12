@@ -33,6 +33,7 @@ public class NetworkListener extends Thread {
                 //Accept new Client and create new ConnectionInfo
                 UserConnectionInfo userConnectionInfo = new UserConnectionInfo(server.getListener().accept());
                 Server.logger.log(Level.INFO, "New Client Connected: " + userConnectionInfo.getSocket().getInetAddress());
+               //TODO  server.getBridge().addEventToLog();
 
                 //Create new Thread for the MessageListener for each new client
                 UserListeningThread u = new UserListeningThread(userConnectionInfo, server);

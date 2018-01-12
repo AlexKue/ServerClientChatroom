@@ -70,6 +70,8 @@ public class MessageListener extends Thread {
                     case ROOMCHANGEREQMSG:
                         changeRoom(m);
                         break;
+                    case WARNINGMSG:
+                        warnUser(m);
                 }
                 //Issues may occur on clients that message are sent too fast.
                 //TODO: find more elegant fix, if there is any
@@ -79,6 +81,14 @@ public class MessageListener extends Thread {
             } catch (IOException e) {
                 Server.logger.log(Level.SEVERE,"Error while serializing!");
             }
+        }
+    }
+
+    private void warnUser(Message m) throws IOException {
+        serializer.serialize(m.getUserConnectionInfo().getOut(),m);
+        switch (((WarningMessage)m).getSeverity()){
+            case 2: userStorage.banUser(m.getUserConnectionInfo().getUserAccountInfo());
+            case 1: server.getNetworkListener().removeClient(m.getUserConnectionInfo().getUserAccountInfo().getLoginName());
         }
     }
 
@@ -106,7 +116,7 @@ public class MessageListener extends Thread {
 
         newRoom.addUser(m.getUserConnectionInfo());
         m.getUserConnectionInfo().setActiveRoom(newRoom);
-        Server.logger.log(Level.INFO, message.getLoginName() + "switched from Room \"" + activeRoom + "\" to \"" + newRoom + "\"");
+        Server.logger.log(Level.INFO, message.getLoginName() + " switched from Room \"" + activeRoom.getName() + "\" to \"" + newRoom.getName() + "\"");
 
         //Updating RoomUserLists for the 2 rooms
         List<String> oldRoomUserList = activeRoom.getUserNamelist();
