@@ -27,6 +27,7 @@ public class ClientGuiMain {
 
 
        Pane ipBox = ServerBox.ServerInput(bridge, "");
+       ipBox.getStylesheets().add(getClass().getResource("HomeGuiStyle.css").toExternalForm());
        Scene scene = new Scene(ipBox);
 
        window.setScene(scene);
@@ -68,6 +69,7 @@ public class ClientGuiMain {
     public void onConnectionAttemtResponse(boolean b) {
        if(b) {
            Pane loginBox = Login.LoginBox(bridge,"");
+           loginBox.getStylesheets().add(getClass().getResource("HomeGuiStyle.css").toExternalForm());
            Scene scene = new Scene(loginBox);
            window.setScene(scene);
        }

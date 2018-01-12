@@ -9,6 +9,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
+import static com.sun.javafx.scene.control.skin.Utils.getResource;
+
 public class ServerBox {
 
     public static Pane ServerInput(Bridge bridge, String errorMessage){
@@ -40,6 +42,11 @@ public class ServerBox {
 
             stackPane.getChildren().add(gridPane);
             StackPane.setAlignment(gridPane, Pos.CENTER_LEFT);
+
+
+            stackPane.getStyleClass().add("mainBackground");
+            ConnectButton.getStyleClass().add("Buttons");
+            iPInput.getStyleClass().add("textArea");
 
             return stackPane;
     }

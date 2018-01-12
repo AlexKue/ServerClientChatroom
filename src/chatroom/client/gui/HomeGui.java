@@ -8,6 +8,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -52,8 +54,10 @@ public class HomeGui {
         //Setups the VBox witch is the chat box
         borderPane.getStylesheets().add(getClass().getResource("HomeGuiStyle.css").toExternalForm());
 
+
         initChatBox(bridge);
         initRightMenu(bridge);
+
 
         message.setOnKeyPressed(key -> {
             if (key.getCode() == KeyCode.ENTER && !key.isShiftDown()) {
@@ -61,16 +65,34 @@ public class HomeGui {
                 message.clear();
                 key.consume();
             }
+            else
+            {
+             if(key.getCode() == KeyCode.ENTER && key.isShiftDown()) {
+                 message.appendText("\n");
+
+             }
+            }
         });
 
+        HBox SendMessageButtonAndTextArea = new HBox();
+        SendMessageButtonAndTextArea.getChildren().addAll(message, sendMessage);
         chatBoxContainer.setContent(chatBox);
         chatBoxContainer.setFitToWidth(true);
         chatBoxContainer.setPrefViewportHeight(500);
-        chatBoxContainer.getStyleClass().add("background");
-        container.getChildren().addAll(chatBoxContainer, message, sendMessage);
+
+        container.getChildren().addAll(chatBoxContainer, SendMessageButtonAndTextArea);
 
         //borderPane.setPrefSize(700, 900);
         borderPane.setCenter(container);
+
+        chatBoxContainer.getStyleClass().add("background");
+        borderPane.getStyleClass().add("mainBackground");
+        borderPane.setPadding(new Insets(80, 80, 80, 80));
+        message.getStyleClass().add("textArea");
+        roomSelection.getStyleClass().add("roomSelection");
+        userLists.getStyleClass().add("tabPane");
+        sendMessage.getStyleClass().add("Buttons");
+
 
         Scene scene = new Scene(borderPane);
         window.setScene(scene);
@@ -153,12 +175,13 @@ public class HomeGui {
         if (username.equals(bridge.getUsername())) {
 
             label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
-            label.setStyle("-fx-background-color:green;");
+            label.setStyle("-fx-background-color:#CC6666; -fx-text-fill: #C5C8C6");
             label.setAlignment(Pos.CENTER_LEFT);
 
         } else {
 
             label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
+            label.setStyle("-fx-background-color:#8ABEB7; -fx-text-fill: #C5C8C6");
             label.setAlignment(Pos.CENTER_RIGHT);
 
         }

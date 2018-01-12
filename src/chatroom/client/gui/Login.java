@@ -44,6 +44,12 @@ public class Login {
         stackPane.getChildren().add(gridPane);
         StackPane.setAlignment(gridPane, Pos.CENTER_LEFT);
 
+        stackPane.getStyleClass().add("mainBackground");
+        nameInput.getStyleClass().add("textArea");
+        passwordInput.getStyleClass().add("textArea");
+        gridPane.getStyleClass().add("mainBackground");
+        loginButton.getStyleClass().add("Buttons");
+
         return stackPane;
     }
 

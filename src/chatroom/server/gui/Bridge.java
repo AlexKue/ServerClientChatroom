@@ -14,7 +14,6 @@ public class Bridge {
     public Bridge(ServerForTesting server, ServerGuiMain serverGuiMain){
         this.model = server;
         this.gui = serverGuiMain;
-
     }
 
     //This Method is for Code to run when a Close is requested
@@ -67,6 +66,7 @@ public class Bridge {
             model.deleteRoom(name);
     }
 
+    //This is the Server Log
     public void addEventToLog(String event){
         gui.serverHomeGui.addEventToLog(event);
     }

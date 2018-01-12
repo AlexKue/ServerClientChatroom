@@ -4,8 +4,8 @@
 
 .label {
 
-    -fx-background-color: #33fff7;
-    -fx-text-fill: white;
+    /*-fx-background-color: #969896;*/
+    -fx-text-fill: #969896;
 }
 
 .background {
@@ -15,4 +15,52 @@
 .UserSelection {
     -fx-text-fill: #8F0900;
     -fx-background-color: white;
+}
+.mainBackground{
+    -fx-background-color: #1D1F21;
+}
+.textArea .content{
+    -fx-background-color: #C5C8C6;
+}
+.roomSelection{
+    -fx-background-color: #B5BD68;
+}
+.roomSelection .list-cell{
+    -fx-background-color: #5f6634;
+}
+.tabPane .tab-header-area .tab-header-background{
+    -fx-background-color: #1D1F21;
+}
+.tab:selected{
+    -fx-background-color: #B5BD68;
+}
+
+.tab{
+    -fx-background-color: #C5C8C6;
+    -fx-text-fill: #F0C674;
+}
+.list-cell:even{
+    -fx-background-color: #151515;
+}
+.list-cell:odd{
+    -fx-background-color: #191919;
+}
+.list-cell{
+    -fx-text-fill: #75bd61;
+    -fx-font-weight: bold;
+}
+.Buttons{
+    -fx-background-color:
+            #090a0c,
+            linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%),
+            linear-gradient(#20262b, #191d22),
+            radial-gradient(center 50% 0%, radius 100%, rgba(114,131,148,0.9), rgba(255,255,255,0));
+    -fx-background-radius: 5,4,3,5;
+    -fx-background-insets: 0,1,2,0;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+    -fx-font-family: "Arial";
+    -fx-text-fill: linear-gradient(white, #d0d0d0);
+    -fx-font-size: 12px;
+    -fx-padding: 10 20 10 20;
 }
