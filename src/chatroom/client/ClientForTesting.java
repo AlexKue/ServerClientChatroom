@@ -1,6 +1,7 @@
 package chatroom.client;
 
 import chatroom.client.gui.Bridge;
+import chatroom.model.message.LoginResponses;
 
 import java.util.ArrayList;
 
@@ -25,7 +26,7 @@ public class ClientForTesting {
     public void login(String username, String password){
         System.out.println("The Password is: " + password + "\n The username is: "+ username);
         this.username = username;
-        bridge.onServerLoginAnswer(true);
+        bridge.onServerLoginAnswer(LoginResponses.SUCCESS);
     }
 
     public void sendMessage(String message){
@@ -77,7 +78,7 @@ public class ClientForTesting {
 
     public void ConnectToAdress(String adress) {
         System.out.println(adress);
-        bridge.onConnect(true);
+        bridge.onConnectionAttemtResponse(true);
     }
     public void requestRoomChange(String room){
         bridge.onRoomChangeRequestAccepted(room);

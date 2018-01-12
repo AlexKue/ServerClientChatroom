@@ -1,6 +1,7 @@
 package chatroom.client.gui;
 
 
+import chatroom.model.message.LoginResponses;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -25,16 +26,30 @@ public class ClientGuiMain {
        window.setOnCloseRequest(e -> onClose());
 
 
-       Pane ipBox = ServerBox.ServerInput(bridge);
+       Pane ipBox = ServerBox.ServerInput(bridge, "");
        Scene scene = new Scene(ipBox);
 
        window.setScene(scene);
        window.show();
 
     }
-    public void onLoginAnswer(boolean answer){
-        if(answer)
-            LoadHomeWindow();
+    public void onLoginAnswer(LoginResponses answer){
+        switch(answer){
+            case SUCCESS:
+                LoadHomeWindow(); break;
+            case WRONG_PASSWORD: {
+                Pane loginBox = Login.LoginBox(bridge, "Wrong Password, or the Username you chose is already forgiven!");
+                Scene scene = new Scene(loginBox);
+                window.setScene(scene);
+                break;
+            }
+            case ALREADY_LOGGED_IN: {
+                Pane loginBox = Login.LoginBox(bridge, "Already Logged in. Please contact the server master!");
+                Scene scene = new Scene(loginBox);
+                window.setScene(scene);
+                break;
+            }
+        }
     }
 
     public void LoadHomeWindow(){
@@ -50,10 +65,15 @@ public class ClientGuiMain {
     }
 
 
-    public void onConnect(boolean b) {
+    public void onConnectionAttemtResponse(boolean b) {
        if(b) {
-           Pane loginBox = Login.LoginBox(bridge);
+           Pane loginBox = Login.LoginBox(bridge,"");
            Scene scene = new Scene(loginBox);
+           window.setScene(scene);
+       }
+       else{
+           Pane ipBox = ServerBox.ServerInput(bridge, "Server not Available");
+           Scene scene = new Scene(ipBox);
            window.setScene(scene);
        }
 

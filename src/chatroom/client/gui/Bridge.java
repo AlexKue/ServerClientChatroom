@@ -1,6 +1,7 @@
 package chatroom.client.gui;
 
 import chatroom.client.ClientForTesting;
+import chatroom.model.message.LoginResponses;
 
 import java.util.ArrayList;
 
@@ -20,9 +21,10 @@ public class Bridge {
     }
 
     //called by the model to let the gui know whether the login succeeded or not TODO: ---BENUTZEN im MODEL------
-    public void onServerLoginAnswer(boolean answer){
+    public void onServerLoginAnswer(LoginResponses answer){
         gui.onLoginAnswer(answer);
     }
+
 
     //sends the message TODO: ---ERSETZEN------
     public void SendMessage(String message){
@@ -65,8 +67,8 @@ public class Bridge {
     }
 
     //has to be triggered after succesfull connection TODO: ---BENUTZEN im MODEL------
-    public void onConnect(boolean b) {
-        gui.onConnect(b);
+    public void onConnectionAttemtResponse(boolean b) {
+        gui.onConnectionAttemtResponse(b);
     }
 
     //requests room change TODO: ---ERSETZEN------

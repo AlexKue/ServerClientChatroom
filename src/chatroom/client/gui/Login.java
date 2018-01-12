@@ -8,7 +8,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 
 public class Login {
-    public static Pane LoginBox(Bridge bridge){
+    public static Pane LoginBox(Bridge bridge, String errorMessage){
         StackPane stackPane = new StackPane();
         stackPane.setPrefSize(300, 150);
         GridPane gridPane = new GridPane();
@@ -19,6 +19,10 @@ public class Login {
         //Password and name label
         Label nameLabel = new Label("Username");
         Label passwordLabel = new Label("Passoword");
+        Label errorLabel = new Label(errorMessage);
+
+        errorLabel.setStyle("-fx-text-fill: red");
+        errorLabel.setWrapText(true);
 
         //Textfields
         TextField nameInput = new TextField();
@@ -35,7 +39,7 @@ public class Login {
         loginButton.setOnAction(e -> login(passwordInput, nameInput, bridge));
         GridPane.setConstraints(loginButton, 1, 2);
 
-        gridPane.getChildren().addAll(nameInput, nameLabel, passwordInput, passwordLabel, loginButton);
+        gridPane.getChildren().addAll(nameInput, nameLabel, passwordInput, passwordLabel, loginButton, errorLabel);
 
         stackPane.getChildren().add(gridPane);
         StackPane.setAlignment(gridPane, Pos.CENTER_LEFT);

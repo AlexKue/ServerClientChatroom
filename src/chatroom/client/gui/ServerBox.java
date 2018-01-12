@@ -11,7 +11,7 @@ import javafx.scene.layout.StackPane;
 
 public class ServerBox {
 
-    public static Pane ServerInput(Bridge bridge){
+    public static Pane ServerInput(Bridge bridge, String errorMessage){
             StackPane stackPane = new StackPane();
             stackPane.setPrefSize(300, 150);
             GridPane gridPane = new GridPane();
@@ -21,6 +21,8 @@ public class ServerBox {
 
             //Ip Label
             Label IpLabel = new Label("Enter Ip Adress");
+            Label errorLabel = new Label(errorMessage);
+            errorLabel.setStyle("-fx-text-fill: red");
 
             //Textfields
             TextField iPInput = new TextField();
@@ -34,7 +36,7 @@ public class ServerBox {
             ConnectButton.setOnAction(e -> ConnectToAdress(iPInput.getText(), bridge));
             GridPane.setConstraints(ConnectButton, 1, 2);
 
-            gridPane.getChildren().addAll(IpLabel, iPInput, ConnectButton);
+            gridPane.getChildren().addAll(IpLabel, iPInput, ConnectButton, errorLabel);
 
             stackPane.getChildren().add(gridPane);
             StackPane.setAlignment(gridPane, Pos.CENTER_LEFT);

@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Optional;
 
 /**
@@ -13,13 +12,14 @@ import java.util.Optional;
  */
 public class UserStorage {
 
-    String filename = "userData.ser";
+    String filenameUserData = "userData.ser";
+    String filenameBannList = "bannList.ser";
     private ArrayList<UserAccountInfo> userInfo; //The list of all the Data of Users
     private ArrayList<UserAccountInfo> banList; //list of users being banned
 
     public UserStorage() {
         userInfo = readUserDataFromFile();
-        banList = new ArrayList<>();
+        banList = readBlackListFromFile();
     }
 
     /**
@@ -108,18 +108,11 @@ public class UserStorage {
     }
 
     public void saveUserDataToFile() {
-
-        // save the object to file
-        FileOutputStream fos = null;
-        ObjectOutputStream out = null;
         try {
-            fos = new FileOutputStream(filename);
-            out = new ObjectOutputStream(fos);
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filenameUserData));
             out.writeObject(userInfo);
-
             out.close();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
 
@@ -130,7 +123,7 @@ public class UserStorage {
         FileInputStream fis = null;
         ObjectInputStream in = null;
         try {
-            fis = new FileInputStream(filename);
+            fis = new FileInputStream(filenameUserData);
             in = new ObjectInputStream(fis);
             userInfo = (ArrayList<UserAccountInfo>) in.readObject();
             in.close();
@@ -140,5 +133,31 @@ public class UserStorage {
         }
         System.out.println(userInfo);
         return userInfo;
+    }
+
+    public void saveBannListToFile() {
+        // save the object to file
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filenameBannList));
+            out.writeObject(banList);
+            out.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public ArrayList<UserAccountInfo> readBlackListFromFile() {
+        // read the object from file
+
+        try {
+            ObjectInputStream in = new ObjectInputStream(new FileInputStream(filenameBannList));
+            banList = (ArrayList<UserAccountInfo>) in.readObject();
+            in.close();
+        } catch (Exception ex) {
+            //ex.printStackTrace();
+            return new ArrayList<>();
+        }
+        System.out.println(banList);
+        return banList;
     }
 }
