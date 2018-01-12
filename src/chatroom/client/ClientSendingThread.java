@@ -86,7 +86,7 @@ public class ClientSendingThread extends Thread {
 
     public void changeRoom(String roomName){
         try {
-            serializer.serialize(out,new RoomChangeRequestMessage(roomName,client.getUsername()));
+            serializer.serialize(this.out, new RoomChangeRequestMessage(roomName,client.getUsername()));
         } catch (IOException e) {
             e.printStackTrace();
         }

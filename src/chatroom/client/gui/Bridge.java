@@ -35,7 +35,7 @@ public class Bridge {
 
     //Adds new Message to the View... Attention!!! The Own message will not be displayed automaticly please add it to the view TODO: ---BENUTZEN im MODEL------
     public void AddMessageToView(String username, String message){
-        gui.AddMessage(username, message);
+        Platform.runLater(() ->gui.AddMessage(username, message));
     }
 
     //gets The username from the ModelTODO: TODO: ---ERSETZEN------
@@ -50,7 +50,7 @@ public class Bridge {
 
     //Updates the room view by adding or removing rooms TODO: ---BENUTZEN im MODEL------
     public void onRoomUpdate(ArrayList<String> rooms){
-        gui.onRoomUpdate(rooms);
+        Platform.runLater(() ->gui.onRoomUpdate(rooms));
     }
 
     //requests all users TODO: ---ERSETZEN------
@@ -80,21 +80,21 @@ public class Bridge {
 
     //Has to be triggered after succesfull roomchange TODO: ---BENUTZEN im MODEL------
     public void onRoomChangeRequestAccepted(String room){
-        gui.onRoomChange(room);
+        Platform.runLater(() -> gui.onRoomChange(room));
     }
 
     //updates the all users view TODO: ---BENUTZEN im MODEL------
     public void allUsersUpdate(ArrayList<String> newAllUsers){
-        gui.homeGui.allUsersUpdate(newAllUsers);
+        Platform.runLater(() -> gui.homeGui.allUsersUpdate(newAllUsers));
     }
 
     //updates current room users view TODO: ---BENUTZEN im MODEL------
     public void userRoomUpdate(ArrayList<String> newCurrentUsers){
-       gui.homeGui.userRoomUpdate(newCurrentUsers);
+       Platform.runLater(() ->gui.homeGui.userRoomUpdate(newCurrentUsers));
     }
     //this method is for alertboxes. Like kicked message, warning or banned TODO: ---BENUTZEN im MODEL------
     public void issueBox(String message){
-        gui.homeGui.showIssueAlert(message);
+        Platform.runLater(() -> gui.homeGui.showIssueAlert(message));
     }
 
     //this method is for operations that have to be run befor closing the window TODO: ---ERSETZEN------

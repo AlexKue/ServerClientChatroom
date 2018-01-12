@@ -103,6 +103,7 @@ public class ClientListeningThread extends Thread {
                 RoomUserListMessage roomUserListMessage = ((RoomUserListMessage)message);
                 client.setRoomUserList((ArrayList<String>) roomUserListMessage.getUserList());
                 client.getBridge().userRoomUpdate((ArrayList<String>) roomUserListMessage.getUserList());
+                break;
             case LOGINRESPONSEMSG:
                 client.getBridge().onServerLoginAnswer(((LoginResponseMessage)message).getResponse());
                 switch (((LoginResponseMessage)message).getResponse()){
