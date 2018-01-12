@@ -51,7 +51,7 @@ public class RoomCreatingDeletingAndEditingBox {
             else
             {
                 errorLabel.setText("The name: "+textField.getText() +"is already used. Please choose another one");
-                errorLabel.setStyle("-fx-text-fill: red; -fx-content-display: block");
+                errorLabel.setStyle("-fx-text-fill: red;");
             }
         });
         Scene scene = new Scene(layout);
@@ -78,7 +78,7 @@ public class RoomCreatingDeletingAndEditingBox {
             else
             {
                 errorLabel.setText("The name: "+textField.getText() +"is already used. Please choose another one");
-                errorLabel.setStyle("-fx-text-fill: red; -fx-content-display: block");
+                errorLabel.setStyle("-fx-text-fill: red");
             }
         });
         Scene scene = new Scene(layout);
@@ -87,7 +87,11 @@ public class RoomCreatingDeletingAndEditingBox {
     }
 
     private void setupBasicBox(){
-        errorLabel.setStyle("-fx-content-display: none;");
+
+        errorLabel.setWrapText(true);
+        layout.getStyleClass().add("mainBackground");
+        layout.getStylesheets().add(getClass().getResource("ServerHomeGuiStyle.css").toExternalForm());
+        window.setMinHeight(150);
         window.initModality(Modality.APPLICATION_MODAL);
     }
 

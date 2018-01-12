@@ -26,6 +26,7 @@ public class AllUserDataBox {
         ListView<String> listView = new ListView<>();
         listView.getItems().addAll(allUsersList);
         layout.getChildren().addAll(allUsersLabel, listView);
+        layout.getStylesheets().add(getClass().getResource("ServerHomeGuiStyle.css").toExternalForm());
         Scene scene = new Scene(layout);
         window.setScene(scene);
         window.show();

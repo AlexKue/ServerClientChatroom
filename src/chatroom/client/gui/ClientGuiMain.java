@@ -21,7 +21,6 @@ public class ClientGuiMain {
        this.window = primeStage;
        this.bridge = bridge;
 
-
        window.setTitle("The Chat Client");
        window.setOnCloseRequest(e -> onClose());
 
@@ -58,7 +57,9 @@ public class ClientGuiMain {
     }
 
     public void AddMessage(String username, String message){
-        homeGui.addMessage(username, message);
+           homeGui.addMessage(username, message);
+
+
     }
 
     public void onRoomUpdate(ArrayList<String> rooms){

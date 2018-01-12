@@ -42,6 +42,9 @@ public class ServerHomeGui {
 
         Scene scene = new Scene(mainScene);
         window.setScene(scene);
+
+        mainScene.getStyleClass().add("mainBackground");
+
         window.show();
 
     }
