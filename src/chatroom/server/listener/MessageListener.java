@@ -230,6 +230,20 @@ public class MessageListener extends Thread {
             LoginResponseMessage responseMessage = new LoginResponseMessage(LoginResponses.CREATED_ACCOUNT);
             responseMessage.setUserConnectionInfo(m.getUserConnectionInfo());
 
+            //add account info to connection info
+            userStorage.addClient(loginMessage.getLoginName(), loginMessage.getPassword());
+            userStorage.saveUserDataToFile();
+
+            UserAccountInfo userInfo = userStorage.getUserAccountInfo(loginMessage.getLoginName());
+            m.getUserConnectionInfo().setUserAccountInfo(userInfo);
+
+            //set User as logged in
+            m.getUserConnectionInfo().setLoggedIn(true);
+
+            //Add him to the lobby
+            m.getUserConnectionInfo().setActiveRoom(server.getRoomHandler().getRoom("lobby"));
+            server.getRoomHandler().getRoom("lobby").addUser(m.getUserConnectionInfo());
+
             //Prepare List of available rooms
             List<RoomMessage> roomMessageList = new ArrayList<>();
             for(Room r : server.getRoomHandler().getRoomList()){
@@ -241,42 +255,34 @@ public class MessageListener extends Thread {
             List<String> userNameList = server.getRoomHandler().getRoom("lobby").getUserNamelist();
             RoomUserListMessage roomUserListMessage = new RoomUserListMessage(userNameList,"lobby");
 
+            ServerUserListMessage serverUserListMessage= buildUserListMessage();
+
             //send Messages
-            serializer.serialize(m.getUserConnectionInfo().getOut(), roomUserListMessage);
-            serializer.serialize(m.getUserConnectionInfo().getOut(), roomListMessage);
             sendToTarget(responseMessage);
+            serializer.serialize(m.getUserConnectionInfo().getOut(), roomUserListMessage);
+            Server.logger.log(Level.INFO,"roomUserListMessage");
+            serializer.serialize(m.getUserConnectionInfo().getOut(), roomListMessage);
+            Server.logger.log(Level.INFO,"roomListMessage");
+            serializer.serialize(m.getUserConnectionInfo().getOut(), serverUserListMessage);
+            Server.logger.log(Level.INFO,"serverUserListMessage");
 
-
-            //set User as logged in
-            m.getUserConnectionInfo().setLoggedIn(true);
-
-            //add account info to connection info
-            userStorage.addClient(loginMessage.getLoginName(), loginMessage.getPassword());
-            userStorage.saveUserDataToFile();
-
-            UserAccountInfo userInfo = userStorage.getUserAccountInfo(loginMessage.getLoginName());
-            m.getUserConnectionInfo().setUserAccountInfo(userInfo);
 
             Server.logger.log(Level.INFO, "Created new Account for " + loginMessage.getLoginName() + "@" + loginMessage.getUserConnectionInfo().getSocket().getInetAddress());
 
-            //Add him to the lobby
-            m.getUserConnectionInfo().setActiveRoom(server.getRoomHandler().getRoom("lobby"));
-            server.getRoomHandler().getRoom("lobby").addUser(m.getUserConnectionInfo());
-
-            //Notify other users that someone connected
-            sendToRoom(new PublicServerMessage(userInfo.getDisplayName() + " has connected to the Server!"),"lobby");
-
-            //Update lists of all users
-            sendToAll(buildUserListMessage());
-
-            //Fetch List of Names in the lobby
-            List<String> newRoomUserList = server.getRoomHandler().getRoom("lobby").getUserNamelist();
-
-            //Build the message
-            RoomUserListMessage newRoomUserListMessage = new RoomUserListMessage(newRoomUserList,"lobby");
-
-            //Update the lists
-            updateRoomUserLists(newRoomUserListMessage,server.getRoomHandler().getRoom("lobby"));
+//            //Notify other users that someone connected
+//            sendToRoom(new PublicServerMessage(userInfo.getDisplayName() + " has connected to the Server!"),"lobby");
+//
+//            //Update lists of all users
+//            sendToAll(buildUserListMessage());
+//
+//            //Fetch List of Names in the lobby
+//            List<String> newRoomUserList = server.getRoomHandler().getRoom("lobby").getUserNamelist();
+//
+//            //Build the message
+//            RoomUserListMessage newRoomUserListMessage = new RoomUserListMessage(newRoomUserList,"lobby");
+//
+//            //Update the lists
+//            updateRoomUserLists(newRoomUserListMessage,server.getRoomHandler().getRoom("lobby"));
             return;
 
         } else {
