@@ -5,7 +5,6 @@ import chatroom.model.message.LoginResponses;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
 
@@ -60,9 +59,10 @@ public class ClientGuiMain {
         this.homeGui = new HomeGui(bridge, window);
     }
 
-    //TODO: Fix this crap!!!
     public void AddMessage(String username, String message){
             homeGui.addMessage(username, message);
+
+
     }
 
     public void onRoomUpdate(ArrayList<String> rooms){
