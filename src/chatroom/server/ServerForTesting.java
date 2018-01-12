@@ -74,4 +74,8 @@ public class ServerForTesting {
         }
 
     }
+
+    public ArrayList<String> getAllUsers() {
+        return users;
+    }
 }

@@ -70,4 +70,10 @@ public class Bridge {
     public void addEventToLog(String event){
         gui.serverHomeGui.addEventToLog(event);
     }
+
+    public ArrayList<String> getAllUsers() {
+
+        return model.getAllUsers();
+
+    }
 }

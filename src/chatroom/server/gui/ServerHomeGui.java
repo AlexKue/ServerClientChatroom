@@ -102,10 +102,15 @@ public class ServerHomeGui {
     private void initCenter(){
         log.getStyleClass().add("log");
         VBox centerBox = new VBox();
+        Button showUserData = new Button("Show user data");
+        showUserData.setOnAction(e->showAllUserData());
         log.setWrapText(true);
         log.setEditable(false);
-        centerBox.getChildren().add(log);
+        centerBox.getChildren().addAll(log, showUserData);
         mainScene.setCenter(centerBox);
+    }
+
+    private void showAllUserData() {
 
     }
 
