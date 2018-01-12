@@ -100,7 +100,6 @@ public class ServerHomeGui {
     }
 
     private void initCenter(){
-        addEventToLog("blaaaaa");
         log.getStyleClass().add("log");
         VBox centerBox = new VBox();
         log.setWrapText(true);

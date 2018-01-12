@@ -1,9 +1,12 @@
 package chatroom.model;
 
+import java.io.Serializable;
+
 /**
  * This contains Information about an user, like names and the password.
  */
-public class UserAccountInfo {
+public class UserAccountInfo implements Serializable{
+    private static final long serialVersionUID = 42L;
     private String loginName;
     private String displayName;
     private String password;
