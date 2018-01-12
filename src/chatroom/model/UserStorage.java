@@ -160,4 +160,8 @@ public class UserStorage {
         System.out.println(banList);
         return banList;
     }
+
+    public void banUser(UserAccountInfo user) {
+        banList.add(user);
+    }
 }
