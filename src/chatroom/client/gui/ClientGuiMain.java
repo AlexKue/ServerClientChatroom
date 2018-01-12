@@ -75,6 +75,7 @@ public class ClientGuiMain {
        }
        else{
            Pane ipBox = ServerBox.ServerInput(bridge, "Server not Available");
+           ipBox.getStylesheets().add(getClass().getResource("HomeGuiStyle.css").toExternalForm());
            Scene scene = new Scene(ipBox);
            window.setScene(scene);
        }
