@@ -1,15 +1,16 @@
 package chatroom.client.gui;
 
+import chatroom.client.Client;
 import chatroom.client.ClientForTesting;
 import chatroom.model.message.LoginResponses;
 
 import java.util.ArrayList;
 
 public class Bridge {
-    ClientForTesting model;
+    Client model;
     ClientGuiMain gui;
 
-    public Bridge(ClientForTesting client, ClientGuiMain clientGuiMain){
+    public Bridge(Client client, ClientGuiMain clientGuiMain){
         this.model = client;
         this.gui = clientGuiMain;
     }
@@ -53,12 +54,12 @@ public class Bridge {
 
     //requests all users TODO: ---ERSETZEN------
     public ArrayList<String> getAllUsers(){
-        return model.getAllUsers();
+        return (ArrayList<String>) model.getAllUsers();
     }
 
     //requests users from current room TODO: ---ERSETZEN------
     public ArrayList<String> getUsersFromSelection(String room){
-        return model.getAllUsers();
+        return (ArrayList<String>) model.getAllUsers();
     }
 
     //connects to the input adress TODO: ---ERSETZEN------

@@ -3,6 +3,8 @@ package chatroom.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import chatroom.model.message.MessageTypeDictionary;
 import chatroom.server.listener.MessageListener;
@@ -10,6 +12,7 @@ import chatroom.server.listener.NetworkListener;
 import chatroom.server.room.RoomHandler;
 
 public class Server {
+    public static final Logger logger = Logger.getAnonymousLogger();
     private ServerSocket listener;
     private NetworkListener networkListener;
     private MessageListener messageListener;
@@ -38,10 +41,9 @@ public class Server {
             //Create roomHandler with default room
             roomHandler = new RoomHandler();
 
-            System.out.println("*** Server Online! ***");
+            logger.log(Level.INFO,"Server Online!");
         } catch (IOException ex) {
-            System.err.println("*** Error while starting the server! ***");
-            ex.printStackTrace();
+            logger.log(Level.SEVERE, "Failed to start server!",ex);
             System.exit(1);
         }
 
@@ -52,13 +54,11 @@ public class Server {
         }
     }
     private void stop(){
-        System.out.println("*** Shutting down Server... ***");
+        logger.log(Level.WARNING, "Closing the Server Socket!");
         try {
-            System.out.println("*** Closing the Server Socket ***");
             listener.close();
         } catch (IOException e) {
-            System.err.println("*** Error while closing the server! ***");
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Exception was thrown: ", e);
         } finally {
             isRunning = false;
         }

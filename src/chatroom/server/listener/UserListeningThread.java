@@ -6,6 +6,7 @@ import chatroom.serializer.Serializer;
 import chatroom.server.Server;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 /**
  * This Thread's purpose is listening from a stream of a Client and putting them
@@ -21,8 +22,8 @@ public class UserListeningThread extends Thread {
         this.server = server;
         this.userConnectionInfo = userConnectionInfo;
         serializer = new Serializer();
-        userConnectionInfo.setActiveRoom(server.getRoomHandler().getRoom("lobby"));
-        userConnectionInfo.getActiveRoom().addUser(userConnectionInfo);
+//        userConnectionInfo.setActiveRoom(server.getRoomHandler().getRoom("lobby"));
+//        userConnectionInfo.getActiveRoom().addUser(userConnectionInfo);
     }
 
     @Override
@@ -54,12 +55,12 @@ public class UserListeningThread extends Thread {
                 server.getMessageListener().getMessageQueue().put(m);
 
             } catch (IOException e) {
-                System.err.println("UserListeningThread: Lost Connection to client!");
+                Server.logger.log(Level.WARNING,"UserListeningThread: Lost Connection to " + userConnectionInfo.getSocket().getInetAddress());
                 isRunning = false; //Stop the Thread if connection is lost
                 server.getNetworkListener().removeClient(this);
 
             } catch (InterruptedException e) {
-                System.out.println("Error in ListeningThread: " + e.toString());
+                Server.logger.log(Level.WARNING,"Error in ListeningThread ",e);
                 isRunning = false;
                 server.getNetworkListener().removeClient(this);
             }

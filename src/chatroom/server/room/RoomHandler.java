@@ -41,7 +41,7 @@ public class RoomHandler {
         return null;
     }
 
-    public List getRoomList(){
+    public List<Room> getRoomList(){
         return roomList;
     }
 }

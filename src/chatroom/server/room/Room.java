@@ -33,4 +33,15 @@ public class Room {
     public int getRoomSize(){
         return userList.size();
     }
+
+    public List<UserConnectionInfo> getUserList(){
+        return userList;
+    }
+    public List<String> getUserNamelist(){
+        List<String> userNameList = new ArrayList<>();
+        for(UserConnectionInfo u : userList){
+            userNameList.add(u.getUserAccountInfo().getLoginName());
+        }
+        return userNameList;
+    }
 }

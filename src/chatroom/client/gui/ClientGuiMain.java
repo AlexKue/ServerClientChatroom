@@ -5,6 +5,7 @@ import chatroom.model.message.LoginResponses;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
 
@@ -38,6 +39,8 @@ public class ClientGuiMain {
         switch(answer){
             case SUCCESS:
                 LoadHomeWindow(); break;
+            case CREATED_ACCOUNT:
+                LoadHomeWindow();break;
             case WRONG_PASSWORD: {
                 Pane loginBox = Login.LoginBox(bridge, "Wrong Password, or the Username you chose is already forgiven!");
                 Scene scene = new Scene(loginBox);
@@ -57,8 +60,9 @@ public class ClientGuiMain {
         this.homeGui = new HomeGui(bridge, window);
     }
 
+    //TODO: Fix this crap!!!
     public void AddMessage(String username, String message){
-        homeGui.addMessage(username, message);
+            homeGui.addMessage(username, message);
     }
 
     public void onRoomUpdate(ArrayList<String> rooms){

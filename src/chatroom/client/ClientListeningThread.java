@@ -5,6 +5,7 @@ import chatroom.serializer.Serializer;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 /**
  * Deserialize data from Stream and puts it in a Message Object,
@@ -53,22 +54,52 @@ public class ClientListeningThread extends Thread {
         switch (client.getMessageTypeDictionary().getType(message.getType())) {
             case PUBLICTEXTMSG:
                 PublicTextMessage publicTextMessage = ((PublicTextMessage) message);
+                client.getBridge().AddMessageToView(publicTextMessage.getSender(),publicTextMessage.getMessage());
                 String publicString = publicTextMessage.getSender() + ": " + publicTextMessage.getMessage();
                 System.out.println(publicString);
                 break;
             case PUBLICSERVERMSG:
                 PublicServerMessage publicServerMessage = ((PublicServerMessage) message);
+                client.getBridge().AddMessageToView("SERVER",publicServerMessage.getMessage());
                 System.out.println("*** " + publicServerMessage.getMessage() + " ***");
                 break;
             case TARGETSERVERMSG:
                 TargetedServerMessage targetedServerMessage = ((TargetedServerMessage) message);
+                client.getBridge().AddMessageToView("SERVER",targetedServerMessage.getMessage());
                 System.out.println("Server: " + targetedServerMessage.getMessage());
                 break;
             case TARGETTEXTMSG:
                 TargetedTextMessage targetedTextMessage = ((TargetedTextMessage) message);
                 String targetedString = targetedTextMessage.getSender() + " (whispered): " + targetedTextMessage.getMessage();
                 System.out.println(targetedString);
+                break;
+            case WARNINGMSG:
+                WarningMessage warningMessage = ((WarningMessage)message);
+                client.getBridge().issueBox(warningMessage.getMessage());
+                break;
+            case ROOMLISTMSG:
+                RoomListMessage roomListMessage = ((RoomListMessage)message);
+                client.setRoomMessageList(roomListMessage.getRoomList());
+                client.getBridge().onRoomUpdate(client.getRooms());
+                break;
+            case ROOMCHANGERESPONSEMSG:
+                RoomChangeResponseMessage roomChangeResponseMessage= ((RoomChangeResponseMessage)message);
+                if(roomChangeResponseMessage.isSuccessful()){
+                    client.setActiveRoom(roomChangeResponseMessage.getRoomName());
+                    client.getBridge().onRoomChangeRequestAccepted(roomChangeResponseMessage.getRoomName());
+                }
+                break;
+            case SERVERUSERLISTMSG:
+                ServerUserListMessage serverUserListMessage = ((ServerUserListMessage)message);
+                client.setServerUserList(serverUserListMessage.getServerUserList());
+                client.getBridge().allUsersUpdate((ArrayList<String>) client.getAllUsers());
+                break;
+            case ROOMUSERLISTMSG:
+                RoomUserListMessage roomUserListMessage = ((RoomUserListMessage)message);
+                client.setRoomUserList((ArrayList<String>) roomUserListMessage.getUserList());
+                client.getBridge().userRoomUpdate((ArrayList<String>) roomUserListMessage.getUserList());
             case LOGINRESPONSEMSG:
+                client.getBridge().onServerLoginAnswer(((LoginResponseMessage)message).getResponse());
                 switch (((LoginResponseMessage)message).getResponse()){
                     case SUCCESS:
                         client.setLoggedIn(true);
@@ -85,7 +116,7 @@ public class ClientListeningThread extends Thread {
                         break;
                     case WRONG_PASSWORD:
                         System.out.println("*** Wrong password! Please try again! ***");
-                        client.getClientSender().authenticate();
+                        //client.getClientSender().authenticate();
                         break;
                 } break;
         }

@@ -1,5 +1,6 @@
 package chatroom.client.gui;
 
+import chatroom.client.Client;
 import chatroom.client.ClientForTesting;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -12,7 +13,7 @@ public class main extends Application{
 
     @Override
     public void start(Stage primeStage) throws Exception {
-        ClientForTesting client = new ClientForTesting();
+        Client client = new Client();
         ClientGuiMain clientGuiMain = new ClientGuiMain();
         Bridge bridge = new Bridge(client, clientGuiMain);
 

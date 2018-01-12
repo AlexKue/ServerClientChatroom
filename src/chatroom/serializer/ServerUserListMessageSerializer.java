@@ -2,37 +2,38 @@ package chatroom.serializer;
 
 import chatroom.model.message.Message;
 import chatroom.model.message.MessageType;
-import chatroom.model.message.RoomUserListMessage;
+import chatroom.model.message.ServerUserListMessage;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserListMessageSerializer extends MessageSerializer{
+public class ServerUserListMessageSerializer extends MessageSerializer {
 
     @Override
     public void serialize(OutputStream out, Message m) throws IOException {
+        ServerUserListMessage message = (ServerUserListMessage)m;
         DataOutputStream dataOut = new DataOutputStream(new BufferedOutputStream(out));
-        RoomUserListMessage message = (RoomUserListMessage)m;
-        dataOut.writeByte(dict.getByte(MessageType.ROOMUSERLISTMSG));
-        dataOut.writeUTF(message.getRoomName());
-        dataOut.writeByte(message.getUserList().size());
+        dataOut.writeByte(dict.getByte(MessageType.SERVERUSERLISTMSG));
+        dataOut.writeByte(message.getServerUserList().size());
 
-        for(String u : message.getUserList()){
+        for(String u : message.getServerUserList()){
             dataOut.writeUTF(u);
         }
         dataOut.flush();
-
     }
+
+    @Override
     public Message deserialize(InputStream in) throws IOException {
         DataInputStream dataIn = new DataInputStream(new BufferedInputStream(in));
-        List<String> userList = new ArrayList<>();
-        String roomName = dataIn.readUTF();
+        List<String> serverUserList = new ArrayList<>();
         int size = dataIn.readByte();
 
         for(int i = 0; i < size; ++i){
-            userList.add(dataIn.readUTF());
+            serverUserList.add(dataIn.readUTF());
         }
-        return new RoomUserListMessage(userList, roomName);
+
+        ServerUserListMessage m = new ServerUserListMessage(serverUserList);
+        return m;
     }
 }

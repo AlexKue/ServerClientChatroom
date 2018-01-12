@@ -1,10 +1,12 @@
 package chatroom.client;
 
+import chatroom.client.gui.Bridge;
 import chatroom.model.message.MessageTypeDictionary;
 import chatroom.model.message.RoomMessage;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,15 +20,20 @@ public class Client {
     private boolean isRunning;
     private boolean isLoggedIn;
     private String activeRoom;
-    private List<String> userList;
+    private List<String> roomUserList;
+    private List<String> serverUserList;
     private List<RoomMessage> roomMessageList;
+    private Bridge bridge;
 
 
-    private Client() {
+    public Client() {
         messageTypeDictionary = new MessageTypeDictionary();
         sc = new Scanner(System.in);
         isRunning = true;
         setLoggedIn(false);
+        roomUserList = new ArrayList<>();
+        serverUserList = new ArrayList<>();
+        roomMessageList = new ArrayList<>();
     }
 
     public void stop() {
@@ -38,10 +45,10 @@ public class Client {
     private void start() {
         System.out.print("Please enter the address of the server to connect to: ");
         String address = sc.nextLine();
-        connect(address);
+        ConnectToAdress(address);
     }
 
-    public void connect(String address) {
+    public void ConnectToAdress(String address) {
         try {
             Socket server = new Socket(address, 54322);
             System.out.println("Connected to server!");
@@ -54,23 +61,35 @@ public class Client {
 
             clientListener.start();
             clientSender.start();
+
+            activeRoom = "lobby";
+            bridge.onConnectionAttemtResponse(true);
         } catch (IOException ex) {
             System.err.println("Connection Error! " + ex.toString());
+            bridge.onConnectionAttemtResponse(false);
         }
+    }
+    public void login(String username, String password) {
+        clientSender.login(username,password);
+    }
+
+
+    public void sendMessage(String message) {
+        clientSender.sendMessage(message);
     }
 
     public static void main(String args[]) {
-
         Client client = new Client();
         client.start();
-
     }
+
+    /** GETTER / SETTER / CHECKS **/
 
     public MessageTypeDictionary getMessageTypeDictionary() {
         return messageTypeDictionary;
     }
 
-    public String getLoginName() {
+    public String getUsername() {
         return loginName;
     }
 
@@ -110,12 +129,13 @@ public class Client {
         this.activeRoom = activeRoom;
     }
 
-    public List<String> getUserList() {
-        return userList;
+    public ArrayList<String> getRoomUserList() {
+        return (ArrayList<String>) roomUserList;
     }
 
-    public void setUserList(List<String> userList) {
-        this.userList = userList;
+    public void setRoomUserList(ArrayList<String> roomUserList) {
+        this.roomUserList.clear();
+        this.roomUserList.addAll(roomUserList);
     }
 
     public List<RoomMessage> getRoomMessageList() {
@@ -124,5 +144,33 @@ public class Client {
 
     public void setRoomMessageList(List<RoomMessage> roomMessageList) {
         this.roomMessageList = roomMessageList;
+    }
+
+    public ArrayList<String> getRooms() {
+        ArrayList<String> rooms = new ArrayList<>();
+        for(RoomMessage m : roomMessageList){
+            rooms.add(m.getName());
+        }
+        return rooms;
+    }
+
+    public List<String> getAllUsers() {
+        return serverUserList;
+    }
+
+    public void setServerUserList(List<String> serverUserList){
+        this.serverUserList = serverUserList;
+    }
+
+    public void requestRoomChange(String room) {
+        clientSender.changeRoom(room);
+    }
+
+    public Bridge getBridge() {
+        return bridge;
+    }
+
+    public void setBridge(Bridge bridge) {
+        this.bridge = bridge;
     }
 }

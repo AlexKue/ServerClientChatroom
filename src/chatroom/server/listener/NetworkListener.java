@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 import chatroom.model.UserConnectionInfo;
 import chatroom.model.message.PublicServerMessage;
@@ -31,14 +32,14 @@ public class NetworkListener extends Thread {
 
                 //Accept new Client and create new ConnectionInfo
                 UserConnectionInfo userConnectionInfo = new UserConnectionInfo(server.getListener().accept());
-                System.out.println("Client connected: " + userConnectionInfo.getSocket().getInetAddress());
+                Server.logger.log(Level.INFO, "New Client Connected: " + userConnectionInfo.getSocket().getInetAddress());
 
                 //Create new Thread for the MessageListener for each new client
                 UserListeningThread u = new UserListeningThread(userConnectionInfo, server);
                 getUserListeningThreadList().add(u);
                 u.start();
             } catch (IOException ex) {
-                System.out.println("*** Connection Error! " + ex.toString() + " ***");
+                Server.logger.log(Level.SEVERE, "NetworkListener threw an exception!",ex);
                 //.accept() will throw if server is closing
             }
 
@@ -60,8 +61,9 @@ public class NetworkListener extends Thread {
      * Closes the sockets and Streams of all users in the UserListeningThreadList
      */
     private void shutdown() {
-        System.out.println("*** Shutting down network listener ***");
-        System.out.println("*** Closing sockets of Client in List ***");
+        Server.logger.log(Level.SEVERE, "Shutting down network listener");
+        Server.logger.log(Level.SEVERE, "Closing sockets of Client in List");
+
         Iterator<UserListeningThread> iter = userListeningThreadList.iterator();
         while (iter.hasNext()) {
             UserListeningThread u = iter.next();
@@ -87,10 +89,11 @@ public class NetworkListener extends Thread {
                 //Notify logged in users that another logged in user left
                 String username = info.getUserAccountInfo().getDisplayName();
                 PublicServerMessage msg = new PublicServerMessage(username + " has left the server!");
+                Server.logger.log(Level.INFO, username + "@" + info.getSocket().getInetAddress() + " has disconnected!");
                 try {
                     server.getMessageListener().getMessageQueue().put(msg);
                 } catch (InterruptedException e) {
-                    System.err.println("NetworkListener: Error while sending Msg: " + e.toString());
+                    Server.logger.log(Level.SEVERE, "NetworkListener: Error while sending Msg: " + e.toString());
                 }
             }
             //close Sockets

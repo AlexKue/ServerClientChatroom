@@ -1,9 +1,6 @@
 package chatroom.client;
 
-import chatroom.model.message.LoginMessage;
-import chatroom.model.message.LogoutMessage;
-import chatroom.model.message.Message;
-import chatroom.model.message.PublicTextMessage;
+import chatroom.model.message.*;
 import chatroom.serializer.Serializer;
 
 import java.io.IOException;
@@ -28,7 +25,7 @@ public class ClientSendingThread extends Thread {
 
     @Override
     public void run() {
-        authenticate();
+        //authenticate();
         while (client.isRunning()) {
             if (client.isLoggedIn()) {
 
@@ -55,7 +52,7 @@ public class ClientSendingThread extends Thread {
             message = new LogoutMessage();
         } else {
             //handle input as normal TextMessage
-            message = new PublicTextMessage(m, client.getLoginName());
+            message = new PublicTextMessage(m, client.getUsername());
         }
         try {
             serializer.serialize(out, message);
@@ -67,23 +64,31 @@ public class ClientSendingThread extends Thread {
     /**
      * Asks the User to enter his loginName and his password, and sends a LoginMessage to the server.
      */
-    public void authenticate() {
-        System.out.print("Enter your login name: ");
-        String loginName = sc.nextLine();
-        client.setLoginName(loginName);
-        System.out.print("Enter your password: ");
-        String password = sc.nextLine();
+//    public void authenticate() {
+//        System.out.print("Enter your login name: ");
+//        String loginName = sc.nextLine();
+//        client.setLoginName(loginName);
+//        System.out.print("Enter your password: ");
+//        String password = sc.nextLine();
+//        try {
+//            serializer.serialize(out, new LoginMessage(loginName, password));
+//        } catch (IOException e) {
+//            System.err.println("Error while serializing!");
+//        }
+//    }
+    public void login(String loginName, String password){
         try {
             serializer.serialize(out, new LoginMessage(loginName, password));
         } catch (IOException e) {
             System.err.println("Error while serializing!");
         }
     }
-    public void login(String loginName, String password){
+
+    public void changeRoom(String roomName){
         try {
-            serializer.serialize(out, new LoginMessage(loginName, password));
+            serializer.serialize(out,new RoomChangeRequestMessage(roomName,client.getUsername()));
         } catch (IOException e) {
-            System.err.println("Error while serializing!");
+            e.printStackTrace();
         }
     }
 

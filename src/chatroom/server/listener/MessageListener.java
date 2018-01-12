@@ -5,10 +5,15 @@ import chatroom.model.message.*;
 import chatroom.model.message.Message;
 import chatroom.serializer.Serializer;
 import chatroom.server.Server;
+import chatroom.server.room.Room;
+import chatroom.server.room.RoomHandler;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 /**
  * This receives messages from all Clients connected on the server, puts them
@@ -28,7 +33,6 @@ public class MessageListener extends Thread {
         serializer = new Serializer(); //Serializes and sends messages through stream
         userStorage = new UserStorage(); //Contains data of user registered on this server, at runtime for now
     }
-    //TODO: UserListMessage
     @Override
     public void run() {
         while (server.isRunning()) {
@@ -42,13 +46,15 @@ public class MessageListener extends Thread {
 
                 //Display on server what it is working: 
                 String messageTypeString = server.getMessageTypeDictionary().getType(m.getType()).toString();               
-                System.out.println("MessageListener: Now working on: " + messageTypeString);
+                Server.logger.log(Level.INFO,"MessageListener: Next in Queue: " + messageTypeString);
                 
                 //Byte sent by client decides which type of message is sent
                 switch (server.getMessageTypeDictionary().getType(m.getType())) {
                     case PUBLICSERVERMSG:
-                    case PUBLICTEXTMSG:
                         sendToAll(m);
+                        break;
+                    case PUBLICTEXTMSG:
+                        sendToRoom(m,m.getUserConnectionInfo().getActiveRoom().getName());
                         break;
                     case TARGETTEXTMSG:
                     case TARGETSERVERMSG:
@@ -64,29 +70,54 @@ public class MessageListener extends Thread {
                     case ROOMCHANGEREQMSG:
                         changeRoom(m);
                         break;
-                    case ROOMLISTMSG:
-                        updateUserLists(m);
-                        break;
                 }
-                System.out.println("MessageListener: Sent message(s): " + messageTypeString);
-
                 //Issues may occur on clients that message are sent too fast.
                 //TODO: find more elegant fix, if there is any
                 sleep(50);
             } catch (InterruptedException e) {
-                System.err.println("*** MessageListener interrupted by server! ***");
+                Server.logger.log(Level.WARNING,"MessageListener interrupted by server!");
             } catch (IOException e) {
-                System.err.println("*** Error while serializing! ***");
+                Server.logger.log(Level.SEVERE,"Error while serializing!");
             }
         }
     }
 
-    private void updateUserLists(Message m) {
-        //TODO
+    private void updateRoomUserLists(Message m, Room room) throws IOException {
+        for(UserConnectionInfo info : room.getUserList()){
+                serializer.serialize(info.getOut(), m);
+        }
     }
 
-    private void changeRoom(Message m) {
-        //TODO
+    private void changeRoom(Message m) throws InterruptedException, IOException {
+        RoomChangeRequestMessage message = (RoomChangeRequestMessage)m;
+        Room activeRoom = m.getUserConnectionInfo().getActiveRoom();
+        Room newRoom = server.getRoomHandler().getRoom(message.getRoomName());
+
+
+        activeRoom.removeUser(m.getUserConnectionInfo());
+
+        for(UserConnectionInfo info : activeRoom.getUserList()){
+            TargetedServerMessage serverMessage = new TargetedServerMessage(message.getLoginName() +
+                    "has gone to the Room \"" + message.getRoomName() + "\"");
+
+            serverMessage.setUserConnectionInfo(info);
+            serializer.serialize(info.getOut(),serverMessage);
+        }
+
+        newRoom.addUser(m.getUserConnectionInfo());
+        m.getUserConnectionInfo().setActiveRoom(newRoom);
+        Server.logger.log(Level.INFO, message.getLoginName() + "switched from Room \"" + activeRoom + "\" to \"" + newRoom + "\"");
+
+        //Updating RoomUserLists for the 2 rooms
+        List<String> oldRoomUserList = activeRoom.getUserNamelist();
+        List<String> newRoomUserList = newRoom.getUserNamelist();
+        RoomUserListMessage oldRoomList = new RoomUserListMessage(oldRoomUserList,activeRoom.getName());
+        RoomUserListMessage newRoomList = new RoomUserListMessage(newRoomUserList,newRoom.getName());
+        updateRoomUserLists(oldRoomList,activeRoom);
+        updateRoomUserLists(newRoomList,newRoom);
+
+        //Change Successfull
+        serializer.serialize(m.getUserConnectionInfo().getOut(),new RoomChangeResponseMessage(true,newRoom.getName()));
     }
 
     /**
@@ -101,29 +132,41 @@ public class MessageListener extends Thread {
                 //cast message
                 TargetedTextMessage textMessage = (TargetedTextMessage) m;
                 String receiver = textMessage.getReceiver();
+                String sender = textMessage.getUserConnectionInfo().getUserAccountInfo().getDisplayName();
 
                 //Iterate through the list to find the receiver
                 for (UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()) {
                     //Get the AccountInfo of the thread, find receiver of message
                     if (u != null && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(receiver)) {
                         serializer.serialize(u.getUserConnectionInfo().getOut(), m);
+                        Server.logger.log(Level.INFO, sender + " (to " + receiver + "): \"" + textMessage.getMessage() + "\" ");
                         return;
                     }
                 }
                 //If receiver was not found, he is not online. Send message to sender that sending failed
                 TargetedServerMessage serverMessage = new TargetedServerMessage("Failed to send message: " + ((TargetedTextMessage) m).getReceiver() + "is not online!");
+                Server.logger.log(Level.WARNING, "Failed to send message: " + ((TargetedTextMessage) m).getReceiver() + "is not online!");
                 serverMessage.setUserConnectionInfo(m.getUserConnectionInfo());
                 serializer.serialize(m.getUserConnectionInfo().getOut(), serverMessage);
                 break;
 
             //because in case of a login process, we don't know the name of the client, so we get the connectionInfo of message
             case TARGETSERVERMSG:
+                String name = m.getUserConnectionInfo().getUserAccountInfo().getLoginName();
+                String content = ((TargetedServerMessage)m).getMessage();
+                Server.logger.log(Level.INFO, "Servermessage to " + name + ": " + content);
+                serializer.serialize(m.getUserConnectionInfo().getOut(), m);
+                break;
             case LOGINRESPONSEMSG:
+                LoginResponseMessage response = ((LoginResponseMessage)m);
+                Server.logger.log(Level.INFO,"Login response for " + m.getUserConnectionInfo().getSocket().getInetAddress() +
+                        ": " + response.getResponse().toString());
                 serializer.serialize(m.getUserConnectionInfo().getOut(), m);
                 break;
         }
 
     }
+
 
     /**
      * Sends a message to all currently loggedIn users
@@ -138,6 +181,12 @@ public class MessageListener extends Thread {
         }
     }
 
+    private void sendToRoom(Message m, String roomName) throws IOException {
+        Room room = server.getRoomHandler().getRoom(roomName);
+        for(UserConnectionInfo info : room.getUserList()){
+            serializer.serialize(info.getOut(),m);
+        }
+    }
 
     /**
      * Sends a message to all clients that a user has disconnected and removes the client
@@ -147,7 +196,20 @@ public class MessageListener extends Thread {
      */
     private void logOut(Message m) throws InterruptedException, IOException {
         String username = m.getUserConnectionInfo().getUserAccountInfo().getDisplayName();
+        Room activeRoom = m.getUserConnectionInfo().getActiveRoom();
         server.getNetworkListener().removeClient(username);
+
+        //update ServerUserList
+        sendToAll(buildUserListMessage());
+
+        //Fetch List of Names in Room of the client the user was before disconnecting
+        List<String> newRoomUserList = activeRoom.getUserNamelist();
+
+        //Build the message
+        RoomUserListMessage roomUserListMessage = new RoomUserListMessage(newRoomUserList,activeRoom.getName());
+
+        //Update the lists
+        updateRoomUserLists(roomUserListMessage,activeRoom);
     }
     /**
      * Checks the login data of an user and sends <code>LoginResponseMessages</code>
@@ -156,32 +218,65 @@ public class MessageListener extends Thread {
      * @param m the message containing loginName and password
      * @throws InterruptedException if the queue gets interrupted
      */
-    private void authenticate(Message m) throws InterruptedException {
+    private void authenticate(Message m) throws InterruptedException, IOException {
         LoginMessage loginMessage = (LoginMessage) m;
 
         //Look up if loginName is already in Use
+
+        //CASE: Username not taken
         if (!userStorage.loginNameExists(loginMessage.getLoginName())) {
 
-            //send Response Message: No one uses this name
-            LoginResponseMessage message = new LoginResponseMessage(LoginResponses.CREATED_ACCOUNT);
-            message.setUserConnectionInfo(m.getUserConnectionInfo());
-            messageQueue.put(message);
+            //Prepare ResponseMessage: No one uses this name
+            LoginResponseMessage responseMessage = new LoginResponseMessage(LoginResponses.CREATED_ACCOUNT);
+            responseMessage.setUserConnectionInfo(m.getUserConnectionInfo());
+
+            //Prepare List of available rooms
+            List<RoomMessage> roomMessageList = new ArrayList<>();
+            for(Room r : server.getRoomHandler().getRoomList()){
+                roomMessageList.add(new RoomMessage(r.getName(),r.getRoomSize()));
+            }
+            RoomListMessage roomListMessage = new RoomListMessage(roomMessageList);
+
+            //Prepare List of Users in the lobby
+            List<String> userNameList = server.getRoomHandler().getRoom("lobby").getUserNamelist();
+            RoomUserListMessage roomUserListMessage = new RoomUserListMessage(userNameList,"lobby");
+
+            //send Messages
+            serializer.serialize(m.getUserConnectionInfo().getOut(), roomUserListMessage);
+            serializer.serialize(m.getUserConnectionInfo().getOut(), roomListMessage);
+            sendToTarget(responseMessage);
+
 
             //set User as logged in
             m.getUserConnectionInfo().setLoggedIn(true);
 
             //add account info to connection info
             userStorage.addClient(loginMessage.getLoginName(), loginMessage.getPassword());
+            userStorage.saveUserDataToFile();
+
             UserAccountInfo userInfo = userStorage.getUserAccountInfo(loginMessage.getLoginName());
             m.getUserConnectionInfo().setUserAccountInfo(userInfo);
 
-            System.out.println("Created new account for " + loginMessage.getLoginName());
+            Server.logger.log(Level.INFO, "Created new Account for " + loginMessage.getLoginName() + "@" + loginMessage.getUserConnectionInfo().getSocket().getInetAddress());
 
-            //send list of users to new Client
-            messageQueue.put(buildUserListMessage(m.getUserConnectionInfo()));
+            //Add him to the lobby
+            m.getUserConnectionInfo().setActiveRoom(server.getRoomHandler().getRoom("lobby"));
+            server.getRoomHandler().getRoom("lobby").addUser(m.getUserConnectionInfo());
 
             //Notify other users that someone connected
-            messageQueue.put(new PublicServerMessage(userInfo.getDisplayName() + " has connected to the Server!"));
+            sendToRoom(new PublicServerMessage(userInfo.getDisplayName() + " has connected to the Server!"),"lobby");
+
+            //Update lists of all users
+            sendToAll(buildUserListMessage());
+
+            //Fetch List of Names in the lobby
+            List<String> newRoomUserList = server.getRoomHandler().getRoom("lobby").getUserNamelist();
+
+            //Build the message
+            RoomUserListMessage newRoomUserListMessage = new RoomUserListMessage(newRoomUserList,"lobby");
+
+            //Update the lists
+            updateRoomUserLists(newRoomUserListMessage,server.getRoomHandler().getRoom("lobby"));
             return;
 
         } else {
@@ -207,52 +302,75 @@ public class MessageListener extends Thread {
                         System.out.println("A client tried to log into the Account of "+loginMessage.getLoginName()+" while it was already online!");
                         return;
                     }
-
                 }
 
                 //No one else uses this account, grant access
                 response = new LoginResponseMessage(LoginResponses.SUCCESS);
+                response.setUserConnectionInfo(loginMessage.getUserConnectionInfo());
+
                 m.getUserConnectionInfo().setLoggedIn(true);
 
                 //set AccountInfo for the connection
                 UserAccountInfo accountInfo = userStorage.getUserAccountInfo(loginMessage.getLoginName());
                 m.getUserConnectionInfo().setUserAccountInfo(accountInfo);
-                System.out.println("User " + loginMessage.getLoginName() + " has logged in!");
 
-                //Send new User list of already logged in users
-                messageQueue.put(buildUserListMessage(m.getUserConnectionInfo()));
+
+                //Set Room to lobby
+                m.getUserConnectionInfo().setActiveRoom(server.getRoomHandler().getRoom("lobby"));
+                server.getRoomHandler().getRoom("lobby").addUser(m.getUserConnectionInfo());
+
+                //Prepare Messages for new user
+                List<RoomMessage> roomMessageList = new ArrayList<>();
+                for(Room r : server.getRoomHandler().getRoomList()){
+                    roomMessageList.add(new RoomMessage(r.getName(),r.getRoomSize()));
+                }
+                RoomListMessage roomListMessage = new RoomListMessage(roomMessageList);
+
+                List<String> userNameList = server.getRoomHandler().getRoom("lobby").getUserNamelist();
+                RoomUserListMessage roomUserListMessage = new RoomUserListMessage(userNameList,"lobby");
+
+                ServerUserListMessage serverUserListMessage= buildUserListMessage();
+
+                //send the messages
+                sendToTarget(response);
+                serializer.serialize(m.getUserConnectionInfo().getOut(), roomUserListMessage);
+                serializer.serialize(m.getUserConnectionInfo().getOut(), roomListMessage);
+                serializer.serialize(m.getUserConnectionInfo().getOut(), serverUserListMessage);
+
 
                 //Notify other users that someone connected
-                messageQueue.put(new PublicServerMessage(accountInfo.getDisplayName() + " has connected to the Server!"));
+                sendToRoom(new PublicServerMessage(accountInfo.getDisplayName() + " has connected to the Server!"),"lobby");
+                updateRoomUserLists(roomUserListMessage,server.getRoomHandler().getRoom("lobby"));
+
+                Server.logger.log(Level.INFO,"User " + loginMessage.getLoginName() + " has logged in!");
+
             } else {
                 //We know that the password is wrong. Notify user.
                 response = new LoginResponseMessage(LoginResponses.WRONG_PASSWORD);
-                System.out.println("Someone failed to login into the account of " + loginMessage.getLoginName());
+                Server.logger.log(Level.INFO,m.getUserConnectionInfo().getSocket().getInetAddress() + " failed to login into the account of " + loginMessage.getLoginName());
+                response.setUserConnectionInfo(m.getUserConnectionInfo());
+                sendToTarget(response);
+
             }
-            //send LoginResponse to the Client
-            response.setUserConnectionInfo(loginMessage.getUserConnectionInfo());
-            messageQueue.put(response);
+
+
         }
     }
 
     /**
-     * Creates a message for a new Client, containing a list of all connected,
-     * logged in users.
-     * @param info the ConnectionInfo of the client receiving the message
-     * @return A TargetedServerMessage containing a String with a list of users
+     * Creates a List of names of logged in users
+     * @return A ServerUserListMessage containing a List of usernames
      */
-    private TargetedServerMessage buildUserListMessage(UserConnectionInfo info){
-        String userList = "Following users are logged in: \n";
+    private ServerUserListMessage buildUserListMessage(){
+        List<String> userList = new ArrayList<>();
         for(UserListeningThread userListeningThread : server.getNetworkListener().getUserListeningThreadList()){
             if(userListeningThread.getUserConnectionInfo().isLoggedIn()){
-                userList = userList + (userListeningThread.getUserConnectionInfo().getUserAccountInfo().getDisplayName() + "\n");
+                userList.add(userListeningThread.getUserConnectionInfo().getUserAccountInfo().getLoginName());
             }
         }
-        TargetedServerMessage targetedServerMessage = new TargetedServerMessage(userList);
-        targetedServerMessage.setUserConnectionInfo(info);
-        return targetedServerMessage;
+        ServerUserListMessage m = new ServerUserListMessage(userList);
+        return m;
     }
-
 
     /**
      * Returns the MessageQueue
@@ -261,4 +379,6 @@ public class MessageListener extends Thread {
     public ArrayBlockingQueue<Message> getMessageQueue() {
         return messageQueue;
     }
+
+
 }
