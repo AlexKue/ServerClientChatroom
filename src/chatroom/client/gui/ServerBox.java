@@ -9,7 +9,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
-import static com.sun.javafx.scene.control.skin.Utils.getResource;
 
 public class ServerBox {
 
