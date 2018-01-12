@@ -126,6 +126,7 @@ public class UserStorage {
     private ArrayList<UserAccountInfo> readUserDataFromFile() {
         // read the object from file
         // save the object to file
+
         FileInputStream fis = null;
         ObjectInputStream in = null;
         try {
@@ -134,7 +135,8 @@ public class UserStorage {
             userInfo = (ArrayList<UserAccountInfo>) in.readObject();
             in.close();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
+            return new ArrayList<>();
         }
         System.out.println(userInfo);
         return userInfo;

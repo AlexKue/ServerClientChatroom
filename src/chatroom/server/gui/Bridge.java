@@ -66,4 +66,8 @@ public class Bridge {
     public void deleteRoom(String name){
             model.deleteRoom(name);
     }
+
+    public void addEventToLog(String event){
+        gui.serverHomeGui.addEventToLog(event);
+    }
 }
