@@ -72,8 +72,6 @@ public class Bridge {
     }
 
     public ArrayList<String> getAllUsers() {
-
         return model.getAllUsers();
-
     }
 }

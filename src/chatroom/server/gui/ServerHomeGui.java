@@ -111,7 +111,7 @@ public class ServerHomeGui {
     }
 
     private void showAllUserData() {
-
+        AllUserDataBox allUserDataBox = new AllUserDataBox(bridge);
     }
 
 
