@@ -99,8 +99,8 @@ public class HomeGui {
     }
 
     private void initRightMenu(Bridge bridge) {
-        ArrayList<String> rooms = bridge.getRooms();
-        this.rooms = rooms;
+        //ArrayList<String> rooms = bridge.getRooms();
+        //this.rooms = rooms;
         Separator roomUserSeparator = new Separator();
         roomUserSeparator.setPadding(new Insets(10, 0, 10, 0));
 
@@ -108,7 +108,7 @@ public class HomeGui {
         roomSelection = new ComboBox<>();
         roomSelection.valueProperty().addListener((property, oldValue, newValue) -> selectRoom(newValue));
         roomConnectionStatus = new Label();
-        updateRooms(rooms);
+        //updateRooms(rooms);
 
         outerRight = new VBox();
 

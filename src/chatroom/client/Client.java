@@ -78,10 +78,10 @@ public class Client {
         clientSender.sendMessage(message);
     }
 
-    public static void main(String args[]) {
-        Client client = new Client();
-        client.start();
-    }
+//    public static void main(String args[]) {
+//        Client client = new Client();
+//        client.start();
+//    }
 
     /** GETTER / SETTER / CHECKS **/
 

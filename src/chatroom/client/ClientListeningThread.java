@@ -51,6 +51,11 @@ public class ClientListeningThread extends Thread {
      * @param message The message which should be handled
      */
     private void handleMessage(Message message) {
+        try {
+            sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         switch (client.getMessageTypeDictionary().getType(message.getType())) {
             case PUBLICTEXTMSG:
                 PublicTextMessage publicTextMessage = ((PublicTextMessage) message);
@@ -119,6 +124,7 @@ public class ClientListeningThread extends Thread {
                         //client.getClientSender().authenticate();
                         break;
                 } break;
+
         }
 
     }

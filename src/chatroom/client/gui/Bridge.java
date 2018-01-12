@@ -3,6 +3,7 @@ package chatroom.client.gui;
 import chatroom.client.Client;
 import chatroom.client.ClientForTesting;
 import chatroom.model.message.LoginResponses;
+import javafx.application.Platform;
 
 import java.util.ArrayList;
 
@@ -23,7 +24,7 @@ public class Bridge {
 
     //called by the model to let the gui know whether the login succeeded or not TODO: ---BENUTZEN im MODEL------
     public void onServerLoginAnswer(LoginResponses answer){
-        gui.onLoginAnswer(answer);
+        Platform.runLater(()->gui.onLoginAnswer(answer));
     }
 
 

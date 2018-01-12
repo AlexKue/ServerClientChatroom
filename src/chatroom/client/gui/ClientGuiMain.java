@@ -56,11 +56,16 @@ public class ClientGuiMain {
     }
 
     public void LoadHomeWindow(){
-        this.homeGui = new HomeGui(bridge, window);
+        homeGui = new HomeGui(bridge, window);
     }
 
     public void AddMessage(String username, String message){
+        try{
             homeGui.addMessage(username, message);
+        }catch (Exception e){
+
+        }
+
 
 
     }
