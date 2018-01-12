@@ -71,6 +71,7 @@ public class Client {
     }
     public void login(String username, String password) {
         clientSender.login(username,password);
+        loginName = username;
     }
 
 
