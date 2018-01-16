@@ -6,7 +6,7 @@ import java.util.List;
 public class RoomListMessage extends Message {
     private List<RoomMessage> roomList;
 
-    public RoomListMessage(List roomList){
+    public RoomListMessage(List<RoomMessage> roomList){
         this.roomList = roomList;
         type = 7;
     }

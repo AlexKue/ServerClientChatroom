@@ -17,6 +17,7 @@ public class Client {
     private String loginName;
     private ClientListeningThread clientListener;
     private ClientSendingThread clientSender;
+    private ClientMessageHandler messageHandler;
     private boolean isRunning;
     private boolean isLoggedIn;
     private String activeRoom;
@@ -58,9 +59,11 @@ public class Client {
 
             clientListener = new ClientListeningThread(dataIn, this);
             clientSender = new ClientSendingThread(dataOut, this);
+            messageHandler = new ClientMessageHandler(this);
 
             clientListener.start();
             clientSender.start();
+            messageHandler.start();
 
             activeRoom = "lobby";
             bridge.onConnectionAttemtResponse(true);
@@ -147,7 +150,7 @@ public class Client {
         this.roomMessageList = roomMessageList;
     }
 
-    public ArrayList<String> getRooms() {
+    public synchronized ArrayList<String> getRooms() {
         ArrayList<String> rooms = new ArrayList<>();
         for(RoomMessage m : roomMessageList){
             rooms.add(m.getName());
@@ -173,5 +176,9 @@ public class Client {
 
     public void setBridge(Bridge bridge) {
         this.bridge = bridge;
+    }
+
+    public ClientMessageHandler getMessageHandler(){
+        return messageHandler;
     }
 }

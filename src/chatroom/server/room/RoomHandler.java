@@ -1,5 +1,7 @@
 package chatroom.server.room;
 
+import chatroom.model.message.RoomListMessage;
+import chatroom.model.message.RoomMessage;
 import chatroom.server.Server;
 
 import java.util.ArrayList;
@@ -18,11 +20,21 @@ public class RoomHandler {
     public void addRoom(String name) {
         roomList.add(new Room(name));
         server.getBridge().updateRoomListView(getRoomNamesList());
+        try {
+            server.getMessageListener().getMessageQueue().put(buildRoomListMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void removeRoom(Room room) {
         roomList.remove(room);
         server.getBridge().updateRoomListView(getRoomNamesList());
+        try {
+            server.getMessageListener().getMessageQueue().put(buildRoomListMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -34,12 +46,22 @@ public class RoomHandler {
                 break;
             }
         }
+        try {
+            server.getMessageListener().getMessageQueue().put(buildRoomListMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void editRoom(String oldName, String newName) {
         Room room = getRoom(oldName);
         room.setName(newName);
         server.getBridge().updateRoomListView(getRoomNamesList());
+        try {
+            server.getMessageListener().getMessageQueue().put(buildRoomListMessage());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public Room getRoom(String name){
@@ -61,5 +83,13 @@ public class RoomHandler {
             roomNames.add(r.getName());
         }
         return roomNames;
+    }
+
+    public RoomListMessage buildRoomListMessage(){
+        List<RoomMessage> list = new ArrayList<>();
+        for(Room r : roomList){
+            list.add(new RoomMessage(r.getName(),r.getRoomSize()));
+        }
+        return new RoomListMessage(list);
     }
 }
