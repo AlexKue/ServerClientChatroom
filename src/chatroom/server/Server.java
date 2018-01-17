@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import chatroom.model.UserConnectionInfo;
 import chatroom.model.message.MessageTypeDictionary;
+import chatroom.model.message.RoomNameEditMessage;
 import chatroom.model.message.WarningMessage;
 import chatroom.server.gui.Bridge;
 import chatroom.server.listener.MessageListener;
@@ -48,7 +49,6 @@ public class Server {
 
             //Create roomHandler with default room
             roomHandler = new RoomHandler(this);
-
             logger.log(Level.INFO,"Server Online!");
         } catch (IOException ex) {
             logger.log(Level.SEVERE, "Failed to start server!",ex);
@@ -129,22 +129,31 @@ public class Server {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                break;
             }
+            bridge.addEventToLog("Server:" + user + " has been kicked from the server.");
         }
+        bridge.updateUserListView(getAllUsers());
+
     }
 
     public void warnUser(String user) {
         for(UserListeningThread u : networkListener.getUserListeningThreadList()){
             if(u.getUserConnectionInfo().isLoggedIn() && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(user)){
-                WarningMessage m = new WarningMessage(0,"You received a Warning! Please don't disrupt the server!");
+                WarningMessage m = new WarningMessage(0,"You received a Warning! Further disturbance may have consequences!!");
                 m.setUserConnectionInfo(u.getUserConnectionInfo());
                 try {
                     messageListener.getMessageQueue().put(m);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                break;
             }
+            bridge.addEventToLog("Server: A Warning has been sent to " + user);
+
         }
+        bridge.updateUserListView(getAllUsers());
+
     }
 
     public void banUser(String user) {
@@ -157,12 +166,22 @@ public class Server {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                break;
             }
+            bridge.addEventToLog("Server:" + user + " has been kicked from the server.");
         }
+        bridge.updateUserListView(getAllUsers());
     }
 
     public void editRoom(String oldName, String newName) {
         roomHandler.editRoom(oldName,newName);
+        bridge.addEventToLog("RoomHandler: " + "Room \"" + oldName + "\" has been renamed to \"" + newName + "\"");
+        try {
+            messageListener.getMessageQueue().put(new RoomNameEditMessage(newName));
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void addRoom(String name) {
@@ -175,12 +194,12 @@ public class Server {
 
     public ArrayList<String> getAllUsers() {
         ArrayList <String> userNames = new ArrayList<>();
-
         for(UserListeningThread u : networkListener.getUserListeningThreadList()){
             if(u.getUserConnectionInfo().isLoggedIn()){
                 userNames.add(u.getUserConnectionInfo().getUserAccountInfo().getLoginName());
             }
         }
+
         return userNames;
     }
 

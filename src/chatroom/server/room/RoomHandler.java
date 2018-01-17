@@ -1,5 +1,6 @@
 package chatroom.server.room;
 
+import chatroom.model.UserConnectionInfo;
 import chatroom.model.message.RoomListMessage;
 import chatroom.model.message.RoomMessage;
 import chatroom.server.Server;

@@ -48,7 +48,6 @@ public class NetworkListener extends Thread {
         shutdown();
     }
 
-
     /**
      * Returns the ThreadList of ALL clients, even them being NOT logged in into
      * an account
@@ -100,7 +99,7 @@ public class NetworkListener extends Thread {
             //close Sockets
             userThread.close();
         }
-
+        server.getBridge().updateUserListView(server.getAllUsers());
     }
 
     /**

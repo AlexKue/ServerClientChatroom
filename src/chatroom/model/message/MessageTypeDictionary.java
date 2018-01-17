@@ -24,6 +24,7 @@ public class MessageTypeDictionary {
         messageTypeHashMap.put((byte) 10, MessageType.WARNINGMSG);
         messageTypeHashMap.put((byte) 11, MessageType.SERVERUSERLISTMSG);
         messageTypeHashMap.put((byte) 12, MessageType.ROOMCHANGERESPONSEMSG);
+        messageTypeHashMap.put((byte) 13, MessageType.ROOMNAMEEDITMSG);
 
         for(byte key : messageTypeHashMap.keySet()){
             reverseHashMap.put(messageTypeHashMap.get(key), key);

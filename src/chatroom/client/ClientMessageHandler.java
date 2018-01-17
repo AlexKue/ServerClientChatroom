@@ -29,6 +29,7 @@ public class ClientMessageHandler extends Thread {
     }
 
     public void handleMessage(Message message) {
+        System.out.println(client.getMessageTypeDictionary().getType(message.getType()));
         switch (client.getMessageTypeDictionary().getType(message.getType())) {
             case PUBLICTEXTMSG:
                 PublicTextMessage publicTextMessage = ((PublicTextMessage) message);
@@ -59,6 +60,7 @@ public class ClientMessageHandler extends Thread {
                 RoomListMessage roomListMessage = ((RoomListMessage) message);
                 client.setRoomMessageList(roomListMessage.getRoomList());
                 client.getBridge().onRoomUpdate(client.getRooms());
+                System.out.println(client.getRooms());
                 break;
             case ROOMCHANGERESPONSEMSG:
                 RoomChangeResponseMessage roomChangeResponseMessage = ((RoomChangeResponseMessage) message);
@@ -76,6 +78,10 @@ public class ClientMessageHandler extends Thread {
                 RoomUserListMessage roomUserListMessage = ((RoomUserListMessage) message);
                 client.setRoomUserList((ArrayList<String>) roomUserListMessage.getUserList());
                 client.getBridge().userRoomUpdate((ArrayList<String>) roomUserListMessage.getUserList());
+                break;
+            case ROOMNAMEEDITMSG:
+                RoomNameEditMessage roomNameEditMessage = ((RoomNameEditMessage)message);
+                client.setActiveRoom(roomNameEditMessage.getNewName());
                 break;
             case LOGINRESPONSEMSG:
                 client.getBridge().onServerLoginAnswer(((LoginResponseMessage) message).getResponse());
