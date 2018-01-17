@@ -136,10 +136,13 @@ public class HomeGui {
     //Updates the room View
     public void updateRooms(ArrayList<String> rooms) {
         this.rooms = rooms;
+        roomSelection.getItems().setAll(rooms);
 
-        for (String k : rooms) {
-            roomSelection.getItems().add(k);
-        }
+//        this.rooms = rooms;
+//
+//        for (String k : rooms) {
+//            roomSelection.getItems().add(k);
+//        }
 
 /*
         availableRooms.getItems().clear();
