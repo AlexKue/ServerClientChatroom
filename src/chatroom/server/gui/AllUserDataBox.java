@@ -23,6 +23,9 @@ public class AllUserDataBox {
         VBox layout = new VBox();
         Label allUsersLabel = new Label("All Users");
         ArrayList<String> allUsersList =  bridge.getAllUsers();
+        if (allUsersList.isEmpty()){
+            allUsersList.add("");
+        }
         ListView<String> listView = new ListView<>();
         listView.getItems().addAll(allUsersList);
         layout.getChildren().addAll(allUsersLabel, listView);
