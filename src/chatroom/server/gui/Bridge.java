@@ -20,7 +20,7 @@ public class Bridge {
 
     //This Method is for Code to run when a Close is requested
     public void onClose() {
-
+        model.stop();
     }
 
     //Updates the room list view

@@ -29,12 +29,9 @@ public class NetworkListener extends Thread {
     public void run() {
         while (server.isRunning()) {
             try {
-
                 //Accept new Client and create new ConnectionInfo
                 UserConnectionInfo userConnectionInfo = new UserConnectionInfo(server.getListener().accept());
                 server.log(Level.INFO, "New Client Connected: " + userConnectionInfo.getSocket().getInetAddress());
-                server.getBridge().addEventToLog("New Client Connected: " + userConnectionInfo.getSocket().getInetAddress());
-
                 //Create new Thread for the MessageListener for each new client
                 UserListeningThread u = new UserListeningThread(userConnectionInfo, server);
                 getUserListeningThreadList().add(u);
@@ -43,7 +40,6 @@ public class NetworkListener extends Thread {
                 server.log(Level.SEVERE, "NetworkListener: Exception while adding an client!",ex);
                 //.accept() will throw if server is closing
             }
-
         }
         shutdown();
     }

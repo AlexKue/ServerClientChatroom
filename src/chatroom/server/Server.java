@@ -65,12 +65,11 @@ public class Server {
             logger.log(Level.SEVERE, "Server: Failed to start server!",ex);
             System.exit(1);
         }
-
     }
 
 
 
-    private void stop(){
+    public void stop(){
         log(Level.WARNING,"Server: Closing the Server Socket!");
         try {
             listener.close();

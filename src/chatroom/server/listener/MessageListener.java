@@ -116,9 +116,9 @@ public class MessageListener extends Thread {
 
         //Updates userlist of old room
         List<String> oldRoomUserList = oldRoom.getUserNameList();
-        System.out.println(oldRoom.getUserNameList());
         RoomUserListMessage oldRoomList = new RoomUserListMessage(oldRoomUserList,oldRoom.getName());
         sendToRoom(oldRoomList,oldRoom.getName());
+        System.out.println(oldRoomUserList);
 
         //Adding the user to the new Room
         m.getUserConnectionInfo().setActiveRoom(newRoom);
@@ -127,11 +127,11 @@ public class MessageListener extends Thread {
                 " has joined your Room.");
         sendToRoom(serverMessageNewRoom,newRoom.getName());
 
-
         //Updating RoomUserLists of the new Room
         List<String> newRoomUserList = newRoom.getUserNameList();
-        RoomUserListMessage newRoomList = new RoomUserListMessage(newRoomUserList,newRoom.getName());
-        sendToRoom(newRoomList,newRoom.getName());
+        RoomUserListMessage newRoomListMessage = new RoomUserListMessage(newRoomUserList,newRoom.getName());
+        sendToRoom(newRoomListMessage,newRoom.getName());
+        System.out.println(newRoomUserList);
 
         //Change Successful
         RoomChangeResponseMessage responseMessage = new RoomChangeResponseMessage(true, newRoom.getName());
@@ -296,17 +296,29 @@ public class MessageListener extends Thread {
             RoomUserListMessage roomUserListMessage = new RoomUserListMessage(roomUserNameList,"lobby");
             ServerUserListMessage serverUserListMessage = buildUserListMessage();
 
+            //Send user a message that he has logged into the lobby
+            Message roomChangeResponse = new RoomChangeResponseMessage(true, "lobby");
+            roomChangeResponse.setUserConnectionInfo(m.getUserConnectionInfo());
+
             //send Messages
+            //send the authentication response
             sendToTarget(responseMessage);
             sleep(50);
 
+            //send the list of available rooms to the new Client
             serializer.serialize(m.getUserConnectionInfo().getOut(), roomListMessage);
             sleep(50);
 
+            //update the list of users logged in in the lobby for all users in the lobby
             sendToRoom(roomUserListMessage,"lobby");
             sleep(50);
 
-            serializer.serialize(m.getUserConnectionInfo().getOut(), serverUserListMessage);
+            //update lists of all users in the server for all clients
+            sendToAll(serverUserListMessage);
+
+            sleep(50);
+            //send room change response
+            sendToTarget(roomChangeResponse);
 
             server.log(Level.INFO, "Created new Account for " + loginMessage.getLoginName() + "@" + loginMessage.getUserConnectionInfo().getSocket().getInetAddress());
             sendToRoom(new PublicServerMessage(m.getUserConnectionInfo().getUserAccountInfo().getDisplayName() + " has connected to the Server!"),"lobby");
@@ -345,7 +357,6 @@ public class MessageListener extends Thread {
                 UserAccountInfo accountInfo = userStorage.getUserAccountInfo(loginMessage.getLoginName());
                 m.getUserConnectionInfo().setUserAccountInfo(accountInfo);
 
-
                 //Set Room to lobby
                 m.getUserConnectionInfo().setActiveRoom(server.getRoomHandler().getRoom("lobby"));
                 server.getRoomHandler().getRoom("lobby").addUser(m.getUserConnectionInfo());
@@ -357,14 +368,28 @@ public class MessageListener extends Thread {
                 RoomUserListMessage roomUserListMessage = new RoomUserListMessage(userNameList,"lobby");
                 ServerUserListMessage serverUserListMessage = buildUserListMessage();
 
+                //Send user a message that he has logged into the lobby
+                Message roomChangeResponse = new RoomChangeResponseMessage(true, "lobby");
+                roomChangeResponse.setUserConnectionInfo(m.getUserConnectionInfo());
+
                 //send the messages
+                //send authenticate response
                 sendToTarget(response);
                 sleep(50);
+
+                //send list of available rooms to the client
                 serializer.serialize(m.getUserConnectionInfo().getOut(), roomUserListMessage);
                 sleep(50);
+
+                //update lists of users in the lobby for all users in the lobby
                 sendToRoom(roomListMessage,"lobby");
                 sleep(50);
-                serializer.serialize(m.getUserConnectionInfo().getOut(), serverUserListMessage);
+
+                //update lists of all users connected on the server for everyone
+                sendToAll(serverUserListMessage);
+
+                //send room change response to the client
+                sendToTarget(roomChangeResponse);
 
                 //Notify other users that someone connected
                 sendToRoom(new PublicServerMessage(accountInfo.getDisplayName() + " has connected to the Server!"),"lobby");
