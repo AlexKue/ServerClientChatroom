@@ -154,14 +154,29 @@ public class ServerHomeGui {
     }
 
     private void kickUser(String user) {
+        try{
+            user = user.substring(0, user.indexOf('|'));
+        }catch (Exception e){
+
+        }
         bridge.kickUser(user);
     }
 
     private void warnUser(String user) {
+        try{
+            user = user.substring(0, user.indexOf('|'));
+        }catch (Exception e){
+
+        }
         bridge.warnUser(user);
     }
 
     private void banUser(String user) {
+        try{
+            user = user.substring(0, user.indexOf('|'));
+        }catch (Exception e){
+
+        }
         bridge.banUser(user);
     }
 
