@@ -92,7 +92,7 @@ public class HomeGui {
 
         chatBoxContainer.getStyleClass().add("scroll-pane");
         borderPane.getStyleClass().add("mainBackground");
-        borderPane.setPadding(new Insets(80, 80, 80, 80));
+        borderPane.setPadding(new Insets(20, 10, 10, 20));
         message.getStyleClass().add("textArea");
         roomSelection.getStyleClass().add("roomSelection");
         userLists.getStyleClass().add("tabPane");
@@ -189,7 +189,7 @@ public class HomeGui {
             hbox.setAlignment(Pos.CENTER_RIGHT);
             label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
             label.setPrefWidth(400);
-            label.setStyle("-fx-background-color:#0A3F79; -fx-text-fill: #C5C8C6");
+            label.setStyle("-fx-background-color:#0A3F79; -fx-text-fill: #C5C8C6; -fx-background-radius: 4");
             hbox.getChildren().add(label);
 
         } else if(username.equals("SERVER")) {
@@ -197,17 +197,16 @@ public class HomeGui {
             hbox.setAlignment(Pos.CENTER_LEFT);
             label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
             label.setPrefWidth(400);
-            label.setStyle("-fx-background-color:#771919; -fx-text-fill: #C5C8C6");
+            label.setStyle("-fx-background-color:#771919; -fx-text-fill: #C5C8C6; -fx-background-radius: 4");
             hbox.getChildren().add(label);
         }else{
             hbox = new HBox();
             hbox.setAlignment(Pos.CENTER_LEFT);
             label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
             label.setPrefWidth(400);
-            label.setStyle("-fx-background-color:#0A2F58; -fx-text-fill: #C5C8C6");
+            label.setStyle("-fx-background-color:#0A2F58; -fx-text-fill: #C5C8C6; -fx-background-radius: 4;");
             hbox.getChildren().add(label);
         }
-
         label.setWrapText(true);
         chatBox.getChildren().add(hbox);
         index++;
