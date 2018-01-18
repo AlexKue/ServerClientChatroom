@@ -171,5 +171,10 @@ public class UserStorage {
 
     public void banUser(UserAccountInfo user) {
         banList.add(user);
+        saveBannListToFile();
+    }
+
+    public ArrayList<UserAccountInfo> getUserInfoList() {
+        return userInfo;
     }
 }

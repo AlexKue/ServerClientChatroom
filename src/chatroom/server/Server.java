@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+import chatroom.model.UserAccountInfo;
 import chatroom.model.UserConnectionInfo;
 import chatroom.model.message.MessageTypeDictionary;
 import chatroom.model.message.RoomNameEditMessage;
@@ -123,7 +124,7 @@ public class Server {
             }
             log(Level.INFO, "Server:" + user + " has been kicked from the server.");
         }
-        bridge.updateUserListView(getAllUsers());
+        bridge.updateUserListView(requestUserList());
     }
 
     /**
@@ -144,7 +145,7 @@ public class Server {
             }
             log(Level.INFO, "Server: A Warning has been sent to " + user);
         }
-        bridge.updateUserListView(getAllUsers());
+        bridge.updateUserListView(requestUserList());
 
     }
 
@@ -166,7 +167,7 @@ public class Server {
             }
             log(Level.INFO, "Server:" + user + " has been banned from the server.");
         }
-        bridge.updateUserListView(getAllUsers());
+        bridge.updateUserListView(requestUserList());
     }
 
     public void editRoom(String oldName, String newName) {
@@ -188,12 +189,10 @@ public class Server {
 
     public ArrayList<String> getAllUsers() {
         ArrayList <String> userNames = new ArrayList<>();
-        for(UserListeningThread u : networkListener.getUserListeningThreadList()){
-            if(u.getUserConnectionInfo().isLoggedIn()){
-                userNames.add(u.getUserConnectionInfo().getUserAccountInfo().getLoginName());
-            }
+        for(UserAccountInfo u : messageListener.getUserStorage().getUserInfoList()){
+            userNames.add(u.getLoginName());
         }
-
+        System.out.println(userNames);
         return userNames;
     }
     public void log(Level level, String msg, Exception ex) {

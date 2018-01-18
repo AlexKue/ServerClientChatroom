@@ -244,7 +244,7 @@ public class MessageListener extends Thread {
         //Update the lists
         sendToRoom(roomUserListMessage,activeRoom.getName());
 
-        server.getBridge().updateUserListView(server.getAllUsers());
+        server.getBridge().updateUserListView(server.requestUserList());
 
     }
 
@@ -309,7 +309,7 @@ public class MessageListener extends Thread {
 
             server.log(Level.INFO, "Created new Account for " + loginMessage.getLoginName() + "@" + loginMessage.getUserConnectionInfo().getSocket().getInetAddress());
             sendToRoom(new PublicServerMessage(m.getUserConnectionInfo().getUserAccountInfo().getDisplayName() + " has connected to the Server!"),"lobby");
-            server.getBridge().updateUserListView(server.getAllUsers());
+            server.getBridge().updateUserListView(server.requestUserList());
             return;
             //CASE: Username is taken
         } else {

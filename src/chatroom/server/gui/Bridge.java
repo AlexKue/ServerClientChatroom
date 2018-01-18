@@ -2,6 +2,7 @@ package chatroom.server.gui;
 
 import chatroom.server.Server;
 import chatroom.server.ServerForTesting;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
@@ -24,11 +25,11 @@ public class Bridge {
 
     //Updates the room list view
     public void updateRoomListView(ArrayList<String> rooms){
-        gui.serverHomeGui.updateRoomListView(rooms);
+        Platform.runLater(() -> gui.serverHomeGui.updateRoomListView(rooms));
     }
 
     public void updateUserListView(ArrayList<String> users){
-        gui.serverHomeGui.updateUserListView(users);
+        Platform.runLater(() -> gui.serverHomeGui.updateUserListView(users));
     }
 
     //Requests the room list from the Model TODO: ---ERSETZEN und IMPLEMETIEREN

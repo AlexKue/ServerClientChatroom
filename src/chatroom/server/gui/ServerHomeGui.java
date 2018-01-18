@@ -132,8 +132,10 @@ public class ServerHomeGui {
     }
 
     public void updateUserListView(ArrayList<String> users) {
-        this.connectedUsers.clear();
-        this.connectedUsers.addAll(users);
+        this.connectedUsers.setAll(users);
+
+//        this.connectedUsers.clear();
+//        this.connectedUsers.addAll(users);
     }
 
     private void kickUser(String user) {
