@@ -192,7 +192,14 @@ public class HomeGui {
             label.setStyle("-fx-background-color:#0A3F79; -fx-text-fill: #C5C8C6");
             hbox.getChildren().add(label);
 
-        } else {
+        } else if(username.equals("SERVER")) {
+            hbox = new HBox();
+            hbox.setAlignment(Pos.CENTER_LEFT);
+            label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
+            label.setPrefWidth(400);
+            label.setStyle("-fx-background-color:#771919; -fx-text-fill: #C5C8C6");
+            hbox.getChildren().add(label);
+        }else{
             hbox = new HBox();
             hbox.setAlignment(Pos.CENTER_LEFT);
             label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
