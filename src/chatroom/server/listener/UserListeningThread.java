@@ -3,6 +3,7 @@ package chatroom.server.listener;
 import chatroom.model.message.Message;
 import chatroom.model.UserConnectionInfo;
 import chatroom.model.message.PublicTextMessage;
+import chatroom.model.message.RoomChangeRequestMessage;
 import chatroom.serializer.Serializer;
 import chatroom.server.Server;
 
@@ -73,12 +74,20 @@ public class UserListeningThread extends Thread {
     }
 
     private void log(Message m) {
+        String logmsg = "Receiving: [" + server.getMessageTypeDictionary().getType(m.getType()).toString() + "] ";
+        String name = userConnectionInfo.getUserAccountInfo().getLoginName();
         switch (server.getMessageTypeDictionary().getType(m.getType())){
             case PUBLICTEXTMSG:
-                String name = userConnectionInfo.getUserAccountInfo().getLoginName();
                 String room = userConnectionInfo.getActiveRoom().getName();
                 String message = ((PublicTextMessage)m).getMessage();
-                server.log(Level.INFO,"Receiving: " + name + "@" + room + ": " + message);
+                logmsg.concat(name + "@" + room + ": " + message);
+                server.log(Level.INFO,logmsg);
+                break;
+            case ROOMCHANGEREQMSG:
+                RoomChangeRequestMessage roomChangeRequestMessage = (RoomChangeRequestMessage)m;
+                logmsg.concat(name + "@" + userConnectionInfo.getActiveRoom().getName() + "requests room switch to " + roomChangeRequestMessage.getRoomName());
+                server.log(Level.INFO,logmsg);
+                break;
         }
     }
 

@@ -113,25 +113,29 @@ public class MessageListener extends Thread {
         PublicServerMessage serverMessageOldRoom = new PublicServerMessage(message.getLoginName() +
                 " has gone to the Room \"" + message.getRoomName() + "\"");
         sendToRoom(serverMessageOldRoom,oldRoom.getName());
+        sleep(50);
 
         //Updates userlist of old room
         List<String> oldRoomUserList = oldRoom.getUserNameList();
         RoomUserListMessage oldRoomList = new RoomUserListMessage(oldRoomUserList,oldRoom.getName());
         sendToRoom(oldRoomList,oldRoom.getName());
-        System.out.println(oldRoomUserList);
+        sleep(50);
+
+        //Notify users about change
+        PublicServerMessage serverMessageNewRoom = new PublicServerMessage(message.getLoginName() +
+                " has joined your Room.");
+        sendToRoom(serverMessageNewRoom,newRoom.getName());
+        sleep(50);
 
         //Adding the user to the new Room
         m.getUserConnectionInfo().setActiveRoom(newRoom);
         newRoom.addUser(m.getUserConnectionInfo());
-        PublicServerMessage serverMessageNewRoom = new PublicServerMessage(message.getLoginName() +
-                " has joined your Room.");
-        sendToRoom(serverMessageNewRoom,newRoom.getName());
 
         //Updating RoomUserLists of the new Room
         List<String> newRoomUserList = newRoom.getUserNameList();
         RoomUserListMessage newRoomListMessage = new RoomUserListMessage(newRoomUserList,newRoom.getName());
         sendToRoom(newRoomListMessage,newRoom.getName());
-        System.out.println(newRoomUserList);
+        sleep(50);
 
         //Change Successful
         RoomChangeResponseMessage responseMessage = new RoomChangeResponseMessage(true, newRoom.getName());
@@ -206,16 +210,22 @@ public class MessageListener extends Thread {
     }
 
     private void sendToRoom(Message m, String roomName) throws IOException {
+        String logmsg = "Sending: [" + server.getMessageTypeDictionary().getType(m.getType()).toString() + "] ";
         switch (server.getMessageTypeDictionary().getType(m.getType())) {
             case PUBLICTEXTMSG:
                 PublicTextMessage publicTextMessage = (PublicTextMessage)m;
-                server.log(Level.INFO, "Sending: " + publicTextMessage.getSender()+ "@" + roomName + ": " + publicTextMessage.getMessage());
+                logmsg.concat(publicTextMessage.getSender()+ "@" + roomName + ": " + publicTextMessage.getMessage());
                 break;
             case PUBLICSERVERMSG:
                 PublicServerMessage publicServerMessage = (PublicServerMessage)m;
-                server.log(Level.INFO, "Sending: Servermessage to Room \"" + roomName + "\": " + publicServerMessage.getMessage());
+                logmsg.concat("SERVER@" + roomName + ": " + publicServerMessage.getMessage());
+                break;
+            case ROOMUSERLISTMSG:
+                logmsg.concat("Updating RoomUserLists for Clients @" + roomName);
                 break;
         }
+        server.log(Level.INFO,logmsg);
+
         Room room = server.getRoomHandler().getRoom(roomName);
         for(UserConnectionInfo info : room.getUserList()){
             serializer.serialize(info.getOut(),m);

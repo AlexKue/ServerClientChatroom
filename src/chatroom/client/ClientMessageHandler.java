@@ -30,7 +30,6 @@ public class ClientMessageHandler extends Thread {
     }
 
     public void handleMessage(Message message) {
-        System.out.println(client.getMessageTypeDictionary().getType(message.getType()));
         switch (client.getMessageTypeDictionary().getType(message.getType())) {
             case PUBLICTEXTMSG:
                 PublicTextMessage publicTextMessage = ((PublicTextMessage) message);
@@ -55,7 +54,15 @@ public class ClientMessageHandler extends Thread {
                 break;
             case WARNINGMSG:
                 WarningMessage warningMessage = ((WarningMessage) message);
-                client.getBridge().issueBox(warningMessage.getMessage());
+                switch (warningMessage.getSeverity()){
+                    case 0:
+                        client.getBridge().issueBox(warningMessage.getMessage(),false);
+                        break;
+                    case 1:
+                    case 2:
+                        client.getBridge().issueBox(warningMessage.getMessage(),true);
+                        break;
+                }
                 break;
             case ROOMLISTMSG:
                 RoomListMessage roomListMessage = ((RoomListMessage) message);
