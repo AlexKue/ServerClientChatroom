@@ -110,6 +110,7 @@ public class ServerHomeGui {
         log.setWrapText(true);
         log.setEditable(false);
         centerBox.getChildren().addAll(log, showUserData);
+        centerBox.setPadding(new Insets(20, 20, 20, 20));
         mainScene.setCenter(centerBox);
     }
 
