@@ -52,11 +52,11 @@
     -fx-background-color: #37095B;
 }
 .list-cell{
-    -fx-text-fill: #75bd61;
+    -fx-text-fill: #FFFFFF;
     -fx-font-weight: bold;
 }
 .list-cell:selected{
-    -fx-background-color: #3a843c;
+    -fx-background-color: #0A2F58;
 }
 .Buttons{
     -fx-background-color:
