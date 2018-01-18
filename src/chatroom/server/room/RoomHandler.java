@@ -68,9 +68,10 @@ public class RoomHandler {
         }
     }
 
-    public void editRoom(String oldName, String newName) {
+    public boolean editRoom(String oldName, String newName) {
         if (oldName.equals("lobby")) {
             server.log(Level.WARNING, "RoomHandler: Cannot edit room \"lobby\"");
+            return false;
         } else {
             Room room = getRoom(oldName);
             room.setName(newName);
@@ -81,6 +82,7 @@ public class RoomHandler {
                 server.log(Level.WARNING, "RoomHandler: Exception while sending a RoomListMessage: ", e);
             }
             server.log(Level.INFO, "RoomHandler: " + "Room \"" + oldName + "\" has been renamed to \"" + newName + "\"");
+            return true;
         }
     }
 

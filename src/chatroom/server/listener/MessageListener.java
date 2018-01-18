@@ -105,19 +105,20 @@ public class MessageListener extends Thread {
      */
     private void changeRoom(Message m) throws InterruptedException, IOException {
         RoomChangeRequestMessage message = (RoomChangeRequestMessage)m;
-        Room activeRoom = m.getUserConnectionInfo().getActiveRoom();
+        Room oldRoom = m.getUserConnectionInfo().getActiveRoom();
         Room newRoom = server.getRoomHandler().getRoom(message.getRoomName());
 
         //Removing the User from the old room
-        activeRoom.removeUser(m.getUserConnectionInfo());
+        oldRoom.removeUser(m.getUserConnectionInfo());
         PublicServerMessage serverMessageOldRoom = new PublicServerMessage(message.getLoginName() +
                 " has gone to the Room \"" + message.getRoomName() + "\"");
-        sendToRoom(serverMessageOldRoom,activeRoom.getName());
+        sendToRoom(serverMessageOldRoom,oldRoom.getName());
 
         //Updates userlist of old room
-        List<String> oldRoomUserList = activeRoom.getUserNameList();
-        RoomUserListMessage oldRoomList = new RoomUserListMessage(oldRoomUserList,activeRoom.getName());
-        sendToRoom(oldRoomList,activeRoom.getName());
+        List<String> oldRoomUserList = oldRoom.getUserNameList();
+        System.out.println(oldRoom.getUserNameList());
+        RoomUserListMessage oldRoomList = new RoomUserListMessage(oldRoomUserList,oldRoom.getName());
+        sendToRoom(oldRoomList,oldRoom.getName());
 
         //Adding the user to the new Room
         m.getUserConnectionInfo().setActiveRoom(newRoom);
@@ -136,7 +137,7 @@ public class MessageListener extends Thread {
         RoomChangeResponseMessage responseMessage = new RoomChangeResponseMessage(true, newRoom.getName());
         responseMessage.setUserConnectionInfo(m.getUserConnectionInfo());
         messageQueue.put(responseMessage);
-        server.log(Level.INFO, message.getLoginName() + " switched from Room \"" + activeRoom.getName() + "\" to \"" + newRoom.getName() + "\"");
+        server.log(Level.INFO, message.getLoginName() + " switched from Room \"" + oldRoom.getName() + "\" to \"" + newRoom.getName() + "\"");
         server.log(Level.INFO,"Sending: RoomChangeResponse to " + m.getUserConnectionInfo().getUserAccountInfo().getLoginName());
     }
 

@@ -146,7 +146,6 @@ public class Server {
             log(Level.INFO, "Server: A Warning has been sent to " + user);
         }
         bridge.updateUserListView(requestUserList());
-
     }
 
     /**
@@ -171,8 +170,7 @@ public class Server {
     }
 
     public void editRoom(String oldName, String newName) {
-        roomHandler.editRoom(oldName,newName);
-        try {
+        if(roomHandler.editRoom(oldName,newName)) try {
             messageListener.getMessageQueue().put(new RoomNameEditMessage(newName));
         } catch (InterruptedException e) {
             log(Level.SEVERE,"Roomhandler: Exception while notifying users of the new Name " + oldName,e);
