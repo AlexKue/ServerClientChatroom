@@ -25,6 +25,7 @@ public class Client {
     private List<String> serverUserList;
     private List<RoomMessage> roomMessageList;
     private Bridge bridge;
+    private Socket server;
 
 
     public Client() {
@@ -41,6 +42,12 @@ public class Client {
         //System.exit(0);
         isLoggedIn = false;
         isRunning = false;
+        try {
+            server.close();
+        } catch (IOException e) {
+            //We close anyways
+        }
+
     }
 
     private void start() {
@@ -51,7 +58,7 @@ public class Client {
 
     public void ConnectToAdress(String address) {
         try {
-            Socket server = new Socket(address, 54322);
+            server = new Socket(address, 54322);
             System.out.println("Connected to server!");
 
             InputStream dataIn = server.getInputStream();
