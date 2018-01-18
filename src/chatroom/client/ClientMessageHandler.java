@@ -67,6 +67,7 @@ public class ClientMessageHandler extends Thread {
                 if (roomChangeResponseMessage.isSuccessful()) {
                     client.setActiveRoom(roomChangeResponseMessage.getRoomName());
                     client.getBridge().onRoomChangeRequestAccepted(roomChangeResponseMessage.getRoomName());
+                    client.getBridge().AddMessageToView("SERVER","You are now talking in Room\"" + roomChangeResponseMessage.getRoomName() + "\"");
                 }
                 break;
             case SERVERUSERLISTMSG:
@@ -97,7 +98,7 @@ public class ClientMessageHandler extends Thread {
                     case ALREADY_LOGGED_IN:
                         System.out.println("*** Someone is already using your Account!!!! ***");
                         System.out.println("*** Your Account might be in danger. Contact an admin! ***");
-                        client.stop();
+//                        client.stop();
                         break;
                     case WRONG_PASSWORD:
                         System.out.println("*** Wrong password! Please try again! ***");

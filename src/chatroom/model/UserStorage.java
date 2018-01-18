@@ -62,6 +62,14 @@ public class UserStorage {
         }
         return null;
     }
+    public boolean isBanned(String loginName){
+        for(UserAccountInfo u : banList){
+            if(u.getLoginName().equals(loginName)){
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Checks in the Storage if the loginName is already in use on this server
