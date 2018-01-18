@@ -11,6 +11,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -178,13 +179,15 @@ public class HomeGui {
         if (username.equals(bridge.getUsername())) {
 
             label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
-            label.setStyle("-fx-background-color:#CC6666; -fx-text-fill: #C5C8C6");
+            label.setPrefWidth(400);
+            label.setStyle("-fx-background-color:#0A3F79; -fx-text-fill: #C5C8C6");
             label.setAlignment(Pos.CENTER_LEFT);
 
         } else {
 
             label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
-            label.setStyle("-fx-background-color:#8ABEB7; -fx-text-fill: #C5C8C6");
+            label.setPrefWidth(400);
+            label.setStyle("-fx-background-color:#0A2F58; -fx-text-fill: #C5C8C6");
             label.setAlignment(Pos.CENTER_RIGHT);
 
         }
@@ -224,6 +227,7 @@ public class HomeGui {
 
     public void showIssueAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.initModality(Modality.APPLICATION_MODAL);
         alert.setTitle("!!! [WARNING69] !!!");
         alert.setContentText(message);
         alert.showAndWait();
