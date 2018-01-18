@@ -43,6 +43,7 @@ public class ClientListeningThread extends Thread {
                 messageQueue.put(m);
             } catch (IOException ex) {
                 System.err.println("Connection Lost: " + ex.toString() + "\nShutting down client!");
+                client.getBridge().issueBox("Connection lost to server.",true);
                 client.stop();
             } catch (InterruptedException e) {
                 e.printStackTrace();

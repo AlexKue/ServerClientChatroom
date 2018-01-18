@@ -18,6 +18,11 @@
 .scrollPane .content{
     -fx-background-color: #4A097D;
 }
+
+.scroll-pane > .viewport {
+    -fx-background-color: #4A097D;
+}
+
 .UserSelection {
     -fx-text-fill: #04231B;
     -fx-background-color: white;

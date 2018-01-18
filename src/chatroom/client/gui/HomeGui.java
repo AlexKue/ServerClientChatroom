@@ -90,7 +90,7 @@ public class HomeGui {
         //borderPane.setPrefSize(700, 900);
         borderPane.setCenter(container);
 
-        chatBoxContainer.getStyleClass().add("background");
+        chatBoxContainer.getStyleClass().add("scroll-pane");
         borderPane.getStyleClass().add("mainBackground");
         borderPane.setPadding(new Insets(80, 80, 80, 80));
         message.getStyleClass().add("textArea");

@@ -90,6 +90,7 @@ public class ClientMessageHandler extends Thread {
             case ROOMNAMEEDITMSG:
                 RoomNameEditMessage roomNameEditMessage = ((RoomNameEditMessage)message);
                 client.setActiveRoom(roomNameEditMessage.getNewName());
+                client.getBridge().onRoomChangeRequestAccepted(roomNameEditMessage.getNewName());
                 break;
             case LOGINRESPONSEMSG:
                 client.getBridge().onServerLoginAnswer(((LoginResponseMessage) message).getResponse());
