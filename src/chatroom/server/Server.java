@@ -3,6 +3,7 @@ package chatroom.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -11,9 +12,7 @@ import java.util.logging.SimpleFormatter;
 
 import chatroom.model.UserAccountInfo;
 import chatroom.model.UserConnectionInfo;
-import chatroom.model.message.MessageTypeDictionary;
-import chatroom.model.message.RoomNameEditMessage;
-import chatroom.model.message.WarningMessage;
+import chatroom.model.message.*;
 import chatroom.server.gui.Bridge;
 import chatroom.server.listener.MessageListener;
 import chatroom.server.listener.NetworkListener;
@@ -164,8 +163,9 @@ public class Server {
     public void editRoom(String oldName, String newName) {
         if(roomHandler.editRoom(oldName,newName)) try {
             messageListener.getMessageQueue().put(new RoomNameEditMessage(newName));
+
         } catch (InterruptedException e) {
-            log(Level.SEVERE,"Roomhandler: Exception while notifying users of the new Name " + oldName,e);
+            log(Level.SEVERE,"RoomHandler: Exception while notifying users of the new Name " + oldName,e);
         }
     }
 
@@ -173,7 +173,47 @@ public class Server {
         roomHandler.addRoom(name);
     }
 
+    /**
+     * Moves every Client to the lobby and the deletes the room
+     * @param name the name of the room
+     */
     public void deleteRoom(String name) {
+        Room r = roomHandler.getRoom(name);
+        for(UserConnectionInfo u : roomHandler.getRoom("lobby").getUserList() ){
+            TargetedServerMessage targetedServerMessage = new TargetedServerMessage("Room \"" + name + "\" has been deleted and its users have been moved to the lobby.");
+            targetedServerMessage.setUserConnectionInfo(u);
+            try {
+                messageListener.getMessageQueue().put(targetedServerMessage);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        for(UserConnectionInfo u : r.getUserList()){
+            u.setActiveRoom(roomHandler.getRoom("lobby"));
+            roomHandler.getRoom("lobby").addUser(u);
+
+            RoomNameEditMessage roomNameEditMessage = new RoomNameEditMessage("lobby");
+            roomNameEditMessage.setUserConnectionInfo(u);
+
+            TargetedServerMessage targetedServerMessage = new TargetedServerMessage("Room \"" + name + "\" has been deleted and you have been moved to the lobby.");
+            targetedServerMessage.setUserConnectionInfo(u);
+
+            try {
+                messageListener.getMessageQueue().put(roomNameEditMessage);
+                messageListener.getMessageQueue().put(targetedServerMessage);
+            } catch (InterruptedException e) {
+                log(Level.SEVERE,"RoomHandler: Exception while notifying users of the new Name lobby", e);
+            }
+        }
+        List<String> lobbyUserList = roomHandler.getRoom("lobby").getUserNameList();
+        RoomUserListMessage roomUserListMessage = new RoomUserListMessage(lobbyUserList,"lobby");
+        try {
+            messageListener.getMessageQueue().put(roomUserListMessage);
+        } catch (InterruptedException e) {
+            log(Level.SEVERE,"RoomHandler: Exception while updating RoomUserLists", e);
+        }
+
+        r.getUserList().clear();
         roomHandler.removeRoom(name);
     }
 

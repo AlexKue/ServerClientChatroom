@@ -76,6 +76,10 @@ public class MessageListener extends Thread {
                         break;
                     case WARNINGMSG:
                         warnUser(m);
+                        break;
+                    case ROOMUSERLISTMSG:
+                        sendToRoom(m,((RoomUserListMessage)m).getRoomName());
+                        break;
                 }
                 //Issues may occur on clients that message are sent too fast.
                 //TODO: find more elegant fix, if there is any
@@ -83,11 +87,17 @@ public class MessageListener extends Thread {
             } catch (InterruptedException e) {
                 server.log(Level.WARNING,"MessageListener: Interrupted by server!");
             } catch (IOException e) {
-                server.log(Level.SEVERE,"Messagelistener: Error while serializing!", e);
+                server.log(Level.SEVERE,"MessageListener: Error while serializing!", e);
             }
         }
     }
 
+    /**
+     * Sends a WarningMessage, popping up a window at the client's screen and cutting the connection off, depending of
+     * severity
+     * @param m the WarningMessage
+     * @throws IOException
+     */
     private void warnUser(Message m) throws IOException {
         serializer.serialize(m.getUserConnectionInfo().getOut(),m);
         switch (((WarningMessage)m).getSeverity()){
@@ -99,7 +109,7 @@ public class MessageListener extends Thread {
     /**
      * Sets the active Room of the client sending the request to the new Room, removes the user from the old room,
      * adds him to the new one and updates userlists of the users of both rooms.
-     * @param m
+     * @param m a RoomChangeRequestMessage of the user requesting a room change
      * @throws InterruptedException
      * @throws IOException
      */
@@ -141,6 +151,9 @@ public class MessageListener extends Thread {
         RoomChangeResponseMessage responseMessage = new RoomChangeResponseMessage(true, newRoom.getName());
         responseMessage.setUserConnectionInfo(m.getUserConnectionInfo());
         messageQueue.put(responseMessage);
+
+        //updating the Serverlistview
+        server.getBridge().updateUserListView(server.getUserListWithRooms());
         server.log(Level.INFO, message.getLoginName() + " switched from Room \"" + oldRoom.getName() + "\" to \"" + newRoom.getName() + "\"");
     }
 

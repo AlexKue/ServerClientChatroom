@@ -62,7 +62,7 @@ public class RoomHandler {
             try {
                 server.getMessageListener().getMessageQueue().put(buildRoomListMessage());
             } catch (InterruptedException e) {
-                server.log(Level.WARNING, "Roomhandler: Exception while sending a RoomListMessage: ", e);
+                server.log(Level.WARNING, "RoomHandler: Exception while sending a RoomListMessage: ", e);
             }
             server.log(Level.INFO, "Room \"" + name + "\" has been removed");
         }
