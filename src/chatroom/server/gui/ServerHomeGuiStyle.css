@@ -1,5 +1,5 @@
 .log{
-    -fx-text-fill: #4A097D;
+    -fx-text-fill: white;
 }
 .log .content{
     -fx-background-color: #4A097D;
@@ -31,6 +31,7 @@
     -fx-background-color: #04231B;
     -fx-text-fill: white;
 }
+
 .tab-pane .tab-header-area .tab-header-background{
     -fx-background-color: #170624;
 }

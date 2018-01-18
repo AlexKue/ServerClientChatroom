@@ -1,6 +1,7 @@
 package chatroom.server.gui;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -52,6 +53,15 @@ public class ServerHomeGui {
     private void initRight() {
         ListView<String> connectedUsersView = new ListView<>(connectedUsers);
         ListView<String> roomsView = new ListView<>(rooms);
+        connectedUsers.add(0, "");
+        connectedUsers.addListener(new ListChangeListener<String>() {
+            @Override
+            public void onChanged(Change<? extends String> c) {
+                if(connectedUsers.isEmpty()){
+                    connectedUsersView.getItems().add("");
+                }
+            }
+        });
 
         //Rooms Buttons
         HBox roomButtonContainer = new HBox();
@@ -86,6 +96,7 @@ public class ServerHomeGui {
         VBox userBox = new VBox();
         userBox.getChildren().addAll(connectedUsersView, userButtonContainer);
         Tab users = new Tab("Users");
+        users.getStyleClass().add("connectedUsersBox");
         users.setContent(userBox);
 
 
@@ -133,10 +144,13 @@ public class ServerHomeGui {
     }
 
     public void updateUserListView(ArrayList<String> users) {
-        this.connectedUsers.setAll(users);
+       this.connectedUsers.setAll(users);
+       if(connectedUsers.isEmpty()){
+            connectedUsers.add(0, "");
+       }
 
-//        this.connectedUsers.clear();
-//        this.connectedUsers.addAll(users);
+       //this.connectedUsers.clear();
+       //this.connectedUsers.addAll(users);
     }
 
     private void kickUser(String user) {

@@ -32,6 +32,7 @@ public class ServerBox {
 
             GridPane.setConstraints(IpLabel, 0,0);
             GridPane.setConstraints(iPInput, 1,0);
+            GridPane.setConstraints(errorLabel, 0, 2);
 
             Button ConnectButton = new Button("Connect");
             ConnectButton.setOnAction(e -> ConnectToAdress(iPInput.getText(), bridge));

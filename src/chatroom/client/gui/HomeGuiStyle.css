@@ -1,5 +1,5 @@
 .chatbox {
-    -fx-background-color: #333333;
+    -fx-background-color: #4A097D;
 }
 
 .label {
@@ -13,54 +13,63 @@
 }
 
 .UserSelection {
-    -fx-text-fill: #8F0900;
+    -fx-text-fill: #04231B;
     -fx-background-color: white;
 }
 .mainBackground{
-    -fx-background-color: #1D1F21;
+    -fx-background-color: #170624;
 }
 .textArea .content{
-    -fx-background-color: #C5C8C6;
+    -fx-background-color:  #4A097D;
+}
+.textArea{
+    -fx-background-color:  #4A097D;
+    -fx-text-fill: white;
 }
 .roomSelection{
-    -fx-background-color: #B5BD68;
+    -fx-background-color: #4A097D;
 }
 .roomSelection .list-cell{
-    -fx-background-color: #5f6634;
+    -fx-background-color: #4A097D;
+    -fx-text-fill: white;
 }
-.tabPane .tab-header-area .tab-header-background{
-    -fx-background-color: #1D1F21;
+.tab-pane{
+    -fx-background-color: #4A097D;
+}
+.tab-pane .tab-header-area .tab-header-background{
+    -fx-background-color: #170624;
 }
 .tab:selected{
-    -fx-background-color: #B5BD68;
+    -fx-background-color: #37095B;
 }
 
 .tab{
-    -fx-background-color: #C5C8C6;
-    -fx-text-fill: #F0C674;
+    -fx-background-color: #4A097D;
+}
+.tab .tab-label{
+    -fx-text-fill: white;
 }
 .list-cell:even{
-    -fx-background-color: #151515;
+    -fx-background-color: #4A097D;
 }
 .list-cell:odd{
-    -fx-background-color: #191919;
+    -fx-background-color: #37095B;
 }
 .list-cell{
-    -fx-text-fill: #75bd61;
+    -fx-text-fill: #0a5797;
     -fx-font-weight: bold;
 }
 .Buttons{
     -fx-background-color:
             #090a0c,
-            linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%),
-            linear-gradient(#20262b, #191d22),
-            radial-gradient(center 50% 0%, radius 100%, rgba(114,131,148,0.9), rgba(255,255,255,0));
+            linear-gradient(#0A2F58 0%, #071423 20%, #040B13 100%),
+            linear-gradient(#071423, #040B13),
+            radial-gradient(center 50% 0%, radius 100%, rgba(10,47,148,0.9), rgba(7,20,35,0));
     -fx-background-radius: 5,4,3,5;
     -fx-background-insets: 0,1,2,0;
     -fx-text-fill: white;
     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
     -fx-font-family: "Arial";
-    -fx-text-fill: linear-gradient(white, #d0d0d0);
     -fx-font-size: 12px;
     -fx-padding: 10 20 10 20;
 }
