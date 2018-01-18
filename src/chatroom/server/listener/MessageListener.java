@@ -116,9 +116,9 @@ public class MessageListener extends Thread {
 
         //Updates userlist of old room
         List<String> oldRoomUserList = oldRoom.getUserNameList();
-        System.out.println(oldRoom.getUserNameList());
         RoomUserListMessage oldRoomList = new RoomUserListMessage(oldRoomUserList,oldRoom.getName());
         sendToRoom(oldRoomList,oldRoom.getName());
+        System.out.println(oldRoomUserList);
 
         //Adding the user to the new Room
         m.getUserConnectionInfo().setActiveRoom(newRoom);
@@ -127,11 +127,11 @@ public class MessageListener extends Thread {
                 " has joined your Room.");
         sendToRoom(serverMessageNewRoom,newRoom.getName());
 
-
         //Updating RoomUserLists of the new Room
         List<String> newRoomUserList = newRoom.getUserNameList();
-        RoomUserListMessage newRoomList = new RoomUserListMessage(newRoomUserList,newRoom.getName());
-        sendToRoom(newRoomList,newRoom.getName());
+        RoomUserListMessage newRoomListMessage = new RoomUserListMessage(newRoomUserList,newRoom.getName());
+        sendToRoom(newRoomListMessage,newRoom.getName());
+        System.out.println(newRoomUserList);
 
         //Change Successful
         RoomChangeResponseMessage responseMessage = new RoomChangeResponseMessage(true, newRoom.getName());
@@ -316,6 +316,7 @@ public class MessageListener extends Thread {
             //update lists of all users in the server for all clients
             sendToAll(serverUserListMessage);
 
+            sleep(50);
             //send room change response
             sendToTarget(roomChangeResponse);
 
@@ -355,7 +356,6 @@ public class MessageListener extends Thread {
                 //set AccountInfo for the connection
                 UserAccountInfo accountInfo = userStorage.getUserAccountInfo(loginMessage.getLoginName());
                 m.getUserConnectionInfo().setUserAccountInfo(accountInfo);
-
 
                 //Set Room to lobby
                 m.getUserConnectionInfo().setActiveRoom(server.getRoomHandler().getRoom("lobby"));
@@ -418,7 +418,6 @@ public class MessageListener extends Thread {
             }
         }
         ServerUserListMessage m = new ServerUserListMessage(userList);
-        System.out.println(userList);
         return m;
     }
 
