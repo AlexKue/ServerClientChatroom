@@ -99,6 +99,6 @@ public class Bridge {
 
     //this method is for operations that have to be run befor closing the window TODO: ---ERSETZEN------
     public void runClosinOperations() {
-
+        model.stop();
     }
 }

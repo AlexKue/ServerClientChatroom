@@ -26,6 +26,7 @@ public class ClientMessageHandler extends Thread {
                 e.printStackTrace();
             }
         }
+        System.err.println("Shutting down Message Handler!");
     }
 
     public void handleMessage(Message message) {

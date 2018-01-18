@@ -38,9 +38,9 @@ public class Client {
     }
 
     public void stop() {
-        System.exit(0);
-//        isLoggedIn = false;
-//        isRunning = false;
+        //System.exit(0);
+        isLoggedIn = false;
+        isRunning = false;
     }
 
     private void start() {

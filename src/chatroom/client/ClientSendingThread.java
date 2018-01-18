@@ -29,13 +29,13 @@ public class ClientSendingThread extends Thread {
         while (client.isRunning()) {
             if (client.isLoggedIn()) {
 
-                //read input of System.in
-                String stringMessage = sc.nextLine();
-                sendMessage(stringMessage);
+//                //read input of System.in
+//                String stringMessage = sc.nextLine();
+//                sendMessage(stringMessage);
             }
         }
         System.out.println("Shutting down sending handler!");
-        client.stop();
+//        client.stop();
     }
 
     /**
