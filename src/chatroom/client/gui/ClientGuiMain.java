@@ -42,12 +42,21 @@ public class ClientGuiMain {
                 LoadHomeWindow();break;
             case WRONG_PASSWORD: {
                 Pane loginBox = Login.LoginBox(bridge, "Wrong Password, or the Username you chose is already forgiven!");
+                loginBox.getStylesheets().add(getClass().getResource("HomeGuiStyle.css").toExternalForm());
                 Scene scene = new Scene(loginBox);
                 window.setScene(scene);
                 break;
             }
             case ALREADY_LOGGED_IN: {
                 Pane loginBox = Login.LoginBox(bridge, "Already Logged in. Please contact the server master!");
+                loginBox.getStylesheets().add(getClass().getResource("HomeGuiStyle.css").toExternalForm());
+                Scene scene = new Scene(loginBox);
+                window.setScene(scene);
+                break;
+            }
+            case BANNED:{
+                Pane loginBox = Login.LoginBox(bridge, "You Are Banned. Please contact the server master!");
+                loginBox.getStylesheets().add(getClass().getResource("HomeGuiStyle.css").toExternalForm());
                 Scene scene = new Scene(loginBox);
                 window.setScene(scene);
                 break;

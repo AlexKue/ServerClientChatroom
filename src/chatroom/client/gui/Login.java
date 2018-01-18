@@ -34,6 +34,7 @@ public class Login {
         GridPane.setConstraints(nameInput, 1,0);
         GridPane.setConstraints(passwordLabel, 0,1);
         GridPane.setConstraints(passwordInput, 1,1);
+        GridPane.setConstraints(errorLabel, 0, 3);
 
         Button loginButton = new Button("Log in");
         loginButton.setOnAction(e -> login(passwordInput, nameInput, bridge));
