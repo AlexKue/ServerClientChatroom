@@ -93,8 +93,8 @@ public class Bridge {
        Platform.runLater(() ->gui.homeGui.userRoomUpdate(newCurrentUsers));
     }
     //this method is for alertboxes. Like kicked message, warning or banned TODO: ---BENUTZEN im MODEL------
-    public void issueBox(String message){
-        Platform.runLater(() -> gui.homeGui.showIssueAlert(message));
+    public void issueBox(String message, boolean closeWindow){
+        Platform.runLater(() -> gui.homeGui.showIssueAlert(message, closeWindow));
     }
 
     //this method is for operations that have to be run befor closing the window TODO: ---ERSETZEN------

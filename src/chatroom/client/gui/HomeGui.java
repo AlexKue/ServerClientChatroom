@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class HomeGui {
 
@@ -74,6 +75,8 @@ public class HomeGui {
              }
             }
         });
+
+        container.getStyleClass().add("CenterContainer");
 
         HBox SendMessageButtonAndTextArea = new HBox();
         SendMessageButtonAndTextArea.getChildren().addAll(message, sendMessage);
@@ -219,6 +222,7 @@ public class HomeGui {
         roomConnectionStatus.setText("Successful connected to: " + room);
         selectedRoom.setText("Current room: " + room);
         currentRoom = room;
+        roomSelection.setValue(room);
     }
 
     public void userRoomUpdate(ArrayList<String> newCurrentUsers) {
@@ -231,11 +235,16 @@ public class HomeGui {
         allUsers.addAll(newAllUsers);
     }
 
-    public void showIssueAlert(String message) {
+    public void showIssueAlert(String message, boolean closeWindow) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.setTitle("!!! [WARNING69] !!!");
         alert.setContentText(message);
         alert.showAndWait();
+        if (closeWindow){
+            window.close();
+        }
+
     }
+
 }
