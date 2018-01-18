@@ -7,6 +7,7 @@ import chatroom.server.Server;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class RoomHandler {
     private List<Room> roomList;
@@ -24,8 +25,9 @@ public class RoomHandler {
         try {
             server.getMessageListener().getMessageQueue().put(buildRoomListMessage());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            server.log(Level.WARNING,"Roomhandler: Exception while sending a RoomListMessage: ",e);
         }
+        server.log(Level.INFO,"Roomhandler: Room\"" + name + "\" has been created.");
     }
 
     public void removeRoom(Room room) {
@@ -34,9 +36,9 @@ public class RoomHandler {
         try {
             server.getMessageListener().getMessageQueue().put(buildRoomListMessage());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            server.log(Level.WARNING,"Roomhandler: Exception while sending a RoomListMessage: ",e);
         }
-
+        server.log(Level.INFO,"Room \"" + room.getName() + "\" has been removed");
     }
 
     public void removeRoom(String name){
@@ -50,8 +52,9 @@ public class RoomHandler {
         try {
             server.getMessageListener().getMessageQueue().put(buildRoomListMessage());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            server.log(Level.WARNING,"Roomhandler: Exception while sending a RoomListMessage: ",e);
         }
+        server.log(Level.INFO,"Room \"" + name + "\" has been removed");
     }
 
     public void editRoom(String oldName, String newName) {
@@ -61,8 +64,9 @@ public class RoomHandler {
         try {
             server.getMessageListener().getMessageQueue().put(buildRoomListMessage());
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            server.log(Level.WARNING,"Roomhandler: Exception while sending a RoomListMessage: ", e);
         }
+        server.log(Level.INFO,"RoomHandler: " + "Room \"" + oldName + "\" has been renamed to \"" + newName + "\"");
     }
 
     public Room getRoom(String name){

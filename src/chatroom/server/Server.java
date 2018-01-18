@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import chatroom.model.UserConnectionInfo;
 import chatroom.model.message.MessageTypeDictionary;
@@ -19,7 +21,8 @@ import chatroom.server.room.Room;
 import chatroom.server.room.RoomHandler;
 
 public class Server {
-    public static final Logger logger = Logger.getAnonymousLogger();
+    public static final Logger logger = Logger.getLogger("Server");
+    private FileHandler fh;
     private ServerSocket listener;
     private NetworkListener networkListener;
     private MessageListener messageListener;
@@ -36,9 +39,16 @@ public class Server {
         start();
     }
 
+    /**
+     * Start all Threads and handlers
+     */
     private void start(){
         try {
-            // Open new Socket
+            //Create FileHandler for logging
+            fh = new FileHandler("ServerLog.txt");
+            SimpleFormatter simpleFormatter = new SimpleFormatter();
+            fh.setFormatter(simpleFormatter);
+            logger.addHandler(fh);
             listener = new ServerSocket(54322);
 
             //Start listening Threads
@@ -51,22 +61,20 @@ public class Server {
             roomHandler = new RoomHandler(this);
             logger.log(Level.INFO,"Server Online!");
         } catch (IOException ex) {
-            logger.log(Level.SEVERE, "Failed to start server!",ex);
+            logger.log(Level.SEVERE, "Server: Failed to start server!",ex);
             System.exit(1);
         }
 
-//        while(isRunning()){
-//            if(sc.nextLine().trim().equals("!quit")){
-//                stop();
-//            }
-//        }
     }
+
+
+
     private void stop(){
-        logger.log(Level.WARNING, "Closing the Server Socket!");
+        log(Level.WARNING,"Server: Closing the Server Socket!");
         try {
             listener.close();
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Exception was thrown: ", e);
+            log(Level.SEVERE,"Server: Exception was thrown: " + e.toString());
         } finally {
             isRunning = false;
         }
@@ -76,6 +84,129 @@ public class Server {
         Server server = new Server();
         server.start();
     }
+
+
+    public ArrayList<String> requestRoomList() {
+        ArrayList<String> roomNames = new ArrayList<>();
+
+        for(Room r : roomHandler.getRoomList()){
+            roomNames.add(r.getName());
+        }
+        return roomNames;
+    }
+
+    public ArrayList<String> requestUserList() {
+        ArrayList<String> userNames = new ArrayList<>();
+        for(UserListeningThread u : networkListener.getUserListeningThreadList()){
+            if(u.getUserConnectionInfo().isLoggedIn()){
+                userNames.add(u.getUserConnectionInfo().getUserAccountInfo().getLoginName());
+            }
+        }
+        return userNames;
+    }
+
+    /**
+     * Sends a Message to the user and kicks him.
+     * @param user
+     */
+    public void kickUser(String user) {
+        for(UserListeningThread u : networkListener.getUserListeningThreadList()){
+            if(u.getUserConnectionInfo().isLoggedIn() && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(user)){
+                WarningMessage m = new WarningMessage(1,"You have been kicked from the Server.");
+                m.setUserConnectionInfo(u.getUserConnectionInfo());
+                try {
+                    messageListener.getMessageQueue().put(m);
+                } catch (InterruptedException e) {
+                    log(Level.SEVERE, "Server: Exception while trying to kick user " + user, e);
+                }
+                break;
+            }
+            log(Level.INFO, "Server:" + user + " has been kicked from the server.");
+        }
+        bridge.updateUserListView(getAllUsers());
+    }
+
+    /**
+     * Just sends a text message to the user warning him.
+     * @param user
+     */
+    public void warnUser(String user) {
+        for(UserListeningThread u : networkListener.getUserListeningThreadList()){
+            if(u.getUserConnectionInfo().isLoggedIn() && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(user)){
+                WarningMessage m = new WarningMessage(0,"You received a Warning! Further disturbance may have consequences!!");
+                m.setUserConnectionInfo(u.getUserConnectionInfo());
+                try {
+                    messageListener.getMessageQueue().put(m);
+                } catch (InterruptedException e) {
+                    log(Level.SEVERE, "Server: Exception while trying to warn user " + user, e);
+                }
+                break;
+            }
+            log(Level.INFO, "Server: A Warning has been sent to " + user);
+        }
+        bridge.updateUserListView(getAllUsers());
+
+    }
+
+    /**
+     * Kicks then User from the Server and puts him onto the banlist, preventing him to reconnect using that username
+     * @param user
+     */
+    public void banUser(String user) {
+        for(UserListeningThread u : networkListener.getUserListeningThreadList()){
+            if(u.getUserConnectionInfo().isLoggedIn() && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(user)){
+                WarningMessage m = new WarningMessage(2,"You have been banned from the Server.");
+                m.setUserConnectionInfo(u.getUserConnectionInfo());
+                try {
+                    messageListener.getMessageQueue().put(m);
+                } catch (InterruptedException e) {
+                    log(Level.SEVERE, "Server: Exception while trying to ban user " + user, e);
+                }
+                break;
+            }
+            log(Level.INFO, "Server:" + user + " has been banned from the server.");
+        }
+        bridge.updateUserListView(getAllUsers());
+    }
+
+    public void editRoom(String oldName, String newName) {
+        roomHandler.editRoom(oldName,newName);
+        try {
+            messageListener.getMessageQueue().put(new RoomNameEditMessage(newName));
+        } catch (InterruptedException e) {
+            log(Level.SEVERE,"Roomhandler: Exception while notifying users of the new Name " + oldName,e);
+        }
+    }
+
+    public void addRoom(String name) {
+        roomHandler.addRoom(name);
+    }
+
+    public void deleteRoom(String name) {
+        roomHandler.removeRoom(name);
+    }
+
+    public ArrayList<String> getAllUsers() {
+        ArrayList <String> userNames = new ArrayList<>();
+        for(UserListeningThread u : networkListener.getUserListeningThreadList()){
+            if(u.getUserConnectionInfo().isLoggedIn()){
+                userNames.add(u.getUserConnectionInfo().getUserAccountInfo().getLoginName());
+            }
+        }
+
+        return userNames;
+    }
+    public void log(Level level, String msg, Exception ex) {
+        logger.log(level, msg, ex);
+        bridge.addEventToLog(msg + ex.toString());
+    }
+    public void log(Level level, String msg){
+        logger.log(level,msg);
+        bridge.addEventToLog(msg);
+    }
+
+
+    /** Setter/Getter  */
     public boolean isRunning(){
         return isRunning;
     }
@@ -98,109 +229,6 @@ public class Server {
 
     public RoomHandler getRoomHandler(){
         return roomHandler;
-    }
-
-    public ArrayList<String> requestRoomList() {
-        ArrayList<String> roomNames = new ArrayList<>();
-
-        for(Room r : roomHandler.getRoomList()){
-            roomNames.add(r.getName());
-        }
-        return roomNames;
-    }
-
-    public ArrayList<String> requestUserList() {
-        ArrayList<String> userNames = new ArrayList<>();
-        for(UserListeningThread u : networkListener.getUserListeningThreadList()){
-            if(u.getUserConnectionInfo().isLoggedIn()){
-                userNames.add(u.getUserConnectionInfo().getUserAccountInfo().getLoginName());
-            }
-        }
-        return userNames;
-    }
-
-    public void kickUser(String user) {
-        for(UserListeningThread u : networkListener.getUserListeningThreadList()){
-            if(u.getUserConnectionInfo().isLoggedIn() && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(user)){
-                WarningMessage m = new WarningMessage(1,"You have been kicked from the Server.");
-                m.setUserConnectionInfo(u.getUserConnectionInfo());
-                try {
-                    messageListener.getMessageQueue().put(m);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                break;
-            }
-            bridge.addEventToLog("Server:" + user + " has been kicked from the server.");
-        }
-        bridge.updateUserListView(getAllUsers());
-
-    }
-
-    public void warnUser(String user) {
-        for(UserListeningThread u : networkListener.getUserListeningThreadList()){
-            if(u.getUserConnectionInfo().isLoggedIn() && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(user)){
-                WarningMessage m = new WarningMessage(0,"You received a Warning! Further disturbance may have consequences!!");
-                m.setUserConnectionInfo(u.getUserConnectionInfo());
-                try {
-                    messageListener.getMessageQueue().put(m);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                break;
-            }
-            bridge.addEventToLog("Server: A Warning has been sent to " + user);
-
-        }
-        bridge.updateUserListView(getAllUsers());
-
-    }
-
-    public void banUser(String user) {
-        for(UserListeningThread u : networkListener.getUserListeningThreadList()){
-            if(u.getUserConnectionInfo().isLoggedIn() && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(user)){
-                WarningMessage m = new WarningMessage(2,"You have been banned from the Server.");
-                m.setUserConnectionInfo(u.getUserConnectionInfo());
-                try {
-                    messageListener.getMessageQueue().put(m);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                break;
-            }
-            bridge.addEventToLog("Server:" + user + " has been kicked from the server.");
-        }
-        bridge.updateUserListView(getAllUsers());
-    }
-
-    public void editRoom(String oldName, String newName) {
-        roomHandler.editRoom(oldName,newName);
-        bridge.addEventToLog("RoomHandler: " + "Room \"" + oldName + "\" has been renamed to \"" + newName + "\"");
-        try {
-            messageListener.getMessageQueue().put(new RoomNameEditMessage(newName));
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void addRoom(String name) {
-        roomHandler.addRoom(name);
-    }
-
-    public void deleteRoom(String name) {
-        roomHandler.removeRoom(name);
-    }
-
-    public ArrayList<String> getAllUsers() {
-        ArrayList <String> userNames = new ArrayList<>();
-        for(UserListeningThread u : networkListener.getUserListeningThreadList()){
-            if(u.getUserConnectionInfo().isLoggedIn()){
-                userNames.add(u.getUserConnectionInfo().getUserAccountInfo().getLoginName());
-            }
-        }
-
-        return userNames;
     }
 
     public Bridge getBridge() {

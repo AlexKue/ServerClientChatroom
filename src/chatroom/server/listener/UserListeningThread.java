@@ -55,12 +55,12 @@ public class UserListeningThread extends Thread {
                 server.getMessageListener().getMessageQueue().put(m);
 
             } catch (IOException e) {
-                Server.logger.log(Level.WARNING,"UserListeningThread: Lost Connection to " + userConnectionInfo.getSocket().getInetAddress());
+                server.log(Level.WARNING,"UserListeningThread: Lost Connection to " + userConnectionInfo.getSocket().getInetAddress());
                 isRunning = false; //Stop the Thread if connection is lost
                 server.getNetworkListener().removeClient(this);
                 server.getBridge().updateUserListView(server.getAllUsers());
             } catch (InterruptedException e) {
-                Server.logger.log(Level.WARNING,"Error in ListeningThread ",e);
+                server.log(Level.WARNING,"UserListeningThread: Excpeption has been thrown for user " + userConnectionInfo.getSocket().getInetAddress(),e);
                 isRunning = false;
                 server.getNetworkListener().removeClient(this);
                 server.getBridge().updateUserListView(server.getAllUsers());

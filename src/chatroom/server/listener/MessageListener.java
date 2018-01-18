@@ -6,7 +6,6 @@ import chatroom.model.message.Message;
 import chatroom.serializer.Serializer;
 import chatroom.server.Server;
 import chatroom.server.room.Room;
-import chatroom.server.room.RoomHandler;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,7 +45,7 @@ public class MessageListener extends Thread {
 
                 //Display on server what it is working: 
                 String messageTypeString = server.getMessageTypeDictionary().getType(m.getType()).toString();               
-                Server.logger.log(Level.INFO,"MessageListener: Next in Queue: " + messageTypeString);
+                server.log(Level.INFO,"MessageListener: Next in Queue: " + messageTypeString);
                 
                 //Byte sent by client decides which type of message is sent
                 switch (server.getMessageTypeDictionary().getType(m.getType())) {
@@ -82,9 +81,9 @@ public class MessageListener extends Thread {
                 //TODO: find more elegant fix, if there is any
                 sleep(50);
             } catch (InterruptedException e) {
-                Server.logger.log(Level.WARNING,"MessageListener interrupted by server!");
+                server.log(Level.WARNING,"MessageListener: Interrupted by server!");
             } catch (IOException e) {
-                Server.logger.log(Level.SEVERE,"Error while serializing!");
+                server.log(Level.SEVERE,"Messagelistener: Error while serializing!", e);
             }
         }
     }
@@ -97,33 +96,48 @@ public class MessageListener extends Thread {
         }
     }
 
+    /**
+     * Sets the active Room of the client sending the request to the new Room, removes the user from the old room,
+     * adds him to the new one and updates userlists of the users of both rooms.
+     * @param m
+     * @throws InterruptedException
+     * @throws IOException
+     */
     private void changeRoom(Message m) throws InterruptedException, IOException {
         RoomChangeRequestMessage message = (RoomChangeRequestMessage)m;
         Room activeRoom = m.getUserConnectionInfo().getActiveRoom();
         Room newRoom = server.getRoomHandler().getRoom(message.getRoomName());
 
+        //Removing the User from the old room
         activeRoom.removeUser(m.getUserConnectionInfo());
-
-        TargetedServerMessage serverMessage = new TargetedServerMessage(message.getLoginName() +
+        PublicServerMessage serverMessageOldRoom = new PublicServerMessage(message.getLoginName() +
                 "has gone to the Room \"" + message.getRoomName() + "\"");
-        sendToRoom(serverMessage,activeRoom.getName());
+        sendToRoom(serverMessageOldRoom,activeRoom.getName());
 
-        newRoom.addUser(m.getUserConnectionInfo());
-        m.getUserConnectionInfo().setActiveRoom(newRoom);
-        Server.logger.log(Level.INFO, message.getLoginName() + " switched from Room \"" + activeRoom.getName() + "\" to \"" + newRoom.getName() + "\"");
-
-        //Updating RoomUserLists for the 2 rooms
-        List<String> oldRoomUserList = activeRoom.getUserNamelist();
-        List<String> newRoomUserList = newRoom.getUserNamelist();
+        //Updates userlist of old room
+        List<String> oldRoomUserList = activeRoom.getUserNameList();
         RoomUserListMessage oldRoomList = new RoomUserListMessage(oldRoomUserList,activeRoom.getName());
-        RoomUserListMessage newRoomList = new RoomUserListMessage(newRoomUserList,newRoom.getName());
         sendToRoom(oldRoomList,activeRoom.getName());
+
+        //Adding the user to the new Room
+        m.getUserConnectionInfo().setActiveRoom(newRoom);
+        newRoom.addUser(m.getUserConnectionInfo());
+        PublicServerMessage serverMessageNewRoom = new PublicServerMessage(message.getLoginName() +
+                "has joined your Room.");
+        sendToRoom(serverMessageNewRoom,newRoom.getName());
+
+
+        //Updating RoomUserLists of the new Room
+        List<String> newRoomUserList = newRoom.getUserNameList();
+        RoomUserListMessage newRoomList = new RoomUserListMessage(newRoomUserList,newRoom.getName());
         sendToRoom(newRoomList,newRoom.getName());
-        //Change Successfull
+
+        //Change Successful
         RoomChangeResponseMessage responseMessage = new RoomChangeResponseMessage(true, newRoom.getName());
         responseMessage.setUserConnectionInfo(m.getUserConnectionInfo());
         messageQueue.put(responseMessage);
-        Server.logger.log(Level.INFO,"Sending a RoomChangeResponse to " + m.getUserConnectionInfo().getUserAccountInfo().getLoginName());
+        server.log(Level.INFO, message.getLoginName() + " switched from Room \"" + activeRoom.getName() + "\" to \"" + newRoom.getName() + "\"");
+        server.log(Level.INFO,"Sending a RoomChangeResponse to " + m.getUserConnectionInfo().getUserAccountInfo().getLoginName());
     }
 
     /**
@@ -145,13 +159,13 @@ public class MessageListener extends Thread {
                     //Get the AccountInfo of the thread, find receiver of message
                     if (u != null && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(receiver)) {
                         serializer.serialize(u.getUserConnectionInfo().getOut(), m);
-                        Server.logger.log(Level.INFO, sender + " (to " + receiver + "): \"" + textMessage.getMessage() + "\" ");
+                        server.log(Level.INFO, sender + " (to " + receiver + "): \"" + textMessage.getMessage() + "\" ");
                         return;
                     }
                 }
                 //If receiver was not found, he is not online. Send message to sender that sending failed
                 TargetedServerMessage serverMessage = new TargetedServerMessage("Failed to send message: " + ((TargetedTextMessage) m).getReceiver() + "is not online!");
-                Server.logger.log(Level.WARNING, "Failed to send message: " + ((TargetedTextMessage) m).getReceiver() + "is not online!");
+                server.log(Level.WARNING, "Failed to send message: " + ((TargetedTextMessage) m).getReceiver() + "is not online!");
                 serverMessage.setUserConnectionInfo(m.getUserConnectionInfo());
                 serializer.serialize(m.getUserConnectionInfo().getOut(), serverMessage);
                 break;
@@ -160,22 +174,20 @@ public class MessageListener extends Thread {
             case TARGETSERVERMSG:
                 String name = m.getUserConnectionInfo().getUserAccountInfo().getLoginName();
                 String content = ((TargetedServerMessage)m).getMessage();
-                Server.logger.log(Level.INFO, "Servermessage to " + name + ": " + content);
+                server.log(Level.INFO, "Servermessage to " + name + ": " + content);
                 serializer.serialize(m.getUserConnectionInfo().getOut(), m);
                 break;
             case LOGINRESPONSEMSG:
                 LoginResponseMessage response = ((LoginResponseMessage)m);
-                Server.logger.log(Level.INFO,"Login response for " + m.getUserConnectionInfo().getSocket().getInetAddress() +
+                server.log(Level.INFO,"Login response for " + m.getUserConnectionInfo().getSocket().getInetAddress() +
                         ": " + response.getResponse().toString());
                 serializer.serialize(m.getUserConnectionInfo().getOut(), m);
                 break;
             case ROOMCHANGERESPONSEMSG:
                 serializer.serialize(m.getUserConnectionInfo().getOut(),m);
-                Server.logger.log(Level.INFO,"Sending a RoomChangeResponse for " + m.getUserConnectionInfo().getUserAccountInfo().getLoginName());
+                server.log(Level.INFO,"Sending a RoomChangeResponse for " + m.getUserConnectionInfo().getUserAccountInfo().getLoginName());
                 break;
-
         }
-
     }
 
 
@@ -193,7 +205,16 @@ public class MessageListener extends Thread {
     }
 
     private void sendToRoom(Message m, String roomName) throws IOException {
-        Server.logger.log(Level.INFO,"Sending a " + server.getMessageTypeDictionary().getType(m.getType()) + " @" + roomName);
+        switch (server.getMessageTypeDictionary().getType(m.getType())) {
+            case PUBLICTEXTMSG:
+                PublicTextMessage publicTextMessage = (PublicTextMessage)m;
+                server.log(Level.INFO, publicTextMessage.getSender()+ "@" + roomName + ": " + publicTextMessage.getMessage());
+                break;
+            case PUBLICSERVERMSG:
+                PublicServerMessage publicServerMessage = (PublicServerMessage)m;
+                server.log(Level.INFO, "Servermessage to Room \"" + roomName + "\": " + publicServerMessage.getMessage());
+                break;
+        }
         Room room = server.getRoomHandler().getRoom(roomName);
         for(UserConnectionInfo info : room.getUserList()){
             serializer.serialize(info.getOut(),m);
@@ -215,7 +236,7 @@ public class MessageListener extends Thread {
         sendToAll(buildUserListMessage());
 
         //Fetch List of Names in Room of the client the user was before disconnecting
-        List<String> newRoomUserList = activeRoom.getUserNamelist();
+        List<String> newRoomUserList = activeRoom.getUserNameList();
 
         //Build the message
         RoomUserListMessage roomUserListMessage = new RoomUserListMessage(newRoomUserList,activeRoom.getName());
@@ -237,8 +258,15 @@ public class MessageListener extends Thread {
     private void authenticate(Message m) throws InterruptedException, IOException {
         LoginMessage loginMessage = (LoginMessage) m;
 
-        //Look up if loginName is already in Use
+        //First check if user is banned
+        if(userStorage.isBanned(loginMessage.getLoginName())){
+            LoginResponseMessage response = new LoginResponseMessage(LoginResponses.BANNED);
+            response.setUserConnectionInfo(m.getUserConnectionInfo());
+            sendToTarget(response);
+            return;
+        }
 
+        //Look up if loginName is already in Use
         //CASE: Username not taken
         if (!userStorage.loginNameExists(loginMessage.getLoginName())) {
 
@@ -263,7 +291,7 @@ public class MessageListener extends Thread {
             RoomListMessage roomListMessage = server.getRoomHandler().buildRoomListMessage();
 
             //Prepare List of Users in the lobby
-            List<String> roomUserNameList = server.getRoomHandler().getRoom("lobby").getUserNamelist();
+            List<String> roomUserNameList = server.getRoomHandler().getRoom("lobby").getUserNameList();
             RoomUserListMessage roomUserListMessage = new RoomUserListMessage(roomUserNameList,"lobby");
             ServerUserListMessage serverUserListMessage = buildUserListMessage();
 
@@ -279,28 +307,11 @@ public class MessageListener extends Thread {
 
             serializer.serialize(m.getUserConnectionInfo().getOut(), serverUserListMessage);
 
-            Server.logger.log(Level.INFO, "Created new Account for " + loginMessage.getLoginName() + "@" + loginMessage.getUserConnectionInfo().getSocket().getInetAddress());
+            server.log(Level.INFO, "Created new Account for " + loginMessage.getLoginName() + "@" + loginMessage.getUserConnectionInfo().getSocket().getInetAddress());
             sendToRoom(new PublicServerMessage(m.getUserConnectionInfo().getUserAccountInfo().getDisplayName() + " has connected to the Server!"),"lobby");
             server.getBridge().updateUserListView(server.getAllUsers());
-
-
-//            //Notify other users that someone connected
-//            sendToRoom(new PublicServerMessage(userInfo.getDisplayName() + " has connected to the Server!"),"lobby");
-//
-//            //Update lists of all users
-//            sendToAll(buildUserListMessage());
-//
-//            //Fetch List of Names in the lobby
-//            List<String> newRoomUserList = server.getRoomHandler().getRoom("lobby").getUserNamelist();
-//
-//            //Build the message
-//            RoomUserListMessage newRoomUserListMessage = new RoomUserListMessage(newRoomUserList,"lobby");
-//
-//            //Update the lists
-//            updateRoomUserLists(newRoomUserListMessage,server.getRoomHandler().getRoom("lobby"));
             return;
-
-            //CASES: Username is taken
+            //CASE: Username is taken
         } else {
             //Now we know that the loginName is already in user. In case that the password is correct,
             //check, if another user is already using this account.
@@ -342,7 +353,7 @@ public class MessageListener extends Thread {
                 //Prepare List of available rooms
                 RoomListMessage roomListMessage = server.getRoomHandler().buildRoomListMessage();
 
-                List<String> userNameList = server.getRoomHandler().getRoom("lobby").getUserNamelist();
+                List<String> userNameList = server.getRoomHandler().getRoom("lobby").getUserNameList();
                 RoomUserListMessage roomUserListMessage = new RoomUserListMessage(userNameList,"lobby");
                 ServerUserListMessage serverUserListMessage = buildUserListMessage();
 
@@ -359,17 +370,14 @@ public class MessageListener extends Thread {
                 sendToRoom(new PublicServerMessage(accountInfo.getDisplayName() + " has connected to the Server!"),"lobby");
                 server.getBridge().updateUserListView(server.getAllUsers());
 
-                Server.logger.log(Level.INFO,"User " + loginMessage.getLoginName() + " has logged in!");
+                server.log(Level.INFO,"User " + loginMessage.getLoginName() + " has logged in!");
             } else {
                 //We know that the password is wrong. Notify user.
                 response = new LoginResponseMessage(LoginResponses.WRONG_PASSWORD);
-                Server.logger.log(Level.INFO,m.getUserConnectionInfo().getSocket().getInetAddress() + " failed to login into the account of " + loginMessage.getLoginName());
+                server.log(Level.INFO,m.getUserConnectionInfo().getSocket().getInetAddress() + " failed to login into the account of " + loginMessage.getLoginName());
                 response.setUserConnectionInfo(m.getUserConnectionInfo());
                 sendToTarget(response);
-
             }
-
-
         }
     }
 

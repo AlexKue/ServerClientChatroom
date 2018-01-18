@@ -32,7 +32,7 @@ public class NetworkListener extends Thread {
 
                 //Accept new Client and create new ConnectionInfo
                 UserConnectionInfo userConnectionInfo = new UserConnectionInfo(server.getListener().accept());
-                Server.logger.log(Level.INFO, "New Client Connected: " + userConnectionInfo.getSocket().getInetAddress());
+                server.log(Level.INFO, "New Client Connected: " + userConnectionInfo.getSocket().getInetAddress());
                 server.getBridge().addEventToLog("New Client Connected: " + userConnectionInfo.getSocket().getInetAddress());
 
                 //Create new Thread for the MessageListener for each new client
@@ -40,7 +40,7 @@ public class NetworkListener extends Thread {
                 getUserListeningThreadList().add(u);
                 u.start();
             } catch (IOException ex) {
-                Server.logger.log(Level.SEVERE, "NetworkListener threw an exception!",ex);
+                server.log(Level.SEVERE, "NetworkListener: Exception while adding an client!",ex);
                 //.accept() will throw if server is closing
             }
 
@@ -61,8 +61,8 @@ public class NetworkListener extends Thread {
      * Closes the sockets and Streams of all users in the UserListeningThreadList
      */
     private void shutdown() {
-        Server.logger.log(Level.SEVERE, "Shutting down network listener");
-        Server.logger.log(Level.SEVERE, "Closing sockets of Client in List");
+        server.log(Level.SEVERE, "NetworkListener: Shutting down network listener");
+        server.log(Level.SEVERE, "NetworkListener: Closing sockets of Client in List");
 
         Iterator<UserListeningThread> iter = userListeningThreadList.iterator();
         while (iter.hasNext()) {
@@ -89,11 +89,11 @@ public class NetworkListener extends Thread {
                 //Notify logged in users that another logged in user left
                 String username = info.getUserAccountInfo().getDisplayName();
                 PublicServerMessage msg = new PublicServerMessage(username + " has left the server!");
-                Server.logger.log(Level.INFO, username + "@" + info.getSocket().getInetAddress() + " has disconnected!");
+                server.log(Level.INFO, username + "@" + info.getSocket().getInetAddress() + " has disconnected!");
                 try {
                     server.getMessageListener().getMessageQueue().put(msg);
                 } catch (InterruptedException e) {
-                    Server.logger.log(Level.SEVERE, "NetworkListener: Error while sending Msg: " + e.toString());
+                    server.log(Level.SEVERE, "NetworkListener: Error while sending Msg: ", e);
                 }
             }
             //close Sockets

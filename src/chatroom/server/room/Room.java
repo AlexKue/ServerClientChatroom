@@ -34,10 +34,19 @@ public class Room {
         return userList.size();
     }
 
+    /**
+     * Returns a List of UserConnectionInfos of users in the Room
+     * @return a List of UserConnectionInfos of users in the room
+     */
     public List<UserConnectionInfo> getUserList(){
         return userList;
     }
-    public List<String> getUserNamelist(){
+
+    /**
+     * Returns a List of Strings containing the usernames of users in the room
+     * @return a List of String of usernames in the room
+     */
+    public List<String> getUserNameList(){
         List<String> userNameList = new ArrayList<>();
         for(UserConnectionInfo u : userList){
             userNameList.add(u.getUserAccountInfo().getLoginName());
