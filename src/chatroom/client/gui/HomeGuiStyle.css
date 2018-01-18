@@ -2,6 +2,9 @@
     -fx-background-color: #4A097D;
 }
 
+.spacing{
+    -fx-start-margin: 20;
+}
 .label {
 
     /*-fx-background-color: #969896;*/

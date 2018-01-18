@@ -80,6 +80,7 @@ public class HomeGui {
         chatBoxContainer.setContent(chatBox);
         chatBoxContainer.setFitToWidth(true);
         chatBoxContainer.setPrefViewportHeight(500);
+        SendMessageButtonAndTextArea.setPadding(new Insets(10 ,10 ,10 ,10));
 
         container.getChildren().addAll(chatBoxContainer, SendMessageButtonAndTextArea);
 
@@ -94,7 +95,7 @@ public class HomeGui {
         userLists.getStyleClass().add("tabPane");
         sendMessage.getStyleClass().add("Buttons");
 
-
+        borderPane.getStyleClass().add("spacing");
         Scene scene = new Scene(borderPane);
         window.setScene(scene);
     }
@@ -127,7 +128,8 @@ public class HomeGui {
 
         outerRight.getChildren().addAll(new Label("Rooms"), selectedRoom, roomSelection, roomConnectionStatus, roomUserSeparator, new Label("Users"), userLists);
         outerRight.setAlignment(Pos.TOP_CENTER);
-
+        outerRight.getStyleClass().add("spacing");
+        outerRight.setPadding(new Insets(10, 10, 10, 20));
         borderPane.setRight(outerRight);
 
         allUsersUpdate(bridge.getAllUsers());
@@ -163,12 +165,14 @@ public class HomeGui {
 
     private void initChatBox(Bridge bridge) {
         chatBoxContainer.setPrefSize(400, 600);
+        chatBoxContainer.getStyleClass().add("spacing");
         chatBox.getStyleClass().add("chatbox");
 
         sendMessage.setOnAction(evt -> {
             bridge.SendMessage(message.getText());
             message.clear();
         });
+        chatBox.getStyleClass().add("spacing");
         chatBoxContainer.setContent(chatBox);
     }
 
