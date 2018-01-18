@@ -2,6 +2,7 @@ package chatroom.server.listener;
 
 import chatroom.model.message.Message;
 import chatroom.model.UserConnectionInfo;
+import chatroom.model.message.PublicTextMessage;
 import chatroom.serializer.Serializer;
 import chatroom.server.Server;
 
@@ -51,6 +52,9 @@ public class UserListeningThread extends Thread {
                 //put UserConnectionInfo into the message
                 m.setUserConnectionInfo(userConnectionInfo);
 
+                //log the message if it's a Text message
+                log(m);
+
                 //put message into queue
                 server.getMessageListener().getMessageQueue().put(m);
 
@@ -60,14 +64,24 @@ public class UserListeningThread extends Thread {
                 server.getNetworkListener().removeClient(this);
                 server.getBridge().updateUserListView(server.getAllUsers());
             } catch (InterruptedException e) {
-                server.log(Level.WARNING,"UserListeningThread: Excpeption has been thrown for user " + userConnectionInfo.getSocket().getInetAddress(),e);
+                server.log(Level.WARNING,"UserListeningThread: Exception has been thrown for user " + userConnectionInfo.getSocket().getInetAddress(),e);
                 isRunning = false;
                 server.getNetworkListener().removeClient(this);
                 server.getBridge().updateUserListView(server.getAllUsers());
             }
         }
     }
-    
+
+    private void log(Message m) {
+        switch (server.getMessageTypeDictionary().getType(m.getType())){
+            case PUBLICTEXTMSG:
+                String name = userConnectionInfo.getUserAccountInfo().getLoginName();
+                String room = userConnectionInfo.getActiveRoom().getName();
+                String message = ((PublicTextMessage)m).getMessage();
+                server.log(Level.INFO,"Receiving: " + name + "@" + room + ": " + message);
+        }
+    }
+
     /**
      * Returns the <code>UserConnectionInfo</code> of the client
      * @return ConnectionInfo of the client

@@ -111,7 +111,7 @@ public class MessageListener extends Thread {
         //Removing the User from the old room
         activeRoom.removeUser(m.getUserConnectionInfo());
         PublicServerMessage serverMessageOldRoom = new PublicServerMessage(message.getLoginName() +
-                "has gone to the Room \"" + message.getRoomName() + "\"");
+                " has gone to the Room \"" + message.getRoomName() + "\"");
         sendToRoom(serverMessageOldRoom,activeRoom.getName());
 
         //Updates userlist of old room
@@ -123,7 +123,7 @@ public class MessageListener extends Thread {
         m.getUserConnectionInfo().setActiveRoom(newRoom);
         newRoom.addUser(m.getUserConnectionInfo());
         PublicServerMessage serverMessageNewRoom = new PublicServerMessage(message.getLoginName() +
-                "has joined your Room.");
+                " has joined your Room.");
         sendToRoom(serverMessageNewRoom,newRoom.getName());
 
 
@@ -137,7 +137,7 @@ public class MessageListener extends Thread {
         responseMessage.setUserConnectionInfo(m.getUserConnectionInfo());
         messageQueue.put(responseMessage);
         server.log(Level.INFO, message.getLoginName() + " switched from Room \"" + activeRoom.getName() + "\" to \"" + newRoom.getName() + "\"");
-        server.log(Level.INFO,"Sending a RoomChangeResponse to " + m.getUserConnectionInfo().getUserAccountInfo().getLoginName());
+        server.log(Level.INFO,"Sending: RoomChangeResponse to " + m.getUserConnectionInfo().getUserAccountInfo().getLoginName());
     }
 
     /**
@@ -174,18 +174,18 @@ public class MessageListener extends Thread {
             case TARGETSERVERMSG:
                 String name = m.getUserConnectionInfo().getUserAccountInfo().getLoginName();
                 String content = ((TargetedServerMessage)m).getMessage();
-                server.log(Level.INFO, "Servermessage to " + name + ": " + content);
+                server.log(Level.INFO, "Sending: Servermessage to " + name + ": " + content);
                 serializer.serialize(m.getUserConnectionInfo().getOut(), m);
                 break;
             case LOGINRESPONSEMSG:
                 LoginResponseMessage response = ((LoginResponseMessage)m);
-                server.log(Level.INFO,"Login response for " + m.getUserConnectionInfo().getSocket().getInetAddress() +
+                server.log(Level.INFO,"Sending: LoginResponse for " + m.getUserConnectionInfo().getSocket().getInetAddress() +
                         ": " + response.getResponse().toString());
                 serializer.serialize(m.getUserConnectionInfo().getOut(), m);
                 break;
             case ROOMCHANGERESPONSEMSG:
                 serializer.serialize(m.getUserConnectionInfo().getOut(),m);
-                server.log(Level.INFO,"Sending a RoomChangeResponse for " + m.getUserConnectionInfo().getUserAccountInfo().getLoginName());
+                server.log(Level.INFO,"Sending: RoomChangeResponse for " + m.getUserConnectionInfo().getUserAccountInfo().getLoginName());
                 break;
         }
     }
@@ -208,11 +208,11 @@ public class MessageListener extends Thread {
         switch (server.getMessageTypeDictionary().getType(m.getType())) {
             case PUBLICTEXTMSG:
                 PublicTextMessage publicTextMessage = (PublicTextMessage)m;
-                server.log(Level.INFO, publicTextMessage.getSender()+ "@" + roomName + ": " + publicTextMessage.getMessage());
+                server.log(Level.INFO, "Sending: " + publicTextMessage.getSender()+ "@" + roomName + ": " + publicTextMessage.getMessage());
                 break;
             case PUBLICSERVERMSG:
                 PublicServerMessage publicServerMessage = (PublicServerMessage)m;
-                server.log(Level.INFO, "Servermessage to Room \"" + roomName + "\": " + publicServerMessage.getMessage());
+                server.log(Level.INFO, "Sending: Servermessage to Room \"" + roomName + "\": " + publicServerMessage.getMessage());
                 break;
         }
         Room room = server.getRoomHandler().getRoom(roomName);
@@ -235,7 +235,7 @@ public class MessageListener extends Thread {
         //update ServerUserList
         sendToAll(buildUserListMessage());
 
-        //Fetch List of Names in Room of the client the user was before disconnecting
+        //Fetch List of Names in Room of the ServerUserclient the user was before disconnecting
         List<String> newRoomUserList = activeRoom.getUserNameList();
 
         //Build the message
@@ -329,8 +329,7 @@ public class MessageListener extends Thread {
                         LoginResponseMessage message = new LoginResponseMessage(LoginResponses.ALREADY_LOGGED_IN);
                         message.setUserConnectionInfo(m.getUserConnectionInfo());
                         messageQueue.put(message);
-
-                        System.out.println("A client tried to log into the Account of "+loginMessage.getLoginName()+" while it was already online!");
+                        server.log(Level.WARNING,"A client tried to log into the Account of "+loginMessage.getLoginName()+" while it was already online!");
                         return;
                     }
                 }
@@ -368,7 +367,7 @@ public class MessageListener extends Thread {
 
                 //Notify other users that someone connected
                 sendToRoom(new PublicServerMessage(accountInfo.getDisplayName() + " has connected to the Server!"),"lobby");
-                server.getBridge().updateUserListView(server.getAllUsers());
+                server.getBridge().updateUserListView(server.requestUserList());
 
                 server.log(Level.INFO,"User " + loginMessage.getLoginName() + " has logged in!");
             } else {
@@ -405,4 +404,7 @@ public class MessageListener extends Thread {
     }
 
 
+    public UserStorage getUserStorage() {
+        return userStorage;
+    }
 }
