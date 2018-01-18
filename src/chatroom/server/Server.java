@@ -67,8 +67,6 @@ public class Server {
         }
     }
 
-
-
     public void stop(){
         log(Level.WARNING,"Server: Closing the Server Socket!");
         try {
@@ -79,12 +77,6 @@ public class Server {
             isRunning = false;
         }
     }
-
-    public static void main (String args[]){
-        Server server = new Server();
-        server.start();
-    }
-
 
     public ArrayList<String> requestRoomList() {
         ArrayList<String> roomNames = new ArrayList<>();
@@ -105,6 +97,7 @@ public class Server {
         return userNames;
     }
 
+
     /**
      * Sends a Message to the user and kicks him.
      * @param user
@@ -123,7 +116,7 @@ public class Server {
             }
             log(Level.INFO, "Server:" + user + " has been kicked from the server.");
         }
-        bridge.updateUserListView(requestUserList());
+        bridge.updateUserListView(getUserListWithRooms());
     }
 
     /**
@@ -144,7 +137,7 @@ public class Server {
             }
             log(Level.INFO, "Server: A Warning has been sent to " + user);
         }
-        bridge.updateUserListView(requestUserList());
+        bridge.updateUserListView(getUserListWithRooms());
     }
 
     /**
@@ -165,7 +158,7 @@ public class Server {
             }
             log(Level.INFO, "Server:" + user + " has been banned from the server.");
         }
-        bridge.updateUserListView(requestUserList());
+        bridge.updateUserListView(getUserListWithRooms());
     }
 
     public void editRoom(String oldName, String newName) {
@@ -184,19 +177,12 @@ public class Server {
         roomHandler.removeRoom(name);
     }
 
-    public ArrayList<String> getAllUsers() {
-        ArrayList <String> userNames = new ArrayList<>();
-        for(UserAccountInfo u : messageListener.getUserStorage().getUserInfoList()){
-            userNames.add(u.getLoginName());
-        }
-        System.out.println(userNames);
-        return userNames;
-    }
-    public void log(Level level, String msg, Exception ex) {
+
+    public synchronized void log(Level level, String msg, Exception ex) {
         logger.log(level, msg, ex);
         bridge.addEventToLog(msg + ex.toString());
     }
-    public void log(Level level, String msg){
+    public synchronized void log(Level level, String msg){
         logger.log(level,msg);
         bridge.addEventToLog(msg);
     }
@@ -233,5 +219,25 @@ public class Server {
 
     public void setBridge(Bridge bridge) {
         this.bridge = bridge;
+    }
+
+    public ArrayList<String> getAllUsers() {
+        ArrayList <String> userNames = new ArrayList<>();
+        for(UserAccountInfo u : messageListener.getUserStorage().getUserInfoList()){
+            userNames.add(u.getLoginName());
+        }
+        System.out.println(userNames);
+        return userNames;
+    }
+
+    public ArrayList<String> getUserListWithRooms(){
+        ArrayList<String> userNames = new ArrayList<>();
+        for(UserListeningThread u : networkListener.getUserListeningThreadList()){
+            if(u.getUserConnectionInfo().isLoggedIn()){
+                UserAccountInfo info = u.getUserConnectionInfo().getUserAccountInfo();
+                userNames.add(info.getLoginName()+"|["+u.getUserConnectionInfo().getActiveRoom().getName()+"]");
+            }
+        }
+        return userNames;
     }
 }

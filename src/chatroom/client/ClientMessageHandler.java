@@ -68,7 +68,6 @@ public class ClientMessageHandler extends Thread {
                 RoomListMessage roomListMessage = ((RoomListMessage) message);
                 client.setRoomMessageList(roomListMessage.getRoomList());
                 client.getBridge().onRoomUpdate(client.getRooms());
-                System.out.println(client.getRooms());
                 break;
             case ROOMCHANGERESPONSEMSG:
                 RoomChangeResponseMessage roomChangeResponseMessage = ((RoomChangeResponseMessage) message);

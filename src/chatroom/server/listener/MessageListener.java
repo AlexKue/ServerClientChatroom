@@ -142,7 +142,6 @@ public class MessageListener extends Thread {
         responseMessage.setUserConnectionInfo(m.getUserConnectionInfo());
         messageQueue.put(responseMessage);
         server.log(Level.INFO, message.getLoginName() + " switched from Room \"" + oldRoom.getName() + "\" to \"" + newRoom.getName() + "\"");
-        server.log(Level.INFO,"Sending: RoomChangeResponse to " + m.getUserConnectionInfo().getUserAccountInfo().getLoginName());
     }
 
     /**
@@ -190,7 +189,6 @@ public class MessageListener extends Thread {
                 break;
             case ROOMCHANGERESPONSEMSG:
                 serializer.serialize(m.getUserConnectionInfo().getOut(),m);
-                server.log(Level.INFO,"Sending: RoomChangeResponse for " + m.getUserConnectionInfo().getUserAccountInfo().getLoginName());
                 break;
         }
     }
@@ -214,14 +212,14 @@ public class MessageListener extends Thread {
         switch (server.getMessageTypeDictionary().getType(m.getType())) {
             case PUBLICTEXTMSG:
                 PublicTextMessage publicTextMessage = (PublicTextMessage)m;
-                logmsg.concat(publicTextMessage.getSender()+ "@" + roomName + ": " + publicTextMessage.getMessage());
+                logmsg = logmsg.concat(publicTextMessage.getSender()+ "@" + roomName + ": " + publicTextMessage.getMessage());
                 break;
             case PUBLICSERVERMSG:
                 PublicServerMessage publicServerMessage = (PublicServerMessage)m;
-                logmsg.concat("SERVER@" + roomName + ": " + publicServerMessage.getMessage());
+                logmsg = logmsg.concat("SERVER@" + roomName + ": " + publicServerMessage.getMessage());
                 break;
             case ROOMUSERLISTMSG:
-                logmsg.concat("Updating RoomUserLists for Clients @" + roomName);
+                logmsg = logmsg.concat("Updating RoomUserLists for Clients @" + roomName);
                 break;
         }
         server.log(Level.INFO,logmsg);
@@ -255,7 +253,7 @@ public class MessageListener extends Thread {
         //Update the lists
         sendToRoom(roomUserListMessage,activeRoom.getName());
 
-        server.getBridge().updateUserListView(server.requestUserList());
+        server.getBridge().updateUserListView(server.getUserListWithRooms());
 
     }
 
@@ -332,7 +330,7 @@ public class MessageListener extends Thread {
 
             server.log(Level.INFO, "Created new Account for " + loginMessage.getLoginName() + "@" + loginMessage.getUserConnectionInfo().getSocket().getInetAddress());
             sendToRoom(new PublicServerMessage(m.getUserConnectionInfo().getUserAccountInfo().getDisplayName() + " has connected to the Server!"),"lobby");
-            server.getBridge().updateUserListView(server.requestUserList());
+            server.getBridge().updateUserListView(server.getUserListWithRooms());
             return;
             //CASE: Username is taken
         } else {
@@ -403,7 +401,7 @@ public class MessageListener extends Thread {
 
                 //Notify other users that someone connected
                 sendToRoom(new PublicServerMessage(accountInfo.getDisplayName() + " has connected to the Server!"),"lobby");
-                server.getBridge().updateUserListView(server.requestUserList());
+                server.getBridge().updateUserListView(server.getUserListWithRooms());
 
                 server.log(Level.INFO,"User " + loginMessage.getLoginName() + " has logged in!");
             } else {

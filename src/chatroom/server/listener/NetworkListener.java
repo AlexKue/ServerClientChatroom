@@ -95,7 +95,7 @@ public class NetworkListener extends Thread {
             //close Sockets
             userThread.close();
         }
-        server.getBridge().updateUserListView(server.requestUserList());
+        server.getBridge().updateUserListView(server.getUserListWithRooms());
     }
 
     /**

@@ -63,29 +63,27 @@ public class UserListeningThread extends Thread {
                 server.log(Level.WARNING,"UserListeningThread: Lost Connection to " + userConnectionInfo.getSocket().getInetAddress());
                 isRunning = false; //Stop the Thread if connection is lost
                 server.getNetworkListener().removeClient(this);
-                server.getBridge().updateUserListView(server.requestUserList());
+                server.getBridge().updateUserListView(server.getUserListWithRooms());
             } catch (InterruptedException e) {
                 server.log(Level.WARNING,"UserListeningThread: Exception has been thrown for user " + userConnectionInfo.getSocket().getInetAddress(),e);
                 isRunning = false;
                 server.getNetworkListener().removeClient(this);
-                server.getBridge().updateUserListView(server.requestUserList());
+                server.getBridge().updateUserListView(server.getUserListWithRooms());
             }
         }
     }
 
     private void log(Message m) {
         String logmsg = "Receiving: [" + server.getMessageTypeDictionary().getType(m.getType()).toString() + "] ";
-        String name = userConnectionInfo.getUserAccountInfo().getLoginName();
         switch (server.getMessageTypeDictionary().getType(m.getType())){
             case PUBLICTEXTMSG:
-                String room = userConnectionInfo.getActiveRoom().getName();
                 String message = ((PublicTextMessage)m).getMessage();
-                logmsg.concat(name + "@" + room + ": " + message);
+                logmsg = logmsg.concat(userConnectionInfo.getUserAccountInfo().getLoginName() + "@" + userConnectionInfo.getActiveRoom().getName() + ": " + message);
                 server.log(Level.INFO,logmsg);
                 break;
             case ROOMCHANGEREQMSG:
-                RoomChangeRequestMessage roomChangeRequestMessage = (RoomChangeRequestMessage)m;
-                logmsg.concat(name + "@" + userConnectionInfo.getActiveRoom().getName() + "requests room switch to " + roomChangeRequestMessage.getRoomName());
+                logmsg = logmsg.concat(userConnectionInfo.getUserAccountInfo().getLoginName() + "@" + userConnectionInfo.getActiveRoom().getName() +
+                "requests room change to " + ((RoomChangeRequestMessage)m).getRoomName());
                 server.log(Level.INFO,logmsg);
                 break;
         }

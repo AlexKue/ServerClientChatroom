@@ -14,6 +14,7 @@ public class LoginResponsesDictionary {
         loginResponseHashMap.put((byte) 1, LoginResponses.CREATED_ACCOUNT);
         loginResponseHashMap.put((byte) 2, LoginResponses.WRONG_PASSWORD);
         loginResponseHashMap.put((byte) 3, LoginResponses.ALREADY_LOGGED_IN);
+        loginResponseHashMap.put((byte) 4, LoginResponses.BANNED);
 
         for(byte key : loginResponseHashMap.keySet()){
             reverseHashMap.put(loginResponseHashMap.get(key), key);

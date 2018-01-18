@@ -8,6 +8,7 @@ import javafx.scene.control.ButtonType;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.logging.Level;
 
 public class Bridge {
     Server model;
@@ -20,6 +21,7 @@ public class Bridge {
 
     //This Method is for Code to run when a Close is requested
     public void onClose() {
+        model.log(Level.WARNING,"***** Shutting down Server *****");
         model.stop();
     }
 
