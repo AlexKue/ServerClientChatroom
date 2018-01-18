@@ -180,24 +180,26 @@ public class HomeGui {
     public void addMessage(String username, String message) {
         messages.add(new String[]{username, message});
         Label label;
+        HBox hbox;
         if (username.equals(bridge.getUsername())) {
-
+            hbox = new HBox();
+            hbox.setAlignment(Pos.CENTER_RIGHT);
             label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
             label.setPrefWidth(400);
             label.setStyle("-fx-background-color:#0A3F79; -fx-text-fill: #C5C8C6");
-            label.setAlignment(Pos.CENTER_LEFT);
+            hbox.getChildren().add(label);
 
         } else {
-
+            hbox = new HBox();
+            hbox.setAlignment(Pos.CENTER_LEFT);
             label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
             label.setPrefWidth(400);
             label.setStyle("-fx-background-color:#0A2F58; -fx-text-fill: #C5C8C6");
-            label.setAlignment(Pos.CENTER_RIGHT);
-
+            hbox.getChildren().add(label);
         }
 
         label.setWrapText(true);
-        chatBox.getChildren().add(label);
+        chatBox.getChildren().add(hbox);
         index++;
     }
 
