@@ -78,14 +78,15 @@ public class HomeGui {
 
         container.getStyleClass().add("CenterContainer");
 
-        HBox SendMessageButtonAndTextArea = new HBox();
-        SendMessageButtonAndTextArea.getChildren().addAll(message, sendMessage);
+        HBox sendMessageButtonAndTextArea = new HBox();
+        sendMessageButtonAndTextArea.getChildren().addAll(message, sendMessage);
         chatBoxContainer.setContent(chatBox);
         chatBoxContainer.setFitToWidth(true);
         chatBoxContainer.setPrefViewportHeight(500);
-        SendMessageButtonAndTextArea.setPadding(new Insets(10 ,10 ,10 ,10));
+        sendMessageButtonAndTextArea.setPadding(new Insets(10 ,10 ,10 ,0));
+        sendMessageButtonAndTextArea.setSpacing(10);
 
-        container.getChildren().addAll(chatBoxContainer, SendMessageButtonAndTextArea);
+        container.getChildren().addAll(chatBoxContainer, sendMessageButtonAndTextArea);
 
         //borderPane.setPrefSize(700, 900);
         borderPane.setCenter(container);
@@ -129,7 +130,7 @@ public class HomeGui {
         userRequest = new Label();
         userRequest.getStyleClass().add("UserSelection");
 
-        outerRight.getChildren().addAll(new Label("Rooms"), selectedRoom, roomSelection, roomConnectionStatus, roomUserSeparator, new Label("Users"), userLists);
+        outerRight.getChildren().addAll(selectedRoom, roomSelection, roomConnectionStatus, roomUserSeparator, userLists);
         outerRight.setAlignment(Pos.TOP_CENTER);
         outerRight.getStyleClass().add("spacing");
         outerRight.setPadding(new Insets(10, 10, 10, 20));
@@ -189,7 +190,7 @@ public class HomeGui {
             hbox.setAlignment(Pos.CENTER_RIGHT);
             label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
             label.setPrefWidth(400);
-            label.setStyle("-fx-background-color:#0A3F79; -fx-text-fill: #C5C8C6; -fx-background-radius: 4");
+            label.setStyle("-fx-background-color:#0A3F79; -fx-text-fill: #C5C8C6; -fx-background-radius: 6");
             hbox.getChildren().add(label);
 
         } else if(username.equals("SERVER")) {
@@ -197,18 +198,20 @@ public class HomeGui {
             hbox.setAlignment(Pos.CENTER_LEFT);
             label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
             label.setPrefWidth(400);
-            label.setStyle("-fx-background-color:#771919; -fx-text-fill: #C5C8C6; -fx-background-radius: 4");
+            label.setStyle("-fx-background-color:#771919; -fx-text-fill: #C5C8C6; -fx-background-radius: 6");
             hbox.getChildren().add(label);
         }else{
             hbox = new HBox();
             hbox.setAlignment(Pos.CENTER_LEFT);
             label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
             label.setPrefWidth(400);
-            label.setStyle("-fx-background-color:#0A2F58; -fx-text-fill: #C5C8C6; -fx-background-radius: 4;");
+            label.setStyle("-fx-background-color:#0A2F58; -fx-text-fill: #C5C8C6; -fx-background-radius: 6;");
             hbox.getChildren().add(label);
         }
         label.setWrapText(true);
+        label.setPadding(new Insets(2,2,2,2));
         chatBox.getChildren().add(hbox);
+        chatBox.setPadding(new Insets(3,3,3,3));
         index++;
     }
 

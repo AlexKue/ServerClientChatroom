@@ -7,7 +7,7 @@
 .label {
 
     /*-fx-background-color: #969896;*/
-    -fx-text-fill: #969896;
+    -fx-text-fill: #FFFFFF;
 }
 
 .background {
@@ -22,7 +22,11 @@
     -fx-background-color: #170624;
 }
 .textArea .content{
-    -fx-background-color: #C5C8C6;
+    -fx-background-color:  #4A097D;
+}
+.textArea{
+    -fx-background-color:  #4A097D;
+    -fx-text-fill: white;
 }
 .roomSelection{
     -fx-background-color: #B5BD68;

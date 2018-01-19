@@ -87,7 +87,7 @@ public class RoomCreatingDeletingAndEditingBox {
     }
 
     private void setupBasicBox(){
-
+        textField.getStyleClass().add("textArea");
         errorLabel.setWrapText(true);
         layout.getStyleClass().add("mainBackground");
         layout.getStylesheets().add(getClass().getResource("ServerHomeGuiStyle.css").toExternalForm());

@@ -97,6 +97,8 @@ public class ServerHomeGui {
         userBox.getChildren().addAll(connectedUsersView, userButtonContainer);
         Tab users = new Tab("Users");
         users.getStyleClass().add("connectedUsersBox");
+        userButtonContainer.setSpacing(10);
+        userBox.setSpacing(10);
         users.setContent(userBox);
 
 
@@ -104,10 +106,13 @@ public class ServerHomeGui {
         roomsBox.getChildren().addAll(roomsView, roomButtonContainer);
         Tab roomsPane = new Tab("Rooms");
         roomsPane.setContent(roomsBox);
+        roomsBox.setSpacing(10);
+        roomButtonContainer.setSpacing(10);
 
         roomAndUserLists.getTabs().addAll(users, roomsPane);
 
         outerRight.getChildren().add(roomAndUserLists);
+        outerRight.setSpacing(10);
         mainScene.setRight(outerRight);
         requestRoomList();
         requestUserList();
@@ -122,6 +127,7 @@ public class ServerHomeGui {
         log.setEditable(false);
         centerBox.getChildren().addAll(log, showUserData);
         centerBox.setPadding(new Insets(20, 20, 20, 20));
+        centerBox.setSpacing(10);
         mainScene.setCenter(centerBox);
     }
 
