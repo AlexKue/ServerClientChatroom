@@ -209,7 +209,7 @@ public class MessageListener extends Thread {
                 break;
             case ROOMCHANGERESPONSEMSG:
                 serializer.serialize(m.getUserConnectionInfo().getOut(),m);
-                server.log(Level.INFO,"Sending: RoomChangeResponse for " + m.getUserConnectionInfo().getUserAccountInfo().getLoginName());
+                server.log(Level.INFO,"Sending: RoomChangeResponse for " + m.getUserConnectionInfo().getUserAccountInfo().getLoginName() + ": " + ((RoomChangeResponseMessage)m).isSuccessful());
                 break;
         }
     }

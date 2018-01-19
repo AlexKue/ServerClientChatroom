@@ -79,6 +79,7 @@ public class Server {
 
     /**
      * Returns a list of roomNames available on the server
+     *
      * @return
      */
     public ArrayList<String> requestRoomList() {
@@ -92,6 +93,7 @@ public class Server {
 
     /**
      * Returns an ArrayList of names of the users currently logged in the server
+     *
      * @return
      */
     public ArrayList<String> requestUserList() {
@@ -172,15 +174,17 @@ public class Server {
 
     /**
      * Renames a room
+     *
      * @param oldName
      * @param newName
      */
     public void editRoom(String oldName, String newName) {
-        if (oldName.equals("lobby")) {
+        if (oldName.trim().equals("lobby")) {
             log(Level.WARNING, "RoomHandler: Cannot edit the lobby.");
         } else {
             if (roomHandler.editRoom(oldName, newName)) try {
                 messageListener.getMessageQueue().put(new RoomNameEditMessage(newName));
+                bridge.updateUserListView(getUserListWithRooms());
 
             } catch (InterruptedException e) {
                 log(Level.SEVERE, "RoomHandler: Exception while notifying users of the new Name " + oldName, e);
@@ -189,15 +193,22 @@ public class Server {
     }
 
     public void addRoom(String name) {
-        roomHandler.addRoom(name);
+        if (name.trim().equals("")) {
+            log(Level.WARNING, "RoomHandler: Room name cannot be empty.");
+        } else if (roomHandler.getRoomNamesList().contains(name.trim())) {
+            log(Level.WARNING, "RoomHandler: Room already exists");
+        } else {
+            roomHandler.addRoom(name.trim());
+        }
     }
 
     /**
      * Moves every Client to the lobby and the deletes the room
+     *
      * @param name the name of the room
      */
     public void deleteRoom(String name) {
-        if (name.equals("lobby")) {
+        if (name.trim().equals("lobby")) {
             log(Level.WARNING, "RoomHandler: Cannot remove the lobby.");
         } else {
             Room r = roomHandler.getRoom(name);
@@ -289,6 +300,7 @@ public class Server {
 
     /**
      * Returns a list of usernames of all users saved in the userStorage
+     *
      * @return a ArrayList of Strings containing usernames
      */
     public ArrayList<String> getAllUsers() {
@@ -304,6 +316,7 @@ public class Server {
     /**
      * Returns a list of userNames with the name of the room they currently are appended on it in the format
      * username|[roomname]. This method is used in the serverGui to display all users and the rooms they currently are.
+     *
      * @return list of usernames with their active room appended
      */
     public ArrayList<String> getUserListWithRooms() {
