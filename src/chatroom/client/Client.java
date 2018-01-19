@@ -43,7 +43,9 @@ public class Client {
         isLoggedIn = false;
         isRunning = false;
         try {
-            server.close();
+            if (server != null) {
+                server.close();
+            }
         } catch (IOException e) {
             //We close anyways
         }
@@ -79,8 +81,9 @@ public class Client {
             bridge.onConnectionAttemtResponse(false);
         }
     }
+
     public void login(String username, String password) {
-        clientSender.login(username.trim(),password);
+        clientSender.login(username.trim(), password);
         loginName = username;
     }
 
@@ -94,7 +97,9 @@ public class Client {
 //        client.start();
 //    }
 
-    /** GETTER / SETTER / CHECKS **/
+    /**
+     * GETTER / SETTER / CHECKS
+     **/
 
     public MessageTypeDictionary getMessageTypeDictionary() {
         return messageTypeDictionary;
@@ -159,7 +164,7 @@ public class Client {
 
     public synchronized ArrayList<String> getRooms() {
         ArrayList<String> rooms = new ArrayList<>();
-        for(RoomMessage m : roomMessageList){
+        for (RoomMessage m : roomMessageList) {
             rooms.add(m.getName());
         }
         return rooms;
@@ -169,7 +174,7 @@ public class Client {
         return serverUserList;
     }
 
-    public void setServerUserList(List<String> serverUserList){
+    public void setServerUserList(List<String> serverUserList) {
         this.serverUserList = serverUserList;
     }
 
@@ -185,7 +190,7 @@ public class Client {
         this.bridge = bridge;
     }
 
-    public ClientMessageHandler getMessageHandler(){
+    public ClientMessageHandler getMessageHandler() {
         return messageHandler;
     }
 }

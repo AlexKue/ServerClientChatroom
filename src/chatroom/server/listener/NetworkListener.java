@@ -37,7 +37,7 @@ public class NetworkListener extends Thread {
                 getUserListeningThreadList().add(u);
                 u.start();
             } catch (IOException ex) {
-                server.log(Level.SEVERE, "NetworkListener: Exception while adding an client!",ex);
+                server.log(Level.SEVERE, "NetworkListener: Exception while adding an client!", ex);
                 //.accept() will throw if server is closing
             }
         }
@@ -47,6 +47,7 @@ public class NetworkListener extends Thread {
     /**
      * Returns the ThreadList of ALL clients, even them being NOT logged in into
      * an account
+     *
      * @return a list of <code>UserListeningThreads</code>
      */
     public List<UserListeningThread> getUserListeningThreadList() {
@@ -76,7 +77,10 @@ public class NetworkListener extends Thread {
     public void removeClient(UserListeningThread userThread) {
         //set loggedInStatus to False
         UserConnectionInfo info = userThread.getUserConnectionInfo();
-        info.getActiveRoom().removeUser(info);
+
+        if (info.getActiveRoom() != null) {
+            info.getActiveRoom().removeUser(info);
+        }
         //remove from List
         if (userListeningThreadList.remove(userThread)) {
             //Check if user is logged in
@@ -101,6 +105,7 @@ public class NetworkListener extends Thread {
     /**
      * Removes a Client from the ThreadList by looking up the loginName, retrieving the Thread of the corresponding
      * name and passing it to <code>removeClient(UserListeningThread userThrad)</code>.
+     *
      * @param loginName the loginName of the User who should be removed
      */
     public void removeClient(String loginName) {

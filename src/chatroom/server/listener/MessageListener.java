@@ -104,6 +104,8 @@ public class MessageListener extends Thread {
             case 2: userStorage.banUser(m.getUserConnectionInfo().getUserAccountInfo());
             case 1: server.getNetworkListener().removeClient(m.getUserConnectionInfo().getUserAccountInfo().getLoginName());
         }
+        server.getBridge().updateUserListView(server.getUserListWithRooms());
+
     }
 
     /**
@@ -214,12 +216,23 @@ public class MessageListener extends Thread {
         }
     }
 
-
     /**
      * Sends a message to all currently loggedIn users
      * @param m The message being sent to all clients
      */
     private void sendToAll(Message m) throws InterruptedException, IOException {
+        String logmsg = "Sending: [" + server.getMessageTypeDictionary().getType(m.getType()).toString() + "] ";
+        switch (server.getMessageTypeDictionary().getType(m.getType())) {
+            case PUBLICSERVERMSG:
+                PublicServerMessage publicServerMessage = (PublicServerMessage)m;
+                logmsg = logmsg.concat("SERVER@ALLUSERS: " + publicServerMessage.getMessage());
+                break;
+            case ROOMLISTMSG:
+                logmsg = logmsg.concat("Updating RoomLists for all Clients");
+                break;
+        }
+        server.log(Level.INFO,logmsg);
+
         //Go trough the list of Threads and send to loggedIn users
         for (UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()) {
             if (u != null && u.getUserConnectionInfo().isLoggedIn()) {

@@ -82,7 +82,7 @@ public class Server {
      *
      * @return
      */
-    public ArrayList<String> requestRoomList() {
+    synchronized public ArrayList<String> requestRoomList() {
         ArrayList<String> roomNames = new ArrayList<>();
 
         for (Room r : roomHandler.getRoomList()) {
@@ -96,7 +96,7 @@ public class Server {
      *
      * @return
      */
-    public ArrayList<String> requestUserList() {
+    synchronized public ArrayList<String> requestUserList() {
         ArrayList<String> userNames = new ArrayList<>();
         for (UserListeningThread u : networkListener.getUserListeningThreadList()) {
             if (u.getUserConnectionInfo().isLoggedIn()) {
@@ -111,7 +111,7 @@ public class Server {
      *
      * @param user
      */
-    public void kickUser(String user) {
+    synchronized public void kickUser(String user) {
         for (UserListeningThread u : networkListener.getUserListeningThreadList()) {
             if (u.getUserConnectionInfo().isLoggedIn() && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(user)) {
                 WarningMessage m = new WarningMessage(1, "You have been kicked from the Server.");
@@ -125,7 +125,6 @@ public class Server {
             }
             log(Level.INFO, "Server:" + user + " has been kicked from the server.");
         }
-        bridge.updateUserListView(getUserListWithRooms());
     }
 
     /**
@@ -133,7 +132,7 @@ public class Server {
      *
      * @param user
      */
-    public void warnUser(String user) {
+   synchronized public void warnUser(String user) {
         for (UserListeningThread u : networkListener.getUserListeningThreadList()) {
             if (u.getUserConnectionInfo().isLoggedIn() && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(user)) {
                 WarningMessage m = new WarningMessage(0, "You received a Warning! Further disturbance may have consequences!!");
@@ -147,7 +146,6 @@ public class Server {
             }
             log(Level.INFO, "Server: A Warning has been sent to " + user);
         }
-        bridge.updateUserListView(getUserListWithRooms());
     }
 
     /**
@@ -155,7 +153,7 @@ public class Server {
      *
      * @param user
      */
-    public void banUser(String user) {
+    synchronized public void banUser(String user) {
         for (UserListeningThread u : networkListener.getUserListeningThreadList()) {
             if (u.getUserConnectionInfo().isLoggedIn() && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(user)) {
                 WarningMessage m = new WarningMessage(2, "You have been banned from the Server.");
@@ -169,7 +167,6 @@ public class Server {
             }
             log(Level.INFO, "Server:" + user + " has been banned from the server.");
         }
-        bridge.updateUserListView(getUserListWithRooms());
     }
 
     /**
@@ -178,7 +175,7 @@ public class Server {
      * @param oldName
      * @param newName
      */
-    public void editRoom(String oldName, String newName) {
+    synchronized public void editRoom(String oldName, String newName) {
         if (oldName.trim().equals("lobby")) {
             log(Level.WARNING, "RoomHandler: Cannot edit the lobby.");
         } else {
@@ -192,7 +189,7 @@ public class Server {
         }
     }
 
-    public void addRoom(String name) {
+    synchronized public void addRoom(String name) {
         if (name.trim().equals("")) {
             log(Level.WARNING, "RoomHandler: Room name cannot be empty.");
         } else if (roomHandler.getRoomNamesList().contains(name.trim())) {
@@ -207,7 +204,7 @@ public class Server {
      *
      * @param name the name of the room
      */
-    public void deleteRoom(String name) {
+    synchronized public void deleteRoom(String name) {
         if (name.trim().equals("lobby")) {
             log(Level.WARNING, "RoomHandler: Cannot remove the lobby.");
         } else {
@@ -303,7 +300,7 @@ public class Server {
      *
      * @return a ArrayList of Strings containing usernames
      */
-    public ArrayList<String> getAllUsers() {
+    synchronized public ArrayList<String> getAllUsers() {
         ArrayList<String> userNames = new ArrayList<>();
         for (UserAccountInfo u : messageListener.getUserStorage().getUserInfoList()) {
             userNames.add(u.getLoginName());
@@ -319,7 +316,7 @@ public class Server {
      *
      * @return list of usernames with their active room appended
      */
-    public ArrayList<String> getUserListWithRooms() {
+    synchronized public ArrayList<String> getUserListWithRooms() {
         ArrayList<String> userNames = new ArrayList<>();
         for (UserListeningThread u : networkListener.getUserListeningThreadList()) {
             if (u.getUserConnectionInfo().isLoggedIn()) {
