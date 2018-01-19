@@ -29,12 +29,13 @@ public class RoomHandler {
         }
         roomList.add(new Room(name));
         server.getBridge().updateRoomListView(getRoomNamesList());
+        //Update the list of available rooms for all users
         try {
             server.getMessageListener().getMessageQueue().put(buildRoomListMessage());
         } catch (InterruptedException e) {
-            server.log(Level.WARNING, "Roomhandler: Exception while sending a RoomListMessage: ", e);
+            server.log(Level.WARNING, "RoomHandler: Exception while sending a RoomListMessage: ", e);
         }
-        server.log(Level.INFO, "Roomhandler: Room\"" + name + "\" has been created.");
+        server.log(Level.INFO, "RoomHandler: Room\"" + name + "\" has been created.");
     }
 
     public void removeRoom(Room room) {
@@ -46,7 +47,7 @@ public class RoomHandler {
             try {
                 server.getMessageListener().getMessageQueue().put(buildRoomListMessage());
             } catch (InterruptedException e) {
-                server.log(Level.WARNING, "Roomhandler: Exception while sending a RoomListMessage: ", e);
+                server.log(Level.WARNING, "RoomHandler: Exception while sending a RoomListMessage: ", e);
             }
             server.log(Level.INFO, "Room \"" + room.getName() + "\" has been removed");
         }
@@ -63,6 +64,7 @@ public class RoomHandler {
                     break;
                 }
             }
+            //Update the list of available rooms for all users
             try {
                 server.getMessageListener().getMessageQueue().put(buildRoomListMessage());
             } catch (InterruptedException e) {
@@ -80,6 +82,7 @@ public class RoomHandler {
             Room room = getRoom(oldName);
             room.setName(newName);
             server.getBridge().updateRoomListView(getRoomNamesList());
+            //Update the list of available rooms for all users
             try {
                 server.getMessageListener().getMessageQueue().put(buildRoomListMessage());
             } catch (InterruptedException e) {

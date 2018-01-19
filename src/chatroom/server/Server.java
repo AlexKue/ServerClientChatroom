@@ -77,6 +77,10 @@ public class Server {
         }
     }
 
+    /**
+     * Returns a list of roomNames available on the server
+     * @return
+     */
     public ArrayList<String> requestRoomList() {
         ArrayList<String> roomNames = new ArrayList<>();
 
@@ -86,6 +90,10 @@ public class Server {
         return roomNames;
     }
 
+    /**
+     * Returns an ArrayList of names of the users currently logged in the server
+     * @return
+     */
     public ArrayList<String> requestUserList() {
         ArrayList<String> userNames = new ArrayList<>();
         for (UserListeningThread u : networkListener.getUserListeningThreadList()) {
@@ -95,7 +103,6 @@ public class Server {
         }
         return userNames;
     }
-
 
     /**
      * Sends a Message to the user and kicks him.
@@ -163,6 +170,11 @@ public class Server {
         bridge.updateUserListView(getUserListWithRooms());
     }
 
+    /**
+     * Renames a room
+     * @param oldName
+     * @param newName
+     */
     public void editRoom(String oldName, String newName) {
         if (oldName.equals("lobby")) {
             log(Level.WARNING, "RoomHandler: Cannot edit the lobby.");
@@ -182,7 +194,6 @@ public class Server {
 
     /**
      * Moves every Client to the lobby and the deletes the room
-     *
      * @param name the name of the room
      */
     public void deleteRoom(String name) {
@@ -276,6 +287,10 @@ public class Server {
         this.bridge = bridge;
     }
 
+    /**
+     * Returns a list of usernames of all users saved in the userStorage
+     * @return a ArrayList of Strings containing usernames
+     */
     public ArrayList<String> getAllUsers() {
         ArrayList<String> userNames = new ArrayList<>();
         for (UserAccountInfo u : messageListener.getUserStorage().getUserInfoList()) {
@@ -285,6 +300,12 @@ public class Server {
         return userNames;
     }
 
+
+    /**
+     * Returns a list of userNames with the name of the room they currently are appended on it in the format
+     * username|[roomname]. This method is used in the serverGui to display all users and the rooms they currently are.
+     * @return list of usernames with their active room appended
+     */
     public ArrayList<String> getUserListWithRooms() {
         ArrayList<String> userNames = new ArrayList<>();
         for (UserListeningThread u : networkListener.getUserListeningThreadList()) {
