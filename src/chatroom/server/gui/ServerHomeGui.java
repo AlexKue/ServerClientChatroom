@@ -194,11 +194,7 @@ public class ServerHomeGui {
     private void editRoom(String roomToBeEdited) {
         if(roomToBeEdited == null)
         {
-            Alert noRoomSelectedBox = new Alert(Alert.AlertType.WARNING);
-            noRoomSelectedBox.initModality(Modality.APPLICATION_MODAL);
-            noRoomSelectedBox.setTitle("!!! [WARNING69] !!!");
-            noRoomSelectedBox.setContentText("You have not selected a room!!");
-            noRoomSelectedBox.showAndWait();
+            noRoomSelectedDialog();
         }
         else
         {
@@ -207,15 +203,28 @@ public class ServerHomeGui {
     }
 
     private void deleteRoom(String name) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation Dialog");
-        alert.setHeaderText("You want to delete the Room: " + name);
-        alert.setContentText("Are you sure about this");
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
-            bridge.deleteRoom(name);
+        if(name == null)
+        {
+            noRoomSelectedDialog();
         }
+        else {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation Dialog");
+            alert.setHeaderText("You want to delete the Room: " + name);
+            alert.setContentText("Are you sure about this");
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                bridge.deleteRoom(name);
+            }
+        }
+    }
+    private void noRoomSelectedDialog(){
+        Alert noRoomSelectedBox = new Alert(Alert.AlertType.WARNING);
+        noRoomSelectedBox.initModality(Modality.APPLICATION_MODAL);
+        noRoomSelectedBox.setTitle("!!! [WARNING69] !!!");
+        noRoomSelectedBox.setContentText("You have not selected a room!!");
+        noRoomSelectedBox.showAndWait();
     }
     public void addEventToLog(String event){
         String oldLog = log.getText();
