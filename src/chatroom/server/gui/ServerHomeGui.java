@@ -68,7 +68,7 @@ public class ServerHomeGui {
         roomButtonContainer.setAlignment(Pos.CENTER);
         Button createRoom = new Button("Create Room");
         Button editRoom = new Button("Edit Room");
-        Button deleteRoom = new Button("deleteRoom");
+        Button deleteRoom = new Button("Delete Room");
 
         createRoom.setOnAction(e -> createRoom());
         editRoom.setOnAction(e -> editRoom(roomsView.getSelectionModel().getSelectedItem()));

@@ -1,5 +1,6 @@
 package chatroom.server.gui;
 
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -38,6 +39,7 @@ public class RoomCreatingDeletingAndEditingBox {
         heading = new Label("Edit room: " + roomToEdit);
 
         HBox textfieldButtonBox = new HBox();
+        textfieldButtonBox.setSpacing(10);
         textField.setPromptText("enter the new roomname");
         button = new Button("Edit Room");
         textfieldButtonBox.getChildren().addAll(textField, button);
@@ -65,6 +67,7 @@ public class RoomCreatingDeletingAndEditingBox {
         heading = new Label("Create new Room");
 
         HBox textfieldButtonBox = new HBox();
+        textfieldButtonBox.setSpacing(10);
         textField.setPromptText("enter the name");
         button = new Button("Create Room");
         textfieldButtonBox.getChildren().addAll(textField, button);
@@ -89,6 +92,7 @@ public class RoomCreatingDeletingAndEditingBox {
     private void setupBasicBox(){
         textField.getStyleClass().add("textArea");
         errorLabel.setWrapText(true);
+        layout.setPadding(new Insets(10,10,10,10));
         layout.getStyleClass().add("mainBackground");
         layout.getStylesheets().add(getClass().getResource("ServerHomeGuiStyle.css").toExternalForm());
         window.setMinHeight(150);
