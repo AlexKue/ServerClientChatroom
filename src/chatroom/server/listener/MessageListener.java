@@ -220,6 +220,12 @@ public class MessageListener extends Thread {
         }
     }
 
+    /**
+     * Sends a message to all Users in the room
+     * @param m the message being sent to the room
+     * @param roomName the room the message should be sent to
+     * @throws IOException
+     */
     private void sendToRoom(Message m, String roomName) throws IOException {
         String logmsg = "Sending: [" + server.getMessageTypeDictionary().getType(m.getType()).toString() + "] ";
         switch (server.getMessageTypeDictionary().getType(m.getType())) {
@@ -450,7 +456,10 @@ public class MessageListener extends Thread {
         return messageQueue;
     }
 
-
+    /**
+     * Return the UserStorage of the server containing passwords, the banlist etc.
+     * @return the UserStorage of the server
+     */
     public UserStorage getUserStorage() {
         return userStorage;
     }
