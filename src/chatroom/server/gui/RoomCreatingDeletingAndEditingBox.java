@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -14,13 +15,13 @@ public class RoomCreatingDeletingAndEditingBox {
     Bridge bridge;
     public RoomCreatingDeletingAndEditingBox(Bridge bridge, String roomToEdit){
         this.bridge = bridge;
-        editRoom(roomToEdit);
+        editRoomBox(roomToEdit);
     }
 
 
     public RoomCreatingDeletingAndEditingBox(Bridge bridge){
         this.bridge = bridge;
-        createRoom();
+        createRoomBox();
     }
 
 
@@ -33,7 +34,7 @@ public class RoomCreatingDeletingAndEditingBox {
     Label errorLabel = new Label();
 
 
-    private void editRoom(String roomToEdit){
+    private void editRoomBox(String roomToEdit){
         setupBasicBox();
         window.setTitle("Edit Room");
         heading = new Label("Edit room: " + roomToEdit);
@@ -46,14 +47,11 @@ public class RoomCreatingDeletingAndEditingBox {
         layout.getChildren().addAll(heading, textfieldButtonBox, errorLabel);
 
         button.setOnAction(e->{
-            if(checkForIdenticalNames(textField.getText())){
-                bridge.editRoom(roomToEdit, textField.getText());
-                window.close();
-            }
-            else
-            {
-                errorLabel.setText("The name: "+textField.getText() +"is already used. Please choose another one");
-                errorLabel.setStyle("-fx-text-fill: red;");
+            editRoom(roomToEdit);
+        });
+        textField.setOnKeyPressed(key -> {
+            if (key.getCode() == KeyCode.ENTER) {
+                editRoom(roomToEdit);
             }
         });
         Scene scene = new Scene(layout);
@@ -61,7 +59,7 @@ public class RoomCreatingDeletingAndEditingBox {
         window.show();
     }
 
-    private void createRoom(){
+    private void createRoomBox(){
         setupBasicBox();
         window.setTitle("Create Room");
         heading = new Label("Create new Room");
@@ -74,19 +72,28 @@ public class RoomCreatingDeletingAndEditingBox {
         layout.getChildren().addAll(heading, textfieldButtonBox, errorLabel);
 
         button.setOnAction(e->{
-            if(checkForIdenticalNames(textField.getText())){
-                bridge.addRoom(textField.getText());
-                window.close();
-            }
-            else
-            {
-                errorLabel.setText("The name: "+textField.getText() +"is already used. Please choose another one");
-                errorLabel.setStyle("-fx-text-fill: red");
+            createRoom();
+        });
+        textField.setOnKeyPressed(key -> {
+            if (key.getCode() == KeyCode.ENTER) {
+                createRoom();
             }
         });
         Scene scene = new Scene(layout);
         window.setScene(scene);
         window.show();
+    }
+
+    private void createRoom() {
+        if(checkForIdenticalNames(textField.getText())){
+            bridge.addRoom(textField.getText());
+            window.close();
+        }
+        else
+        {
+            errorLabel.setText("The name: "+textField.getText() +"is already used. Please choose another one");
+            errorLabel.setStyle("-fx-text-fill: red");
+        }
     }
 
     private void setupBasicBox(){
@@ -106,6 +113,18 @@ public class RoomCreatingDeletingAndEditingBox {
             }
         }
         return true;
+    }
+
+    private void editRoom(String roomToEdit){
+        if(checkForIdenticalNames(textField.getText())){
+            bridge.editRoom(roomToEdit, textField.getText());
+            window.close();
+        }
+        else
+        {
+            errorLabel.setText("The name: "+textField.getText() +"is already used. Please choose another one");
+            errorLabel.setStyle("-fx-text-fill: red;");
+        }
     }
 
 }

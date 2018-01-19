@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -191,7 +192,18 @@ public class ServerHomeGui {
     }
 
     private void editRoom(String roomToBeEdited) {
-        RoomCreatingDeletingAndEditingBox editRoomBox = new RoomCreatingDeletingAndEditingBox(bridge, roomToBeEdited);
+        if(roomToBeEdited == null)
+        {
+            Alert noRoomSelectedBox = new Alert(Alert.AlertType.WARNING);
+            noRoomSelectedBox.initModality(Modality.APPLICATION_MODAL);
+            noRoomSelectedBox.setTitle("!!! [WARNING69] !!!");
+            noRoomSelectedBox.setContentText("You have not selected a room!!");
+            noRoomSelectedBox.showAndWait();
+        }
+        else
+        {
+            RoomCreatingDeletingAndEditingBox editRoomBox = new RoomCreatingDeletingAndEditingBox(bridge, roomToBeEdited);
+        }
     }
 
     private void deleteRoom(String name) {

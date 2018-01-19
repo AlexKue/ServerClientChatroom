@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -43,6 +44,11 @@ public class ServerBox {
             stackPane.getChildren().add(gridPane);
             StackPane.setAlignment(gridPane, Pos.CENTER_LEFT);
 
+            iPInput.setOnKeyPressed(key -> {
+                if (key.getCode() == KeyCode.ENTER) {
+                    ConnectToAdress(iPInput.getText(), bridge);
+                }
+            });
 
             stackPane.getStyleClass().add("mainBackground");
             ConnectButton.getStyleClass().add("Buttons");
