@@ -3,12 +3,10 @@ package chatroom.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+import java.util.logging.*;
 
 import chatroom.model.UserAccountInfo;
 import chatroom.model.UserConnectionInfo;
@@ -21,7 +19,7 @@ import chatroom.server.room.Room;
 import chatroom.server.room.RoomHandler;
 
 public class Server {
-    public static final Logger logger = Logger.getLogger("Server");
+    public static final Logger logger = Logger.getLogger(Server.class.getName());
     private FileHandler fh;
     private ServerSocket listener;
     private NetworkListener networkListener;
@@ -250,13 +248,15 @@ public class Server {
 
 
     public synchronized void log(Level level, String msg, Exception ex) {
+        Date time = new Date();
         logger.log(level, msg, ex);
-        bridge.addEventToLog(msg + ex.toString());
+        bridge.addEventToLog("[" + time.toString() + "] " + msg + ex.toString());
     }
 
     public synchronized void log(Level level, String msg) {
+        Date time = new Date();
         logger.log(level, msg);
-        bridge.addEventToLog(msg);
+        bridge.addEventToLog("[" + time.toString() + "] " + msg);
     }
 
 
