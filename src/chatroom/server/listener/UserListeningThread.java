@@ -83,7 +83,7 @@ public class UserListeningThread extends Thread {
                 break;
             case ROOMCHANGEREQMSG:
                 logmsg = logmsg.concat(userConnectionInfo.getUserAccountInfo().getLoginName() + "@" + userConnectionInfo.getActiveRoom().getName() +
-                "requests room change to " + ((RoomChangeRequestMessage)m).getRoomName());
+                " requests room change to " + ((RoomChangeRequestMessage)m).getRoomName());
                 server.log(Level.INFO,logmsg);
                 break;
         }
