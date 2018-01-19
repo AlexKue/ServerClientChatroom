@@ -21,9 +21,9 @@ public class RoomHandler {
 
     public void addRoom(String name) {
         //check if Room already exists
-        for(Room r : roomList){
-            if(r.getName().equals(name)){
-                server.log(Level.WARNING,"RoomHandler: Room " + name + "already exists.");
+        for (Room r : roomList) {
+            if (r.getName().equals(name)) {
+                server.log(Level.WARNING, "RoomHandler: Room " + name + "already exists.");
                 return;
             }
         }
@@ -38,14 +38,18 @@ public class RoomHandler {
     }
 
     public void removeRoom(Room room) {
-        roomList.remove(room);
-        server.getBridge().updateRoomListView(getRoomNamesList());
-        try {
-            server.getMessageListener().getMessageQueue().put(buildRoomListMessage());
-        } catch (InterruptedException e) {
-            server.log(Level.WARNING, "Roomhandler: Exception while sending a RoomListMessage: ", e);
+        if (room.getName().equals("lobby")) {
+            server.log(Level.WARNING, "RoomHandler: Cannot remove room \"lobby\"");
+        } else {
+            roomList.remove(room);
+            server.getBridge().updateRoomListView(getRoomNamesList());
+            try {
+                server.getMessageListener().getMessageQueue().put(buildRoomListMessage());
+            } catch (InterruptedException e) {
+                server.log(Level.WARNING, "Roomhandler: Exception while sending a RoomListMessage: ", e);
+            }
+            server.log(Level.INFO, "Room \"" + room.getName() + "\" has been removed");
         }
-        server.log(Level.INFO, "Room \"" + room.getName() + "\" has been removed");
     }
 
     public void removeRoom(String name) {

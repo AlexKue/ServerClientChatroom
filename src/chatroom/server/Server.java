@@ -32,7 +32,7 @@ public class Server {
     private RoomHandler roomHandler;
     private Bridge bridge;
 
-    public Server(){
+    public Server() {
         messageTypeDictionary = new MessageTypeDictionary();
         sc = new Scanner(System.in);
         isRunning = true;
@@ -42,7 +42,7 @@ public class Server {
     /**
      * Start all Threads and handlers
      */
-    private void start(){
+    private void start() {
         try {
             //Create FileHandler for logging
             fh = new FileHandler("ServerLog.txt");
@@ -59,19 +59,19 @@ public class Server {
 
             //Create roomHandler with default room
             roomHandler = new RoomHandler(this);
-            logger.log(Level.INFO,"Server Online!");
+            logger.log(Level.INFO, "Server Online!");
         } catch (IOException ex) {
-            logger.log(Level.SEVERE, "Server: Failed to start server!",ex);
+            logger.log(Level.SEVERE, "Server: Failed to start server!", ex);
             System.exit(1);
         }
     }
 
-    public void stop(){
-        log(Level.WARNING,"Server: Closing the Server Socket!");
+    public void stop() {
+        log(Level.WARNING, "Server: Closing the Server Socket!");
         try {
             listener.close();
         } catch (IOException e) {
-            log(Level.SEVERE,"Server: Exception was thrown: " + e.toString());
+            log(Level.SEVERE, "Server: Exception was thrown: " + e.toString());
         } finally {
             isRunning = false;
         }
@@ -80,7 +80,7 @@ public class Server {
     public ArrayList<String> requestRoomList() {
         ArrayList<String> roomNames = new ArrayList<>();
 
-        for(Room r : roomHandler.getRoomList()){
+        for (Room r : roomHandler.getRoomList()) {
             roomNames.add(r.getName());
         }
         return roomNames;
@@ -88,8 +88,8 @@ public class Server {
 
     public ArrayList<String> requestUserList() {
         ArrayList<String> userNames = new ArrayList<>();
-        for(UserListeningThread u : networkListener.getUserListeningThreadList()){
-            if(u.getUserConnectionInfo().isLoggedIn()){
+        for (UserListeningThread u : networkListener.getUserListeningThreadList()) {
+            if (u.getUserConnectionInfo().isLoggedIn()) {
                 userNames.add(u.getUserConnectionInfo().getUserAccountInfo().getLoginName());
             }
         }
@@ -99,12 +99,13 @@ public class Server {
 
     /**
      * Sends a Message to the user and kicks him.
+     *
      * @param user
      */
     public void kickUser(String user) {
-        for(UserListeningThread u : networkListener.getUserListeningThreadList()){
-            if(u.getUserConnectionInfo().isLoggedIn() && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(user)){
-                WarningMessage m = new WarningMessage(1,"You have been kicked from the Server.");
+        for (UserListeningThread u : networkListener.getUserListeningThreadList()) {
+            if (u.getUserConnectionInfo().isLoggedIn() && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(user)) {
+                WarningMessage m = new WarningMessage(1, "You have been kicked from the Server.");
                 m.setUserConnectionInfo(u.getUserConnectionInfo());
                 try {
                     messageListener.getMessageQueue().put(m);
@@ -120,12 +121,13 @@ public class Server {
 
     /**
      * Just sends a text message to the user warning him.
+     *
      * @param user
      */
     public void warnUser(String user) {
-        for(UserListeningThread u : networkListener.getUserListeningThreadList()){
-            if(u.getUserConnectionInfo().isLoggedIn() && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(user)){
-                WarningMessage m = new WarningMessage(0,"You received a Warning! Further disturbance may have consequences!!");
+        for (UserListeningThread u : networkListener.getUserListeningThreadList()) {
+            if (u.getUserConnectionInfo().isLoggedIn() && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(user)) {
+                WarningMessage m = new WarningMessage(0, "You received a Warning! Further disturbance may have consequences!!");
                 m.setUserConnectionInfo(u.getUserConnectionInfo());
                 try {
                     messageListener.getMessageQueue().put(m);
@@ -141,12 +143,13 @@ public class Server {
 
     /**
      * Kicks then User from the Server and puts him onto the banlist, preventing him to reconnect using that username
+     *
      * @param user
      */
     public void banUser(String user) {
-        for(UserListeningThread u : networkListener.getUserListeningThreadList()){
-            if(u.getUserConnectionInfo().isLoggedIn() && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(user)){
-                WarningMessage m = new WarningMessage(2,"You have been banned from the Server.");
+        for (UserListeningThread u : networkListener.getUserListeningThreadList()) {
+            if (u.getUserConnectionInfo().isLoggedIn() && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(user)) {
+                WarningMessage m = new WarningMessage(2, "You have been banned from the Server.");
                 m.setUserConnectionInfo(u.getUserConnectionInfo());
                 try {
                     messageListener.getMessageQueue().put(m);
@@ -161,11 +164,15 @@ public class Server {
     }
 
     public void editRoom(String oldName, String newName) {
-        if(roomHandler.editRoom(oldName,newName)) try {
-            messageListener.getMessageQueue().put(new RoomNameEditMessage(newName));
+        if (oldName.equals("lobby")) {
+            log(Level.WARNING, "RoomHandler: Cannot edit the lobby.");
+        } else {
+            if (roomHandler.editRoom(oldName, newName)) try {
+                messageListener.getMessageQueue().put(new RoomNameEditMessage(newName));
 
-        } catch (InterruptedException e) {
-            log(Level.SEVERE,"RoomHandler: Exception while notifying users of the new Name " + oldName,e);
+            } catch (InterruptedException e) {
+                log(Level.SEVERE, "RoomHandler: Exception while notifying users of the new Name " + oldName, e);
+            }
         }
     }
 
@@ -175,46 +182,51 @@ public class Server {
 
     /**
      * Moves every Client to the lobby and the deletes the room
+     *
      * @param name the name of the room
      */
     public void deleteRoom(String name) {
-        Room r = roomHandler.getRoom(name);
-        for(UserConnectionInfo u : roomHandler.getRoom("lobby").getUserList() ){
-            TargetedServerMessage targetedServerMessage = new TargetedServerMessage("Room \"" + name + "\" has been deleted and its users have been moved to the lobby.");
-            targetedServerMessage.setUserConnectionInfo(u);
-            try {
-                messageListener.getMessageQueue().put(targetedServerMessage);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        if (name.equals("lobby")) {
+            log(Level.WARNING, "RoomHandler: Cannot remove the lobby.");
+        } else {
+            Room r = roomHandler.getRoom(name);
+            for (UserConnectionInfo u : roomHandler.getRoom("lobby").getUserList()) {
+                TargetedServerMessage targetedServerMessage = new TargetedServerMessage("Room \"" + name + "\" has been deleted and its users have been moved to the lobby.");
+                targetedServerMessage.setUserConnectionInfo(u);
+                try {
+                    messageListener.getMessageQueue().put(targetedServerMessage);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-        }
-        for(UserConnectionInfo u : r.getUserList()){
-            u.setActiveRoom(roomHandler.getRoom("lobby"));
-            roomHandler.getRoom("lobby").addUser(u);
+            for (UserConnectionInfo u : r.getUserList()) {
+                u.setActiveRoom(roomHandler.getRoom("lobby"));
+                roomHandler.getRoom("lobby").addUser(u);
 
-            RoomNameEditMessage roomNameEditMessage = new RoomNameEditMessage("lobby");
-            roomNameEditMessage.setUserConnectionInfo(u);
+                RoomNameEditMessage roomNameEditMessage = new RoomNameEditMessage("lobby");
+                roomNameEditMessage.setUserConnectionInfo(u);
 
-            TargetedServerMessage targetedServerMessage = new TargetedServerMessage("Room \"" + name + "\" has been deleted and you have been moved to the lobby.");
-            targetedServerMessage.setUserConnectionInfo(u);
+                TargetedServerMessage targetedServerMessage = new TargetedServerMessage("Room \"" + name + "\" has been deleted and you have been moved to the lobby.");
+                targetedServerMessage.setUserConnectionInfo(u);
 
-            try {
-                messageListener.getMessageQueue().put(roomNameEditMessage);
-                messageListener.getMessageQueue().put(targetedServerMessage);
-            } catch (InterruptedException e) {
-                log(Level.SEVERE,"RoomHandler: Exception while notifying users of the new Name lobby", e);
+                try {
+                    messageListener.getMessageQueue().put(roomNameEditMessage);
+                    messageListener.getMessageQueue().put(targetedServerMessage);
+                } catch (InterruptedException e) {
+                    log(Level.SEVERE, "RoomHandler: Exception while notifying users of the new Name lobby", e);
+                }
             }
-        }
-        List<String> lobbyUserList = roomHandler.getRoom("lobby").getUserNameList();
-        RoomUserListMessage roomUserListMessage = new RoomUserListMessage(lobbyUserList,"lobby");
-        try {
-            messageListener.getMessageQueue().put(roomUserListMessage);
-        } catch (InterruptedException e) {
-            log(Level.SEVERE,"RoomHandler: Exception while updating RoomUserLists", e);
-        }
+            List<String> lobbyUserList = roomHandler.getRoom("lobby").getUserNameList();
+            RoomUserListMessage roomUserListMessage = new RoomUserListMessage(lobbyUserList, "lobby");
+            try {
+                messageListener.getMessageQueue().put(roomUserListMessage);
+            } catch (InterruptedException e) {
+                log(Level.SEVERE, "RoomHandler: Exception while updating RoomUserLists", e);
+            }
 
-        r.getUserList().clear();
-        roomHandler.removeRoom(name);
+            r.getUserList().clear();
+            roomHandler.removeRoom(name);
+        }
     }
 
 
@@ -222,14 +234,17 @@ public class Server {
         logger.log(level, msg, ex);
         bridge.addEventToLog(msg + ex.toString());
     }
-    public synchronized void log(Level level, String msg){
-        logger.log(level,msg);
+
+    public synchronized void log(Level level, String msg) {
+        logger.log(level, msg);
         bridge.addEventToLog(msg);
     }
 
 
-    /** Setter/Getter  */
-    public boolean isRunning(){
+    /**
+     * Setter/Getter
+     */
+    public boolean isRunning() {
         return isRunning;
     }
 
@@ -249,7 +264,7 @@ public class Server {
         return messageTypeDictionary;
     }
 
-    public RoomHandler getRoomHandler(){
+    public RoomHandler getRoomHandler() {
         return roomHandler;
     }
 
@@ -262,20 +277,20 @@ public class Server {
     }
 
     public ArrayList<String> getAllUsers() {
-        ArrayList <String> userNames = new ArrayList<>();
-        for(UserAccountInfo u : messageListener.getUserStorage().getUserInfoList()){
+        ArrayList<String> userNames = new ArrayList<>();
+        for (UserAccountInfo u : messageListener.getUserStorage().getUserInfoList()) {
             userNames.add(u.getLoginName());
         }
         System.out.println(userNames);
         return userNames;
     }
 
-    public ArrayList<String> getUserListWithRooms(){
+    public ArrayList<String> getUserListWithRooms() {
         ArrayList<String> userNames = new ArrayList<>();
-        for(UserListeningThread u : networkListener.getUserListeningThreadList()){
-            if(u.getUserConnectionInfo().isLoggedIn()){
+        for (UserListeningThread u : networkListener.getUserListeningThreadList()) {
+            if (u.getUserConnectionInfo().isLoggedIn()) {
                 UserAccountInfo info = u.getUserConnectionInfo().getUserAccountInfo();
-                userNames.add(info.getLoginName()+"|["+u.getUserConnectionInfo().getActiveRoom().getName()+"]");
+                userNames.add(info.getLoginName() + "|[" + u.getUserConnectionInfo().getActiveRoom().getName() + "]");
             }
         }
         return userNames;
