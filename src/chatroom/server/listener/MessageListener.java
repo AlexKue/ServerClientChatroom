@@ -118,6 +118,13 @@ public class MessageListener extends Thread {
         Room oldRoom = m.getUserConnectionInfo().getActiveRoom();
         Room newRoom = server.getRoomHandler().getRoom(message.getRoomName());
 
+        if(oldRoom.getName().equals(newRoom.getName())){
+            RoomChangeResponseMessage responseMessage = new RoomChangeResponseMessage(false,oldRoom.getName());
+            responseMessage.setUserConnectionInfo(m.getUserConnectionInfo());
+            messageQueue.put(responseMessage);
+            return;
+        }
+
         //Removing the User from the old room
         oldRoom.removeUser(m.getUserConnectionInfo());
         PublicServerMessage serverMessageOldRoom = new PublicServerMessage(message.getLoginName() +
