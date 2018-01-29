@@ -72,7 +72,7 @@ public class Bridge {
 
     //This is the Server Log
     public void addEventToLog(String event){
-        gui.serverHomeGui.addEventToLog(event);
+        Platform.runLater(() -> gui.serverHomeGui.addEventToLog(event));
     }
 
     public ArrayList<String> getAllUsers() {
