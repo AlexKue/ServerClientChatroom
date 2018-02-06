@@ -70,7 +70,7 @@ public class Bridge {
 
     //has to be triggered after succesfull connection TODO: ---BENUTZEN im MODEL------
     public void onConnectionAttemtResponse(boolean b) {
-        gui.onConnectionAttemtResponse(b);
+        Platform.runLater(() -> gui.onConnectionAttemtResponse(b));
     }
 
     //requests room change TODO: ---ERSETZEN------
@@ -100,5 +100,19 @@ public class Bridge {
     //this method is for operations that have to be run befor closing the window TODO: ---ERSETZEN------
     public void runClosinOperations() {
         model.stop();
+    }
+
+    public void sendPrivateMessage(String message, String targetUser) {
+
+    }
+
+    public void privateChatDisconnected(String endingUser, String userToBeInformed) {
+
+    }
+    public void startPrivateChatOnGui(String username){
+        Platform.runLater(()-> gui.homeGui.startPrivateChat(username));
+    }
+    public void addPrivateMessage(String originUser, String message, boolean isServer){
+        Platform.runLater(()->gui.homeGui.addPrivateMessage(originUser, message, isServer));
     }
 }

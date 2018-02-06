@@ -156,8 +156,8 @@ public class ServerHomeGui {
             connectedUsers.add(0, "");
        }
 
-       //this.connectedUsers.clear();
-       //this.connectedUsers.addAll(users);
+      // this.connectedUsers.clear();
+      // this.connectedUsers.addAll(users);
     }
 
     private void kickUser(String user) {

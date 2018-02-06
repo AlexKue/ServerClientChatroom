@@ -2,11 +2,13 @@ package chatroom.client.gui;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -15,6 +17,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +47,11 @@ public class HomeGui {
     private TabPane userLists;
     private ObservableList<String> allUsers = FXCollections.observableArrayList();
     private ObservableList<String> currentRoomUsers = FXCollections.observableArrayList();
+    private ListView<String> allUserView;
+    private ListView<String> currentRoomUsersView;
+
+    //Programm objects
+    HashMap<String, PrivateChatWindow> privateChatWindows = new HashMap<>();
 
     public HomeGui(Bridge bridge, Stage window) {
         this.bridge = bridge;
@@ -122,10 +130,32 @@ public class HomeGui {
         userLists = new TabPane();
         userLists.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         Tab allUsersTab = new Tab("All Users");
-        allUsersTab.setContent(new ListView<>(allUsers));
+        allUserView= new ListView<>(allUsers);
+        allUsersTab.setContent(allUserView);
         Tab currentRoomUsersTab = new Tab("Users in Current Room");
-        currentRoomUsersTab.setContent(new ListView<>(currentRoomUsers));
+        currentRoomUsersView= new ListView<>(currentRoomUsers);
+        currentRoomUsersTab.setContent(currentRoomUsersView);
         userLists.getTabs().addAll(allUsersTab, currentRoomUsersTab);
+
+        //Functionality for private Chat
+        allUserView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent click) {
+                if (click.getClickCount() == 2) {
+                    String username = allUserView.getSelectionModel().getSelectedItem();
+                    startPrivateChat(username);
+                }
+            }
+        });
+        currentRoomUsersView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent click) {
+                if (click.getClickCount() == 2) {
+                    String username = allUserView.getSelectionModel().getSelectedItem();
+                    startPrivateChat(username);
+                }
+            }
+        });
 
         userRequest = new Label();
         userRequest.getStyleClass().add("UserSelection");
@@ -190,7 +220,7 @@ public class HomeGui {
             hbox.setAlignment(Pos.CENTER_RIGHT);
             label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
             label.setPrefWidth(400);
-            label.setStyle("-fx-background-color:#0A3F79; -fx-text-fill: #C5C8C6; -fx-background-radius: 6");
+            label.getStyleClass().add("ownMessage");
             hbox.getChildren().add(label);
 
         } else if(username.equals("SERVER")) {
@@ -198,14 +228,14 @@ public class HomeGui {
             hbox.setAlignment(Pos.CENTER_LEFT);
             label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
             label.setPrefWidth(400);
-            label.setStyle("-fx-background-color:#771919; -fx-text-fill: #C5C8C6; -fx-background-radius: 6");
+            label.getStyleClass().add("serverMessage");
             hbox.getChildren().add(label);
         }else{
             hbox = new HBox();
             hbox.setAlignment(Pos.CENTER_LEFT);
             label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
             label.setPrefWidth(400);
-            label.setStyle("-fx-background-color:#0A2F58; -fx-text-fill: #C5C8C6; -fx-background-radius: 6;");
+            label.getStyleClass().add("roomMessage");
             hbox.getChildren().add(label);
         }
         label.setWrapText(true);
@@ -222,6 +252,11 @@ public class HomeGui {
     private void selectRoom(String room) {
         roomConnectionStatus.setStyle("-fx-text-fill: red");
         roomConnectionStatus.setText("Connecting to room: " + room);
+        if(room.equals(currentRoom)){
+            roomConnectionStatus.setStyle("-fx-text-fill: #248000");
+            roomConnectionStatus.setText("Successful connected to: " + room);
+            selectedRoom.setText("Current room: " + room);
+        }
         bridge.requestRoomChange(room);
 
     }
@@ -253,7 +288,16 @@ public class HomeGui {
         if (closeWindow){
             window.close();
         }
+    }
 
+    public void startPrivateChat(String username){
+        PrivateChatWindow privateChatWindow = new PrivateChatWindow(bridge, username);
+        privateChatWindow.loadPrivateChatBox();
+        privateChatWindows.put(username,  privateChatWindow);
+    }
+    public void addPrivateMessage(String originUser, String message, boolean isServer){
+        PrivateChatWindow privateChatWindow =  privateChatWindows.get(originUser);
+        privateChatWindow.addMessage(originUser, message, isServer);
     }
 
 }

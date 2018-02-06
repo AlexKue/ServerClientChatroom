@@ -84,3 +84,12 @@
     -fx-font-size: 12px;
     -fx-padding: 10 20 10 20;
 }
+.ownMessage{
+    -fx-background-color:#0A3F79; -fx-text-fill: #C5C8C6; -fx-background-radius: 6;
+}
+.serverMessage{
+    -fx-background-color:#771919; -fx-text-fill: #C5C8C6; -fx-background-radius: 6;
+}
+.roomMessage{
+    -fx-background-color:#0A2F58; -fx-text-fill: #C5C8C6; -fx-background-radius: 6;
+}
