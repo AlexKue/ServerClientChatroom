@@ -24,6 +24,8 @@ public class PrivateChatWindow {
     private Label heading;
     private VBox layout = new VBox(10);
 
+    private boolean chatConnected = true;
+
     //Chat Box Elements
     private Button sendMessage = new Button("Send");
     private VBox chatBox = new VBox(9);
@@ -46,8 +48,10 @@ public class PrivateChatWindow {
 
         message.setOnKeyPressed(key -> {
             if (key.getCode() == KeyCode.ENTER && !key.isShiftDown()) {
-                bridge.sendPrivateMessage(message.getText(), username);
-                addMessage(bridge.getUsername(), message.getText(), false);
+                if(chatConnected) {
+                    bridge.sendPrivateMessage(message.getText(), username);
+                    addMessage(bridge.getUsername(), message.getText(), false);
+                }
                 message.clear();
                 key.consume();
             }
@@ -62,6 +66,7 @@ public class PrivateChatWindow {
         initChatBox();
 
         container.getStyleClass().add("CenterContainer");
+        sendMessage.getStyleClass().add("Buttons");
 
         HBox sendMessageButtonAndTextArea = new HBox();
         sendMessageButtonAndTextArea.getChildren().addAll(message, sendMessage);
@@ -90,8 +95,10 @@ public class PrivateChatWindow {
         chatBox.getStyleClass().add("chatbox");
 
         sendMessage.setOnAction(evt -> {
-            bridge.sendPrivateMessage(message.getText(), username);
-            addMessage(bridge.getUsername(), message.getText(), false);
+            if(chatConnected) {
+                bridge.sendPrivateMessage(message.getText(), username);
+                addMessage(bridge.getUsername(), message.getText(), false);
+            }
             message.clear();
         });
         chatBox.getStyleClass().add("spacing");
@@ -113,7 +120,7 @@ public class PrivateChatWindow {
         } else if(isServer) {
             hbox = new HBox();
             hbox.setAlignment(Pos.CENTER_LEFT);
-            label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
+            label = new Label("SERVER: " + ": \n" + messages.get(index)[1]);
             label.getStyleClass().add("serverMessage");
             hbox.getChildren().add(label);
         }else{
@@ -138,6 +145,7 @@ public class PrivateChatWindow {
 
     public void changeChatFielStatus(boolean newStatus){
         message.setEditable(newStatus);
+        chatConnected = newStatus;
     }
     public void closeWindow(){
         window.close();

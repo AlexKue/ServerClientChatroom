@@ -70,6 +70,9 @@
     -fx-text-fill: #FFFFFF;
     -fx-font-weight: bold;
 }
+.list-cell:selected{
+    -fx-background-color: #0A2F58;
+}
 .Buttons{
     -fx-background-color:
             #090a0c,

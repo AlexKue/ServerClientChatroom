@@ -5,7 +5,8 @@ import chatroom.model.message.*;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-public class ClientMessageHandler extends Thread {
+public class
+ClientMessageHandler extends Thread {
     private Client client;
 
     public ClientMessageHandler(Client client) {
@@ -98,6 +99,7 @@ public class ClientMessageHandler extends Thread {
             case PRIVATEROOMENDREQMSG:
                 PrivateChatEndRequestMessage privateChatEndRequestMessage = ((PrivateChatEndRequestMessage)message);
                 client.getBridge().changePrivateChatActiveStatus(privateChatEndRequestMessage.getRequester());
+                client.getBridge().addPrivateMessage(privateChatEndRequestMessage.getRequester(), privateChatEndRequestMessage.getRequester()+" has disconected from chat!", true);
                 break;
             case LOGINRESPONSEMSG:
                 client.getBridge().onServerLoginAnswer(((LoginResponseMessage) message).getResponse());

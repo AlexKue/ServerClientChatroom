@@ -140,6 +140,7 @@ public class HomeGui {
         currentRoomUsersTab.setContent(currentRoomUsersView);
         userLists.getTabs().addAll(allUsersTab, currentRoomUsersTab);
 
+
         //Functionality for private Chat
         allUserView.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -278,11 +279,13 @@ public class HomeGui {
 
     public void userRoomUpdate(ArrayList<String> newCurrentUsers) {
         currentRoomUsers.clear();
+        newCurrentUsers.remove(bridge.getUsername());
         currentRoomUsers.addAll(newCurrentUsers);
     }
 
     public void allUsersUpdate(ArrayList<String> newAllUsers) {
         allUsers.clear();
+        newAllUsers.remove(bridge.getUsername());
         allUsers.addAll(newAllUsers);
     }
 
