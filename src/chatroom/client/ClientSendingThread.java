@@ -39,7 +39,7 @@ public class ClientSendingThread extends Thread {
     }
 
     /**
-     * Checks the String for commands and serializes the message
+     * Serializes the Message as a PublicTextMessage
      * @param m the Message
      */
     public void sendMessage(String m){
@@ -52,6 +52,11 @@ public class ClientSendingThread extends Thread {
     }
 
 
+    /**
+     * Serializes the Message as a TargetedTextMessage, used in Private Chats
+     * @param m the message
+     * @param receiver the name of the receiving Client
+     */
     public void sendMessage(String m, String receiver) {
         Message message = new TargetedTextMessage(m, client.getUsername(),receiver);
         try {
@@ -61,6 +66,11 @@ public class ClientSendingThread extends Thread {
         }
     }
 
+    /**
+     * Serializes the name and pasword as a LoginMessage
+     * @param loginName
+     * @param password
+     */
     public void login(String loginName, String password){
         try {
             serializer.serialize(out, new LoginMessage(loginName, password));
@@ -69,6 +79,10 @@ public class ClientSendingThread extends Thread {
         }
     }
 
+    /**
+     * Sends a RoomChangeRequest to the server, in which the server will respond with a RoomChangeResponse
+     * @param roomName
+     */
     public void changeRoom(String roomName){
         try {
             serializer.serialize(this.out, new RoomChangeRequestMessage(roomName,client.getUsername()));
@@ -77,6 +91,11 @@ public class ClientSendingThread extends Thread {
         }
     }
 
+    /**
+     * Sends a Request to the server to start a private Chat with a Client. The server will forward the request to
+     * the Client who should be texted
+     * @param targetUser the name of the User who should participate in the private Chat
+     */
     public void startPrivateChat(String targetUser){
         Message message = new PrivateChatStartRequestMessage(client.getUsername(),targetUser);
         try {
@@ -86,6 +105,12 @@ public class ClientSendingThread extends Thread {
         }
     }
 
+    /**
+     * Sends a Request to the server to end a private Chat with a Client. The server will forward the request to the
+     * Client who should receive the request
+     * @param endingUser
+     * @param userToBeInformed
+     */
     public void endPrivateChat(String endingUser, String userToBeInformed) {
         Message message = new PrivateChatEndRequestMessage(endingUser, userToBeInformed);
         try {

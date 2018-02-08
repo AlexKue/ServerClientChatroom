@@ -40,6 +40,7 @@ public class ClientListeningThread extends Thread {
                 //deserialize message from stream and put it into an message
                 Message m = serializer.deserialize(in, type);
 
+                //put the message into a queue for the MessageHandler to poll
                 messageQueue.put(m);
             } catch (IOException ex) {
                 System.err.println("Connection Lost: " + ex.toString() + "\nShutting down client!");

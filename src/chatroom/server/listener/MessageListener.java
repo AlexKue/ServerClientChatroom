@@ -194,8 +194,8 @@ public class MessageListener extends Thread {
                     }
                 }
                 //If receiver was not found, he is not online. Send message to sender that sending failed
-                TargetedServerMessage serverMessage = new TargetedServerMessage("Failed to send message: " + ((TargetedTextMessage) m).getReceiver() + "is not online!");
-                server.log(Level.WARNING, "Failed to send message: " + ((TargetedTextMessage) m).getReceiver() + "is not online!");
+                TargetedServerMessage serverMessage = new TargetedServerMessage("Failed to send a private message: " + ((TargetedTextMessage) m).getReceiver() + " is not online!");
+                server.log(Level.WARNING, "Failed to send a private message from " + sender + ": " + ((TargetedTextMessage) m).getReceiver() + " is not online!");
                 serverMessage.setUserConnectionInfo(m.getUserConnectionInfo());
                 serializer.serialize(m.getUserConnectionInfo().getOut(), serverMessage);
                 break;

@@ -38,6 +38,9 @@ public class Client {
         roomMessageList = new ArrayList<>();
     }
 
+    /**
+     * Stops the server by setting the running state to false and calling the close() method of the Server object
+     */
     public void stop() {
         //System.exit(0);
         isLoggedIn = false;
@@ -58,6 +61,11 @@ public class Client {
         ConnectToAdress(address);
     }
 
+    /**
+     * Opens a new Socket for the server and starts all Threads for Network- and MessageHandling. The Port of the server
+     * is always set as 54322
+     * @param address
+     */
     public void ConnectToAdress(String address) {
         try {
             server = new Socket(address, 54322);

@@ -5,6 +5,10 @@ import chatroom.model.UserConnectionInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A Room contains the list of users who are currently in it. A room will always be in the list of the RoomHandler.
+ */
+
 public class Room {
     private List<UserConnectionInfo> userList;
     private String name;

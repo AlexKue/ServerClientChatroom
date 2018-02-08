@@ -222,14 +222,14 @@ public class ServerHomeGui {
     private void noRoomSelectedDialog(){
         Alert noRoomSelectedBox = new Alert(Alert.AlertType.WARNING);
         noRoomSelectedBox.initModality(Modality.APPLICATION_MODAL);
-        noRoomSelectedBox.setTitle("!!! [WARNING69] !!!");
+        noRoomSelectedBox.setTitle("Warning");
         noRoomSelectedBox.setContentText("You have not selected a room!!");
         noRoomSelectedBox.showAndWait();
     }
     public void addEventToLog(String event){
         String oldLog = log.getText();
         log.clear();
-        log.setText(oldLog + "\n >>>>" + event);
+        log.setText(oldLog + "\n >>>> " + event);
     }
 
 

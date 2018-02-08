@@ -5,8 +5,12 @@ import chatroom.model.message.*;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-public class
-ClientMessageHandler extends Thread {
+/**
+ * This Thread pulls a Message from the Queue provided by the ListeningThread and handles the Message accordingly by
+ * its type.
+ */
+public class ClientMessageHandler extends Thread {
+
     private Client client;
 
     public ClientMessageHandler(Client client) {
@@ -14,12 +18,12 @@ ClientMessageHandler extends Thread {
     }
 
     @Override
-    public void run(){
-        while (client.isRunning()){
+    public void run() {
+        while (client.isRunning()) {
             try {
                 Message m = client.getClientListener().getMessageQueue().poll(1, TimeUnit.SECONDS);
 
-                if(m == null){
+                if (m == null) {
                     continue;
                 }
                 handleMessage(m);
@@ -30,6 +34,10 @@ ClientMessageHandler extends Thread {
         System.err.println("Shutting down Message Handler!");
     }
 
+    /**
+     * Handles the message by calling various methods depending on its type.
+     * @param message the message received from the server
+     */
     public void handleMessage(Message message) {
         switch (client.getMessageTypeDictionary().getType(message.getType())) {
             case PUBLICTEXTMSG:
@@ -50,17 +58,17 @@ ClientMessageHandler extends Thread {
                 break;
             case TARGETTEXTMSG:
                 TargetedTextMessage targetedTextMessage = ((TargetedTextMessage) message);
-                client.getBridge().addPrivateMessage(targetedTextMessage.getSender(),targetedTextMessage.getMessage(),false);
+                client.getBridge().addPrivateMessage(targetedTextMessage.getSender(), targetedTextMessage.getMessage(), false);
                 break;
             case WARNINGMSG:
                 WarningMessage warningMessage = ((WarningMessage) message);
-                switch (warningMessage.getSeverity()){
+                switch (warningMessage.getSeverity()) {
                     case 0:
-                        client.getBridge().issueBox(warningMessage.getMessage(),false);
+                        client.getBridge().issueBox(warningMessage.getMessage(), false);
                         break;
                     case 1:
                     case 2:
-                        client.getBridge().issueBox(warningMessage.getMessage(),true);
+                        client.getBridge().issueBox(warningMessage.getMessage(), true);
                         break;
                 }
                 break;
@@ -88,18 +96,18 @@ ClientMessageHandler extends Thread {
                 client.getBridge().userRoomUpdate((ArrayList<String>) roomUserListMessage.getUserList());
                 break;
             case ROOMNAMEEDITMSG:
-                RoomNameEditMessage roomNameEditMessage = ((RoomNameEditMessage)message);
+                RoomNameEditMessage roomNameEditMessage = ((RoomNameEditMessage) message);
                 client.setActiveRoom(roomNameEditMessage.getNewName());
                 client.getBridge().onRoomChangeRequestAccepted(roomNameEditMessage.getNewName());
                 break;
             case PRIVATEROOMSTARTREQMSG:
-                PrivateChatStartRequestMessage privateChatStartRequestMessage = ((PrivateChatStartRequestMessage)message);
+                PrivateChatStartRequestMessage privateChatStartRequestMessage = ((PrivateChatStartRequestMessage) message);
                 client.getBridge().processStartRequestForPrivateChat(privateChatStartRequestMessage.getRequester());
                 break;
             case PRIVATEROOMENDREQMSG:
-                PrivateChatEndRequestMessage privateChatEndRequestMessage = ((PrivateChatEndRequestMessage)message);
+                PrivateChatEndRequestMessage privateChatEndRequestMessage = ((PrivateChatEndRequestMessage) message);
                 client.getBridge().changePrivateChatActiveStatus(privateChatEndRequestMessage.getRequester());
-                client.getBridge().addPrivateMessage(privateChatEndRequestMessage.getRequester(), privateChatEndRequestMessage.getRequester()+" has disconnected from chat!", true);
+                client.getBridge().addPrivateMessage(privateChatEndRequestMessage.getRequester(), privateChatEndRequestMessage.getRequester() + " has disconnected from chat!", true);
                 break;
             case LOGINRESPONSEMSG:
                 client.getBridge().onServerLoginAnswer(((LoginResponseMessage) message).getResponse());

@@ -73,6 +73,10 @@ public class UserListeningThread extends Thread {
         }
     }
 
+    /**
+     * Logs messages depending on their types
+     * @param m The message to be logged
+     */
     private void log(Message m) {
         String logmsg = "Receiving: [" + server.getMessageTypeDictionary().getType(m.getType()).toString() + "] ";
         switch (server.getMessageTypeDictionary().getType(m.getType())){
@@ -87,6 +91,7 @@ public class UserListeningThread extends Thread {
                 server.log(Level.INFO,logmsg);
                 break;
         }
+
     }
 
     /**
