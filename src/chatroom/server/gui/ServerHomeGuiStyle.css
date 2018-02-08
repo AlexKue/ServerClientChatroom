@@ -2,7 +2,7 @@
     -fx-text-fill: white;
 }
 .log .content{
-    -fx-background-color: #4A097D;
+    -fx-background-color: #2F3330;
 }
 .label {
 
@@ -19,13 +19,13 @@
     -fx-background-color: white;
 }
 .mainBackground{
-    -fx-background-color: #170624;
+    -fx-background-color: #1d1f21;
 }
 .textArea .content{
-    -fx-background-color:  #4A097D;
+    -fx-background-color:  #2F3330;
 }
 .textArea{
-    -fx-background-color:  #4A097D;
+    -fx-background-color:  #2F3330;
     -fx-text-fill: white;
 }
 .roomSelection{
@@ -37,37 +37,39 @@
 }
 
 .tab-pane .tab-header-area .tab-header-background{
-    -fx-background-color: #170624;
+    -fx-background-color: #1d1f21;
 }
 .tab:selected{
-    -fx-background-color: #37095B;
+    -fx-background-color: #2C1240
+;
 }
 
 .tab{
-    -fx-background-color: #4A097D;
+    -fx-background-color: #2F3330;
 }
 .tab .tab-label{
     -fx-text-fill: white;
 }
 .list-cell:even{
-    -fx-background-color: #4A097D;
+    -fx-background-color: #2F3330;
 }
 .list-cell:odd{
-    -fx-background-color: #37095B;
+    -fx-background-color: #3a3e3b;
 }
 .list-cell{
     -fx-text-fill: #FFFFFF;
     -fx-font-weight: bold;
 }
 .list-cell:selected{
-    -fx-background-color: #0A2F58;
+    -fx-background-color: #2C1240
+;
 }
 .Buttons{
     -fx-background-color:
             #090a0c,
             linear-gradient(#0A2F58 0%, #071423 20%, #040B13 100%),
             linear-gradient(#071423, #040B13),
-            radial-gradient(center 50% 0%, radius 100%, rgba(10,47,148,0.9), rgba(7,20,35,0));
+            radial-gradient(center 50% 0%, radius 100%, rgba(40, 20, 59, 0.9), rgba(7,20,35,0));
     -fx-background-radius: 5,4,3,5;
     -fx-background-insets: 0,1,2,0;
     -fx-text-fill: white;
@@ -80,9 +82,10 @@
 .button{
     -fx-background-color:
             #090a0c,
-            linear-gradient(#0A2F58 0%, #071423 20%, #040B13 100%),
-            linear-gradient(#071423, #040B13),
-            radial-gradient(center 50% 0%, radius 100%, rgba(10,47,148,0.9), rgba(7,20,35,0));
+            linear-gradient(#0A2F58 0%, #071423 20%, #09192b 100%),
+            linear-gradient(#2C1240
+            , #0f0813),
+            radial-gradient(center 50% 0%, radius 100%, rgba(69, 48, 86, 0.9), rgba(7,20,35,0));
     -fx-background-radius: 5,4,3,5;
     -fx-background-insets: 0,1,2,0;
     -fx-text-fill: white;

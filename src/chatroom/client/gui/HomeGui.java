@@ -315,10 +315,10 @@ public class HomeGui {
     public void addPrivateMessage(String originUser, String message, boolean isServer){
         if (privateChatWindows.containsKey(originUser)) {
             PrivateChatWindow privateChatWindow = privateChatWindows.get(originUser);
-            privateChatWindow.addMessage(originUser, message, isServer);
-        }else {
-            showIssueAlert("Somebody stole the data!\n The Police is on the Way", false);
-        }
+            privateChatWindow.addMessage(originUser, message, isServer);}
+//        }else {
+//            showIssueAlert("Somebody stole the data!\n The Police is on the Way", false);
+//        }
     }
     public void chatClosed(String username){
         privateChatWindows.remove(username);

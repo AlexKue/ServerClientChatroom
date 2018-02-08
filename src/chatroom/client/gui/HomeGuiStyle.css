@@ -1,5 +1,5 @@
 .chatbox {
-    -fx-background-color: #4A097D;
+    -fx-background-color: #282a2e;
 }
 
 .spacing{
@@ -16,11 +16,11 @@
 }
 
 .scrollPane .content{
-    -fx-background-color: #4A097D;
+    -fx-background-color: #282a2e;
 }
 
 .scroll-pane > .viewport {
-    -fx-background-color: #4A097D;
+    -fx-background-color: #282a2e;
 }
 
 .UserSelection {
@@ -28,57 +28,57 @@
     -fx-background-color: white;
 }
 .mainBackground{
-    -fx-background-color: #170624;
+    -fx-background-color: #1d1f21;
 }
 .textArea .content{
-    -fx-background-color:  #4A097D;
+    -fx-background-color:  #282a2e;
 }
 .textArea{
-    -fx-background-color:  #4A097D;
+    -fx-background-color:  #282a2e;
     -fx-text-fill: white;
 }
 .roomSelection{
-    -fx-background-color: #4A097D;
+    -fx-background-color: #282a2e;
 }
 .roomSelection .list-cell{
-    -fx-background-color: #4A097D;
+    -fx-background-color: #282a2e;
     -fx-text-fill: white;
 }
 .tab-pane{
-    -fx-background-color: #4A097D;
+    -fx-background-color: #282a2e;
 }
 .tab-pane .tab-header-area .tab-header-background{
-    -fx-background-color: #170624;
+    -fx-background-color: #1d1f21;
 }
 .tab:selected{
-    -fx-background-color: #37095B;
+    -fx-background-color: #2C1240;
 }
 
 .tab{
-    -fx-background-color: #4A097D;
+    -fx-background-color: #282a2e;
 }
 .tab .tab-label{
     -fx-text-fill: white;
 }
 .list-cell:even{
-    -fx-background-color: #4A097D;
+    -fx-background-color: #282a2e;
 }
 .list-cell:odd{
-    -fx-background-color: #37095B;
+    -fx-background-color: #36383c;
 }
 .list-cell{
     -fx-text-fill: #FFFFFF;
     -fx-font-weight: bold;
 }
 .list-cell:selected{
-    -fx-background-color: #0A2F58;
+    -fx-background-color: #2C1240;
 }
 .Buttons{
     -fx-background-color:
             #090a0c,
-            linear-gradient(#0A2F58 0%, #071423 20%, #040B13 100%),
-            linear-gradient(#071423, #040B13),
-            radial-gradient(center 50% 0%, radius 100%, rgba(10,47,148,0.9), rgba(7,20,35,0));
+            linear-gradient(#0A2F58 0%, #071423 20%, #09192b 100%),
+            linear-gradient(#2c1240, #0f0813),
+            radial-gradient(center 50% 0%, radius 100%, rgba(69, 48, 86, 0.9), rgba(7,20,35,0));
     -fx-background-radius: 5,4,3,5;
     -fx-background-insets: 0,1,2,0;
     -fx-text-fill: white;
@@ -88,11 +88,11 @@
     -fx-padding: 10 20 10 20;
 }
 .ownMessage{
-    -fx-background-color:#0A3F79; -fx-text-fill: #C5C8C6; -fx-background-radius: 6;
+    -fx-background-color:#373b41; -fx-text-fill: #C5C8C6; -fx-background-radius: 6;
 }
 .serverMessage{
-    -fx-background-color:#771919; -fx-text-fill: #C5C8C6; -fx-background-radius: 6;
+    -fx-background-color:#2C1240; -fx-text-fill: #C5C8C6; -fx-background-radius: 6;
 }
 .roomMessage{
-    -fx-background-color:#0A2F58; -fx-text-fill: #C5C8C6; -fx-background-radius: 6;
+    -fx-background-color:#2C1240; -fx-text-fill: #C5C8C6; -fx-background-radius: 6;
 }
