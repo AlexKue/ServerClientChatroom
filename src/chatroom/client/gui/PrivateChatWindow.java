@@ -47,6 +47,7 @@ public class PrivateChatWindow {
         message.setOnKeyPressed(key -> {
             if (key.getCode() == KeyCode.ENTER && !key.isShiftDown()) {
                 bridge.sendPrivateMessage(message.getText(), username);
+                addMessage(bridge.getUsername(), message.getText(), false);
                 message.clear();
                 key.consume();
             }
@@ -90,6 +91,7 @@ public class PrivateChatWindow {
 
         sendMessage.setOnAction(evt -> {
             bridge.sendPrivateMessage(message.getText(), username);
+            addMessage(bridge.getUsername(), message.getText(), false);
             message.clear();
         });
         chatBox.getStyleClass().add("spacing");
@@ -104,8 +106,7 @@ public class PrivateChatWindow {
         if (username.equals(bridge.getUsername())) {
             hbox = new HBox();
             hbox.setAlignment(Pos.CENTER_RIGHT);
-            label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
-            label.setPrefWidth(400);
+            label = new Label("Me:" + ": \n" + messages.get(index)[1]);
             label.getStyleClass().add("ownMessage");
             hbox.getChildren().add(label);
 
@@ -113,17 +114,16 @@ public class PrivateChatWindow {
             hbox = new HBox();
             hbox.setAlignment(Pos.CENTER_LEFT);
             label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
-            label.setPrefWidth(400);
             label.getStyleClass().add("serverMessage");
             hbox.getChildren().add(label);
         }else{
             hbox = new HBox();
             hbox.setAlignment(Pos.CENTER_LEFT);
             label = new Label(messages.get(index)[0] + ": \n" + messages.get(index)[1]);
-            label.setPrefWidth(400);
             label.getStyleClass().add("roomMessage");
             hbox.getChildren().add(label);
         }
+        label.setPrefWidth(200);
         label.setWrapText(true);
         label.setPadding(new Insets(2,2,2,2));
         chatBox.getChildren().add(hbox);
@@ -132,6 +132,7 @@ public class PrivateChatWindow {
     }
     private void closePrivateChat() {
         bridge.privateChatDisconnected(bridge.getUsername(), username);
+        bridge.chatClosed(username);
     }
 
 

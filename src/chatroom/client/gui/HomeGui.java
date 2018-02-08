@@ -68,6 +68,7 @@ public class HomeGui {
         initChatBox(bridge);
         initRightMenu(bridge);
 
+        window.setTitle("The Chat Client || Logged in as: " + bridge.getUsername());
 
         message.setOnKeyPressed(key -> {
             if (key.getCode() == KeyCode.ENTER && !key.isShiftDown()) {
@@ -112,6 +113,8 @@ public class HomeGui {
         window.setScene(scene);
     }
 
+
+
     private void initRightMenu(Bridge bridge) {
         ArrayList<String> rooms = bridge.getRooms();
         this.rooms = rooms;
@@ -143,7 +146,9 @@ public class HomeGui {
             public void handle(MouseEvent click) {
                 if (click.getClickCount() == 2) {
                     String username = allUserView.getSelectionModel().getSelectedItem();
-                    startPrivateChat(username);
+                    if(!username.equals(bridge.getUsername())) {
+                        startPrivateChat(username);
+                    }
                 }
             }
         });
@@ -152,7 +157,9 @@ public class HomeGui {
             public void handle(MouseEvent click) {
                 if (click.getClickCount() == 2) {
                     String username = allUserView.getSelectionModel().getSelectedItem();
-                    startPrivateChat(username);
+                    if(!username.equals(bridge.getUsername())) {
+                        startPrivateChat(username);
+                    }
                 }
             }
         });

@@ -21,7 +21,6 @@ public class ClientGuiMain {
        this.window = primeStage;
        this.bridge = bridge;
 
-
        window.setTitle("The Chat Client");
        window.setOnCloseRequest(e -> onClose());
 
@@ -105,6 +104,9 @@ public class ClientGuiMain {
        }
 
        public void onClose(){
+       if (homeGui!=null){
+               homeGui.closeAllChatWindows();
+       }
         bridge.runClosinOperations();
     }
 }
