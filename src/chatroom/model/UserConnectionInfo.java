@@ -64,4 +64,5 @@ public class UserConnectionInfo {
     public void setActiveRoom(Room activeRoom) {
         this.activeRoom = activeRoom;
     }
+
 }

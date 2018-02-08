@@ -133,4 +133,12 @@ public class PrivateChatWindow {
     private void closePrivateChat() {
         bridge.privateChatDisconnected(bridge.getUsername(), username);
     }
+
+
+    public void changeChatFielStatus(boolean newStatus){
+        message.setEditable(newStatus);
+    }
+    public void closeWindow(){
+        window.close();
+    }
 }

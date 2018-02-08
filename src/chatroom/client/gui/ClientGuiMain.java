@@ -105,6 +105,6 @@ public class ClientGuiMain {
        }
 
        public void onClose(){
-       bridge.runClosinOperations();
+        bridge.runClosinOperations();
     }
 }

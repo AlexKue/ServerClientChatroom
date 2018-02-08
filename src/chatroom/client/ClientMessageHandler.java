@@ -49,8 +49,7 @@ public class ClientMessageHandler extends Thread {
                 break;
             case TARGETTEXTMSG:
                 TargetedTextMessage targetedTextMessage = ((TargetedTextMessage) message);
-                String targetedString = targetedTextMessage.getSender() + " (whispered): " + targetedTextMessage.getMessage();
-                System.out.println(targetedString);
+                client.getBridge().addPrivateMessage(targetedTextMessage.getSender(),targetedTextMessage.getMessage(),false);
                 break;
             case WARNINGMSG:
                 WarningMessage warningMessage = ((WarningMessage) message);

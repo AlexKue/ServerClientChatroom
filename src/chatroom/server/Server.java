@@ -83,7 +83,7 @@ public class Server {
     synchronized public ArrayList<String> requestRoomList() {
         ArrayList<String> roomNames = new ArrayList<>();
 
-        for (Room r : roomHandler.getRoomList()) {
+        for (Room r : roomHandler.getPublicRoomList()) {
             roomNames.add(r.getName());
         }
         return roomNames;
@@ -177,7 +177,7 @@ public class Server {
         if (oldName.trim().equals("lobby")) {
             log(Level.WARNING, "RoomHandler: Cannot edit the lobby.");
         } else {
-            if (roomHandler.editRoom(oldName, newName)) try {
+            if (roomHandler.editPublicRoom(oldName, newName)) try {
                 messageListener.getMessageQueue().put(new RoomNameEditMessage(newName));
                 bridge.updateUserListView(getUserListWithRooms());
 
@@ -193,7 +193,7 @@ public class Server {
         } else if (roomHandler.getRoomNamesList().contains(name.trim())) {
             log(Level.WARNING, "RoomHandler: Room already exists");
         } else {
-            roomHandler.addRoom(name.trim());
+            roomHandler.addPublicRoom(name.trim());
         }
     }
 
@@ -206,8 +206,8 @@ public class Server {
         if (name.trim().equals("lobby")) {
             log(Level.WARNING, "RoomHandler: Cannot remove the lobby.");
         } else {
-            Room r = roomHandler.getRoom(name);
-            for (UserConnectionInfo u : roomHandler.getRoom("lobby").getUserList()) {
+            Room r = roomHandler.getPublicRoom(name);
+            for (UserConnectionInfo u : roomHandler.getPublicRoom("lobby").getUserList()) {
                 TargetedServerMessage targetedServerMessage = new TargetedServerMessage("Room \"" + name + "\" has been deleted and its users have been moved to the lobby.");
                 targetedServerMessage.setUserConnectionInfo(u);
                 try {
@@ -217,8 +217,8 @@ public class Server {
                 }
             }
             for (UserConnectionInfo u : r.getUserList()) {
-                u.setActiveRoom(roomHandler.getRoom("lobby"));
-                roomHandler.getRoom("lobby").addUser(u);
+                u.setActiveRoom(roomHandler.getPublicRoom("lobby"));
+                roomHandler.getPublicRoom("lobby").addUser(u);
 
                 RoomNameEditMessage roomNameEditMessage = new RoomNameEditMessage("lobby");
                 roomNameEditMessage.setUserConnectionInfo(u);
@@ -233,7 +233,7 @@ public class Server {
                     log(Level.SEVERE, "RoomHandler: Exception while notifying users of the new Name lobby", e);
                 }
             }
-            List<String> lobbyUserList = roomHandler.getRoom("lobby").getUserNameList();
+            List<String> lobbyUserList = roomHandler.getPublicRoom("lobby").getUserNameList();
             RoomUserListMessage roomUserListMessage = new RoomUserListMessage(lobbyUserList, "lobby");
             try {
                 messageListener.getMessageQueue().put(roomUserListMessage);
@@ -241,7 +241,7 @@ public class Server {
                 log(Level.SEVERE, "RoomHandler: Exception while updating RoomUserLists", e);
             }
             r.getUserList().clear();
-            roomHandler.removeRoom(name);
+            roomHandler.removePublicRoom(name);
             bridge.updateUserListView(getUserListWithRooms());
         }
     }

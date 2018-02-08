@@ -43,17 +43,7 @@ public class ClientSendingThread extends Thread {
      * @param m the Message
      */
     public void sendMessage(String m){
-        Message message;
-        //Check, if the line was a command
-        if (m.trim().equals("!quit")) {
-            System.out.println("You are now logging out!\nShutting down Client!");
-            client.setLoggedIn(false);
-            client.setRunning(false);
-            message = new LogoutMessage();
-        } else {
-            //handle input as normal TextMessage
-            message = new PublicTextMessage(m, client.getUsername());
-        }
+        Message message = new PublicTextMessage(m, client.getUsername());
         try {
             serializer.serialize(out, message);
         } catch (IOException e) {
@@ -61,21 +51,16 @@ public class ClientSendingThread extends Thread {
         }
     }
 
-    /**
-     * Asks the User to enter his loginName and his password, and sends a LoginMessage to the server.
-     */
-//    public void authenticate() {
-//        System.out.print("Enter your login name: ");
-//        String loginName = sc.nextLine();
-//        client.setLoginName(loginName);
-//        System.out.print("Enter your password: ");
-//        String password = sc.nextLine();
-//        try {
-//            serializer.serialize(out, new LoginMessage(loginName, password));
-//        } catch (IOException e) {
-//            System.err.println("Error while serializing!");
-//        }
-//    }
+
+    public void sendMessage(String m, String receiver) {
+        Message message = new TargetedTextMessage(m, client.getUsername(),receiver);
+        try {
+            serializer.serialize(out, message);
+        } catch (IOException e) {
+            System.err.println("Error while serializing!");
+        }
+    }
+
     public void login(String loginName, String password){
         try {
             serializer.serialize(out, new LoginMessage(loginName, password));
@@ -87,6 +72,15 @@ public class ClientSendingThread extends Thread {
     public void changeRoom(String roomName){
         try {
             serializer.serialize(this.out, new RoomChangeRequestMessage(roomName,client.getUsername()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void startPrivateChat(String targetUser){
+        Message message = new PrivateChatStartRequestMessage(client.getUsername(),targetUser);
+        try {
+            serializer.serialize(this.out,message);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -58,7 +58,6 @@ public class MessageListener extends Thread {
                         sendToRoom(m,m.getUserConnectionInfo().getActiveRoom().getName());
                         break;
                     case ROOMCHANGERESPONSEMSG:
-                    case TARGETTEXTMSG:
                     case TARGETSERVERMSG:
                     case LOGINRESPONSEMSG:
                         sendToTarget(m);
@@ -119,7 +118,7 @@ public class MessageListener extends Thread {
     private void changeRoom(Message m) throws InterruptedException, IOException {
         RoomChangeRequestMessage message = (RoomChangeRequestMessage)m;
         Room oldRoom = m.getUserConnectionInfo().getActiveRoom();
-        Room newRoom = server.getRoomHandler().getRoom(message.getRoomName());
+        Room newRoom = server.getRoomHandler().getPublicRoom(message.getRoomName());
 
         //Check if user is already in this room
         if(oldRoom.getName().equals(newRoom.getName())){
@@ -269,7 +268,7 @@ public class MessageListener extends Thread {
         }
         server.log(Level.INFO,logmsg);
 
-        Room room = server.getRoomHandler().getRoom(roomName);
+        Room room = server.getRoomHandler().getPublicRoom(roomName);
         for(UserConnectionInfo info : room.getUserList()){
             serializer.serialize(info.getOut(),m);
         }
@@ -338,14 +337,14 @@ public class MessageListener extends Thread {
             m.getUserConnectionInfo().setLoggedIn(true);
 
             //Add him to the lobby
-            m.getUserConnectionInfo().setActiveRoom(server.getRoomHandler().getRoom("lobby"));
-            server.getRoomHandler().getRoom("lobby").addUser(m.getUserConnectionInfo());
+            m.getUserConnectionInfo().setActiveRoom(server.getRoomHandler().getPublicRoom("lobby"));
+            server.getRoomHandler().getPublicRoom("lobby").addUser(m.getUserConnectionInfo());
 
             //Prepare List of available rooms
             RoomListMessage roomListMessage = server.getRoomHandler().buildRoomListMessage();
 
             //Prepare List of Users in the lobby
-            List<String> roomUserNameList = server.getRoomHandler().getRoom("lobby").getUserNameList();
+            List<String> roomUserNameList = server.getRoomHandler().getPublicRoom("lobby").getUserNameList();
             RoomUserListMessage roomUserListMessage = new RoomUserListMessage(roomUserNameList,"lobby");
             ServerUserListMessage serverUserListMessage = buildUserListMessage();
 
@@ -411,13 +410,13 @@ public class MessageListener extends Thread {
                 m.getUserConnectionInfo().setUserAccountInfo(accountInfo);
 
                 //Set Room to lobby
-                m.getUserConnectionInfo().setActiveRoom(server.getRoomHandler().getRoom("lobby"));
-                server.getRoomHandler().getRoom("lobby").addUser(m.getUserConnectionInfo());
+                m.getUserConnectionInfo().setActiveRoom(server.getRoomHandler().getPublicRoom("lobby"));
+                server.getRoomHandler().getPublicRoom("lobby").addUser(m.getUserConnectionInfo());
 
                 //Prepare List of available rooms
                 RoomListMessage roomListMessage = server.getRoomHandler().buildRoomListMessage();
 
-                List<String> userNameList = server.getRoomHandler().getRoom("lobby").getUserNameList();
+                List<String> userNameList = server.getRoomHandler().getPublicRoom("lobby").getUserNameList();
                 RoomUserListMessage roomUserListMessage = new RoomUserListMessage(userNameList,"lobby");
                 ServerUserListMessage serverUserListMessage = buildUserListMessage();
 

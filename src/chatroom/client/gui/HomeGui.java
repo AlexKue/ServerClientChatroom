@@ -291,13 +291,32 @@ public class HomeGui {
     }
 
     public void startPrivateChat(String username){
-        PrivateChatWindow privateChatWindow = new PrivateChatWindow(bridge, username);
-        privateChatWindow.loadPrivateChatBox();
-        privateChatWindows.put(username,  privateChatWindow);
+        processStartRequest(username);
+        bridge.privateChatStartet(username);
+    }
+    public void processStartRequest(String username){
+        if(!privateChatWindows.containsKey(username)){
+            PrivateChatWindow privateChatWindow = new PrivateChatWindow(bridge, username);
+            privateChatWindow.loadPrivateChatBox();
+            privateChatWindows.put(username,  privateChatWindow);
+        }else{
+            privateChatWindows.get(username).changeChatFielStatus(true);
+        }
+
     }
     public void addPrivateMessage(String originUser, String message, boolean isServer){
         PrivateChatWindow privateChatWindow =  privateChatWindows.get(originUser);
         privateChatWindow.addMessage(originUser, message, isServer);
     }
-
+    public void chatClosed(String username){
+        privateChatWindows.remove(username);
+    }
+    public void chatDisconnected(String username){
+        privateChatWindows.get(username).changeChatFielStatus(false);
+    }
+    public void closeAllChatWindows(){
+        for (PrivateChatWindow privateChatWindow: privateChatWindows.values()) {
+            privateChatWindow.closeWindow();
+        }
+    }
 }

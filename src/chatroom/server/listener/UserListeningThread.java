@@ -24,7 +24,7 @@ public class UserListeningThread extends Thread {
         this.server = server;
         this.userConnectionInfo = userConnectionInfo;
         serializer = new Serializer();
-//        userConnectionInfo.setActiveRoom(server.getRoomHandler().getRoom("lobby"));
+//        userConnectionInfo.setActiveRoom(server.getRoomHandler().getPublicRoom("lobby"));
 //        userConnectionInfo.getActiveRoom().addUser(userConnectionInfo);
     }
 

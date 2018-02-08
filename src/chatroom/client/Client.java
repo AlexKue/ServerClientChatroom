@@ -87,15 +87,11 @@ public class Client {
         loginName = username;
     }
 
-
     public void sendMessage(String message) {
         clientSender.sendMessage(message);
     }
 
-//    public static void main(String args[]) {
-//        Client client = new Client();
-//        client.start();
-//    }
+    public void sendMessage(String message, String receiver){ clientSender.sendMessage(message, receiver);}
 
     /**
      * GETTER / SETTER / CHECKS
@@ -192,5 +188,9 @@ public class Client {
 
     public ClientMessageHandler getMessageHandler() {
         return messageHandler;
+    }
+
+    public void sendPrivateChatRequest(String targetUser) {
+        clientSender.startPrivateChat(targetUser);
     }
 }

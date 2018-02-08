@@ -10,24 +10,29 @@ import java.util.List;
 import java.util.logging.Level;
 
 public class RoomHandler {
-    private List<Room> roomList;
+    private List<Room> publicRoomList;
     private Server server;
 
+
     public RoomHandler(Server server) {
-        roomList = new ArrayList<>();
-        roomList.add(new Room("lobby"));
+        publicRoomList = new ArrayList<>();
+        publicRoomList.add(new Room("lobby"));
         this.server = server;
     }
 
-    public void addRoom(String name) {
+    /*
+     * Methods handling public Rooms
+     */
+
+    public void addPublicRoom(String name) {
         //check if Room already exists
-        for (Room r : roomList) {
+        for (Room r : publicRoomList) {
             if (r.getName().equals(name)) {
                 server.log(Level.WARNING, "RoomHandler: Room " + name + "already exists.");
                 return;
             }
         }
-        roomList.add(new Room(name));
+        publicRoomList.add(new Room(name));
         server.getBridge().updateRoomListView(getRoomNamesList());
         //Update the list of available rooms for all users
         try {
@@ -38,11 +43,11 @@ public class RoomHandler {
         server.log(Level.INFO, "RoomHandler: Room\"" + name + "\" has been created.");
     }
 
-    public void removeRoom(Room room) {
+    public void removePublicRoom(Room room) {
         if (room.getName().equals("lobby")) {
             server.log(Level.WARNING, "RoomHandler: Cannot remove room \"lobby\"");
         } else {
-            roomList.remove(room);
+            publicRoomList.remove(room);
             server.getBridge().updateRoomListView(getRoomNamesList());
             try {
                 server.getMessageListener().getMessageQueue().put(buildRoomListMessage());
@@ -53,13 +58,13 @@ public class RoomHandler {
         }
     }
 
-    public void removeRoom(String name) {
+    public void removePublicRoom(String name) {
         if (name.equals("lobby")) {
             server.log(Level.WARNING, "RoomHandler: Cannot remove room \"lobby\"");
         } else {
-            for (Room r : roomList) {
+            for (Room r : publicRoomList) {
                 if (r.getName().equals(name)) {
-                    roomList.remove(r);
+                    publicRoomList.remove(r);
                     server.getBridge().updateRoomListView(getRoomNamesList());
                     break;
                 }
@@ -74,12 +79,12 @@ public class RoomHandler {
         }
     }
 
-    public boolean editRoom(String oldName, String newName) {
+    public boolean editPublicRoom(String oldName, String newName) {
         if (oldName.equals("lobby")) {
             server.log(Level.WARNING, "RoomHandler: Cannot edit room \"lobby\"");
             return false;
         } else {
-            Room room = getRoom(oldName);
+            Room room = getPublicRoom(oldName);
             room.setName(newName);
             server.getBridge().updateRoomListView(getRoomNamesList());
             //Update the list of available rooms for all users
@@ -93,8 +98,8 @@ public class RoomHandler {
         }
     }
 
-    public Room getRoom(String name) {
-        for (Room r : roomList) {
+    public Room getPublicRoom(String name) {
+        for (Room r : publicRoomList) {
             if (r.getName().equals(name)) {
                 return r;
             }
@@ -102,13 +107,13 @@ public class RoomHandler {
         return null;
     }
 
-    public List<Room> getRoomList() {
-        return roomList;
+    public List<Room> getPublicRoomList() {
+        return publicRoomList;
     }
 
     public ArrayList<String> getRoomNamesList() {
         ArrayList<String> roomNames = new ArrayList<>();
-        for (Room r : roomList) {
+        for (Room r : publicRoomList) {
             roomNames.add(r.getName());
         }
         return roomNames;
@@ -116,7 +121,7 @@ public class RoomHandler {
 
     public RoomListMessage buildRoomListMessage() {
         List<RoomMessage> list = new ArrayList<>();
-        for (Room r : roomList) {
+        for (Room r : publicRoomList) {
             list.add(new RoomMessage(r.getName(), r.getRoomSize()));
         }
         return new RoomListMessage(list);
