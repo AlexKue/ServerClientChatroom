@@ -313,14 +313,20 @@ public class HomeGui {
 
     }
     public void addPrivateMessage(String originUser, String message, boolean isServer){
-        PrivateChatWindow privateChatWindow =  privateChatWindows.get(originUser);
-        privateChatWindow.addMessage(originUser, message, isServer);
+        if (privateChatWindows.containsKey(originUser)) {
+            PrivateChatWindow privateChatWindow = privateChatWindows.get(originUser);
+            privateChatWindow.addMessage(originUser, message, isServer);
+        }else {
+            showIssueAlert("Somebody stole the data!\n The Police is on the Way", false);
+        }
     }
     public void chatClosed(String username){
         privateChatWindows.remove(username);
     }
     public void chatDisconnected(String username){
-        privateChatWindows.get(username).changeChatFielStatus(false);
+        if (privateChatWindows.containsKey(username)) {
+            privateChatWindows.get(username).changeChatFielStatus(false);
+        }
     }
     public void closeAllChatWindows(){
         for (PrivateChatWindow privateChatWindow: privateChatWindows.values()) {

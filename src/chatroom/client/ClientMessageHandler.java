@@ -99,7 +99,7 @@ ClientMessageHandler extends Thread {
             case PRIVATEROOMENDREQMSG:
                 PrivateChatEndRequestMessage privateChatEndRequestMessage = ((PrivateChatEndRequestMessage)message);
                 client.getBridge().changePrivateChatActiveStatus(privateChatEndRequestMessage.getRequester());
-                client.getBridge().addPrivateMessage(privateChatEndRequestMessage.getRequester(), privateChatEndRequestMessage.getRequester()+" has disconected from chat!", true);
+                client.getBridge().addPrivateMessage(privateChatEndRequestMessage.getRequester(), privateChatEndRequestMessage.getRequester()+" has disconnected from chat!", true);
                 break;
             case LOGINRESPONSEMSG:
                 client.getBridge().onServerLoginAnswer(((LoginResponseMessage) message).getResponse());
