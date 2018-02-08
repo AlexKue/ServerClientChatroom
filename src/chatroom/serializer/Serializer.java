@@ -37,6 +37,8 @@ public class Serializer {
         serializerHashMap.put(dict.getByte(MessageType.SERVERUSERLISTMSG), new ServerUserListMessageSerializer());
         serializerHashMap.put(dict.getByte(MessageType.ROOMCHANGERESPONSEMSG),new RoomChangeResponseMessageSerializer());
         serializerHashMap.put(dict.getByte(MessageType.ROOMNAMEEDITMSG),new RoomNameEditMessageSerializer());
+        serializerHashMap.put(dict.getByte(MessageType.PRIVATEROOMSTARTREQMSG), new PrivateChatStartRequestMessageSerializer());
+        serializerHashMap.put(dict.getByte(MessageType.PRIVATEROOMENDREQMSG), new PrivateChatEndRequestMessageSerializer());
     }
 
     /**
