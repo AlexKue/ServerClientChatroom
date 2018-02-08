@@ -51,6 +51,7 @@ public class MessageListener extends Thread {
                 switch (server.getMessageTypeDictionary().getType(m.getType())) {
                     case PUBLICSERVERMSG:
                     case ROOMLISTMSG:
+                    case SERVERUSERLISTMSG:
                         sendToAll(m);
                         break;
                     case PUBLICTEXTMSG:
@@ -120,6 +121,7 @@ public class MessageListener extends Thread {
         Room oldRoom = m.getUserConnectionInfo().getActiveRoom();
         Room newRoom = server.getRoomHandler().getRoom(message.getRoomName());
 
+        //Check if user is already in this room
         if(oldRoom.getName().equals(newRoom.getName())){
             RoomChangeResponseMessage responseMessage = new RoomChangeResponseMessage(false,oldRoom.getName());
             responseMessage.setUserConnectionInfo(m.getUserConnectionInfo());
@@ -229,6 +231,9 @@ public class MessageListener extends Thread {
                 break;
             case ROOMLISTMSG:
                 logmsg = logmsg.concat("Updating RoomLists for all Clients");
+                break;
+            case SERVERUSERLISTMSG:
+                logmsg = logmsg.concat("Updating ServerUserLists for all Clients");
                 break;
         }
         server.log(Level.INFO,logmsg);

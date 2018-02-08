@@ -71,10 +71,10 @@ public class ClientMessageHandler extends Thread {
                 break;
             case ROOMCHANGERESPONSEMSG:
                 RoomChangeResponseMessage roomChangeResponseMessage = ((RoomChangeResponseMessage) message);
+                client.setActiveRoom(roomChangeResponseMessage.getRoomName());
+                client.getBridge().onRoomChangeRequestAccepted(roomChangeResponseMessage.getRoomName());
                 if (roomChangeResponseMessage.isSuccessful()) {
-                    client.setActiveRoom(roomChangeResponseMessage.getRoomName());
-                    client.getBridge().onRoomChangeRequestAccepted(roomChangeResponseMessage.getRoomName());
-                    client.getBridge().AddMessageToView("SERVER","You are now talking in Room\"" + roomChangeResponseMessage.getRoomName() + "\"");
+                    client.getBridge().AddMessageToView("SERVER", "You are now talking in Room\"" + roomChangeResponseMessage.getRoomName() + "\"");
                 }
                 break;
             case SERVERUSERLISTMSG:

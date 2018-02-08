@@ -9,6 +9,9 @@ import java.util.logging.Level;
 
 import chatroom.model.UserConnectionInfo;
 import chatroom.model.message.PublicServerMessage;
+import chatroom.model.message.RoomListMessage;
+import chatroom.model.message.RoomUserListMessage;
+import chatroom.model.message.ServerUserListMessage;
 import chatroom.server.Server;
 
 /**
@@ -86,12 +89,21 @@ public class NetworkListener extends Thread {
             //Check if user is logged in
             if (info.isLoggedIn()) {
                 info.setLoggedIn(false);
+
                 //Notify logged in users that another logged in user left
                 String username = info.getUserAccountInfo().getDisplayName();
                 PublicServerMessage msg = new PublicServerMessage(username + " has left the server!");
                 server.log(Level.INFO, username + "@" + info.getSocket().getInetAddress() + " has disconnected!");
+
+                //Update userLists of both the Server and the room the disconnected user was prior to disconnecting
+                ServerUserListMessage serverUserListMessage = new ServerUserListMessage(getServerUserList());
+
+                List<String> roomUserList = info.getActiveRoom().getUserNameList();
+                RoomUserListMessage roomUserListMessage = new RoomUserListMessage(roomUserList,info.getActiveRoom().getName());
                 try {
                     server.getMessageListener().getMessageQueue().put(msg);
+                    server.getMessageListener().getMessageQueue().put(serverUserListMessage);
+                    server.getMessageListener().getMessageQueue().put(roomUserListMessage);
                 } catch (InterruptedException e) {
                     server.log(Level.SEVERE, "NetworkListener: Error while sending Msg: ", e);
                 }
@@ -119,5 +131,20 @@ public class NetworkListener extends Thread {
                 break;
             }
         }
+    }
+
+    /**
+     * Returns the list of all Users logged into an account, thus ignoring those who aren't logged in
+     * (because they are trying to log in)
+     * @return List of users logged into an account
+     */
+    public synchronized List<String> getServerUserList() {
+        List<String> userList = new ArrayList<>();
+        for (UserListeningThread userListeningThread : userListeningThreadList) {
+            if (userListeningThread.getUserConnectionInfo().isLoggedIn()) {
+                userList.add(userListeningThread.getUserConnectionInfo().getUserAccountInfo().getLoginName());
+            }
+        }
+        return new ArrayList<>(userList);
     }
 }

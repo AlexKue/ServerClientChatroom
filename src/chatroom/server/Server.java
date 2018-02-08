@@ -240,9 +240,9 @@ public class Server {
             } catch (InterruptedException e) {
                 log(Level.SEVERE, "RoomHandler: Exception while updating RoomUserLists", e);
             }
-
             r.getUserList().clear();
             roomHandler.removeRoom(name);
+            bridge.updateUserListView(getUserListWithRooms());
         }
     }
 
