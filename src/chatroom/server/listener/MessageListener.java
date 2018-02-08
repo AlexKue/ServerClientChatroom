@@ -59,6 +59,7 @@ public class MessageListener extends Thread {
                         break;
                     case ROOMCHANGERESPONSEMSG:
                     case TARGETSERVERMSG:
+                    case TARGETTEXTMSG:
                     case LOGINRESPONSEMSG:
                     case PRIVATEROOMSTARTREQMSG:
                     case PRIVATEROOMENDREQMSG:

@@ -91,7 +91,9 @@ public class Client {
         clientSender.sendMessage(message);
     }
 
-    public void sendMessage(String message, String receiver){ clientSender.sendMessage(message, receiver);}
+    public void sendMessage(String message, String receiver){
+        clientSender.sendMessage(message, receiver);
+    }
 
     /**
      * GETTER / SETTER / CHECKS

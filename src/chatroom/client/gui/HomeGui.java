@@ -282,7 +282,7 @@ public class HomeGui {
     public void showIssueAlert(String message, boolean closeWindow) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.initModality(Modality.APPLICATION_MODAL);
-        alert.setTitle("!!! [WARNING69] !!!");
+        alert.setTitle("Warning");
         alert.setContentText(message);
         alert.showAndWait();
         if (closeWindow){

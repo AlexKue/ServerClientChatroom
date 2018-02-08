@@ -93,11 +93,11 @@ public class ClientMessageHandler extends Thread {
                 break;
             case PRIVATEROOMSTARTREQMSG:
                 PrivateChatStartRequestMessage privateChatStartRequestMessage = ((PrivateChatStartRequestMessage)message);
-                client.getBridge().processStartRequestForPrivateChat(privateChatStartRequestMessage.getPartner());
+                client.getBridge().processStartRequestForPrivateChat(privateChatStartRequestMessage.getRequester());
                 break;
             case PRIVATEROOMENDREQMSG:
                 PrivateChatEndRequestMessage privateChatEndRequestMessage = ((PrivateChatEndRequestMessage)message);
-                client.getBridge().changePrivateChatActiveStatus(privateChatEndRequestMessage.getPartner());
+                client.getBridge().changePrivateChatActiveStatus(privateChatEndRequestMessage.getRequester());
                 break;
             case LOGINRESPONSEMSG:
                 client.getBridge().onServerLoginAnswer(((LoginResponseMessage) message).getResponse());
@@ -113,11 +113,9 @@ public class ClientMessageHandler extends Thread {
                     case ALREADY_LOGGED_IN:
                         System.out.println("*** Someone is already using your Account!!!! ***");
                         System.out.println("*** Your Account might be in danger. Contact an admin! ***");
-//                        client.stop();
                         break;
                     case WRONG_PASSWORD:
                         System.out.println("*** Wrong password! Please try again! ***");
-                        //client.getClientSender().authenticate();
                         break;
                 }
                 break;
