@@ -60,6 +60,8 @@ public class MessageListener extends Thread {
                     case ROOMCHANGERESPONSEMSG:
                     case TARGETSERVERMSG:
                     case LOGINRESPONSEMSG:
+                    case PRIVATEROOMSTARTREQMSG:
+                    case PRIVATEROOMENDREQMSG:
                         sendToTarget(m);
                         break;
                     case LOGINMSG:
@@ -196,6 +198,30 @@ public class MessageListener extends Thread {
                 serverMessage.setUserConnectionInfo(m.getUserConnectionInfo());
                 serializer.serialize(m.getUserConnectionInfo().getOut(), serverMessage);
                 break;
+            case PRIVATEROOMSTARTREQMSG:
+                PrivateChatStartRequestMessage startRequestMessage = (PrivateChatStartRequestMessage)m;
+                for (UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()) {
+                    //Get the AccountInfo of the thread, find receiver of message
+                    if (u != null && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(startRequestMessage.getPartner())) {
+                        serializer.serialize(u.getUserConnectionInfo().getOut(), m);
+                        server.log(Level.INFO, startRequestMessage.getRequester() + " requests private Chat with " + startRequestMessage.getPartner());
+                        return;
+                    }
+                }
+                break;
+
+            case PRIVATEROOMENDREQMSG:
+                PrivateChatEndRequestMessage endRequestMessage = (PrivateChatEndRequestMessage)m;
+                for (UserListeningThread u : server.getNetworkListener().getUserListeningThreadList()) {
+                    //Get the AccountInfo of the thread, find receiver of message
+                    if (u != null && u.getUserConnectionInfo().getUserAccountInfo().getLoginName().equals(endRequestMessage.getPartner())) {
+                        serializer.serialize(u.getUserConnectionInfo().getOut(), m);
+                        server.log(Level.INFO, endRequestMessage.getRequester() + " ended private communication with " + endRequestMessage.getPartner());
+                        return;
+                    }
+                }
+                break;
+
 
             //because in case of a login process, we don't know the name of the client, so we get the connectionInfo of message
             case TARGETSERVERMSG:

@@ -86,4 +86,12 @@ public class ClientSendingThread extends Thread {
         }
     }
 
+    public void endPrivateChat(String endingUser, String userToBeInformed) {
+        Message message = new PrivateChatEndRequestMessage(endingUser, userToBeInformed);
+        try {
+            serializer.serialize(this.out, message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

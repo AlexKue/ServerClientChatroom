@@ -91,6 +91,14 @@ public class ClientMessageHandler extends Thread {
                 client.setActiveRoom(roomNameEditMessage.getNewName());
                 client.getBridge().onRoomChangeRequestAccepted(roomNameEditMessage.getNewName());
                 break;
+            case PRIVATEROOMSTARTREQMSG:
+                PrivateChatStartRequestMessage privateChatStartRequestMessage = ((PrivateChatStartRequestMessage)message);
+                client.getBridge().processStartRequestForPrivateChat(privateChatStartRequestMessage.getPartner());
+                break;
+            case PRIVATEROOMENDREQMSG:
+                PrivateChatEndRequestMessage privateChatEndRequestMessage = ((PrivateChatEndRequestMessage)message);
+                client.getBridge().changePrivateChatActiveStatus(privateChatEndRequestMessage.getPartner());
+                break;
             case LOGINRESPONSEMSG:
                 client.getBridge().onServerLoginAnswer(((LoginResponseMessage) message).getResponse());
                 switch (((LoginResponseMessage) message).getResponse()) {

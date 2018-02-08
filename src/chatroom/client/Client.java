@@ -193,4 +193,8 @@ public class Client {
     public void sendPrivateChatRequest(String targetUser) {
         clientSender.startPrivateChat(targetUser);
     }
+
+    public void sendPrivateChatEndRequest(String endingUser, String userToBeInformed) {
+        clientSender.endPrivateChat(endingUser, userToBeInformed);
+    }
 }

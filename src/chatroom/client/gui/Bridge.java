@@ -1,7 +1,6 @@
 package chatroom.client.gui;
 
 import chatroom.client.Client;
-import chatroom.client.ClientForTesting;
 import chatroom.model.message.LoginResponses;
 import javafx.application.Platform;
 
@@ -108,7 +107,7 @@ public class Bridge {
     }
 
     public void privateChatDisconnected(String endingUser, String userToBeInformed) {
-    //Todo
+        model.sendPrivateChatEndRequest(endingUser,userToBeInformed);
     }
     public void privateChatStartet(String targetUser){
         model.sendPrivateChatRequest(targetUser);
